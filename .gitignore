@@ -11,6 +11,9 @@
 *.o
 *.obj
 
+# Dependency files
+*.d
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -34,7 +37,7 @@
 *.out
 *.app
 
-#### JAVA
+#### Java
 
 *.class
 
