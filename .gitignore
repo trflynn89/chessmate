@@ -2,6 +2,7 @@
 
 *.db
 *.psd
+*.log
 
 #### C++
 
@@ -46,6 +47,7 @@
 
 # Package Files #
 *.jar
+!ChessMateGUI/jars/*
 *.war
 *.ear
 
