@@ -154,7 +154,7 @@ SocketPtr SocketImpl::Accept() const
 	struct sockaddr_in client;
 	int clientLen = sizeof(client);
 
-	int skt = ::accept(m_socketHandle, (struct sockaddr *)&client, &clientLen);
+	SOCKET skt = ::accept(m_socketHandle, (struct sockaddr *)&client, &clientLen);
 
 	if (skt == INVALID_SOCKET)
 	{
