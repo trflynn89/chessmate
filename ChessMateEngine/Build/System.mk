@@ -16,8 +16,8 @@ ifneq ($(findstring mingw, $(SYSTEM)),)
 else ifneq ($(findstring linux, $(SYSTEM)),)
     IS_WINDOWS := 0
     IS_LINUX := 1
-	EXTENSION :=
-	SYSTEM_FLAGS :=
+    EXTENSION :=
+    SYSTEM_FLAGS :=
 else
     $(error Unrecognized compilation system)
 endif
@@ -28,11 +28,20 @@ supported_archs := 32 64
 ifneq ($(findstring x86_64, $(SYSTEM)),)
     arch := 64
 else ifeq ($(arch),64)
-	$(error Cannot build 64-bit architecture on 32-bit machine)
+    $(error Cannot build 64-bit architecture on 32-bit machine)
 else
     arch := 32
 endif
 
 ifneq ($(arch), $(filter $(supported_archs), $(arch)))
     $(error Architecture $(arch) not supported, check System.mk)
+endif
+
+# Determine number of cores
+NUM_CORES := 1
+
+ifeq ($(IS_WINDOWS),1)
+    NUM_CORES := $(NUMBER_OF_PROCESSORS)
+else ifeq ($(IS_LINUX),1)
+
 endif

@@ -45,7 +45,7 @@ tests:
 	$(Q)numPass=0; numFail=0;                                                 \
 	for tgt in $(TEST_TARGETS) ; do                                           \
 		echo -e "------------- [Test $$tgt] -------------\n";                 \
-		$(MAKE) target=$$tgt test;                                            \
+		$(MAKE) -j $(NUM_CORES) target=$$tgt test;                            \
 		if [ $$? -ne 0 ] ; then                                               \
 			echo -e "[ERROR $$tgt]\n";                                        \
 			numFail=$$((numFail+1));                                          \
