@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <random>
 
-namespace Util { namespace Random {
+namespace Util {
 
 /**
  * Wrapper around STL random number generator to provide simpler construction
@@ -28,39 +28,39 @@ template <typename T, typename E = std::default_random_engine>
 class RandomDevice
 {
 public:
-	/**
-	 * Construct the random engine and seed it with a value based on the system
-	 * clock time.
-	 */
-	RandomDevice();
+    /**
+     * Construct the random engine and seed it with a value based on the system
+     * clock time.
+     */
+    RandomDevice();
 
-	/**
-	 * Seed the random engine.
-	 */
-	void Seed(T);
+    /**
+     * Seed the random engine.
+     */
+    void Seed(T);
 
-	/**
-	 * Generate a random number.
-	 */
-	virtual T operator()() = 0;
+    /**
+     * Generate a random number.
+     */
+    virtual T operator()() = 0;
 
 protected:
-	E m_engine;
+    E m_engine;
 };
 
 template <typename T, typename E>
 RandomDevice<T, E>::RandomDevice() : m_engine()
 {
-	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-	time_t seed = std::chrono::system_clock::to_time_t(now);
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    time_t seed = std::chrono::system_clock::to_time_t(now);
 
-	m_engine.seed(seed);
+    m_engine.seed(seed);
 }
 
 template <typename T, typename E>
 void RandomDevice<T, E>::Seed(T seed)
 {
-	m_engine.seed(seed);
+    m_engine.seed(seed);
 }
 
 //=============================================================================
@@ -70,12 +70,12 @@ template <typename T, typename E = std::default_random_engine>
 class NormalDevice : public RandomDevice<T, E>
 {
 public:
-	NormalDevice();
-	NormalDevice(T, T);
-	T operator()();
+    NormalDevice();
+    NormalDevice(T, T);
+    T operator()();
 
 private:
-	std::normal_distribution<T> m_distribution;
+    std::normal_distribution<T> m_distribution;
 };
 
 template <typename T, typename E>
@@ -91,7 +91,7 @@ NormalDevice<T, E>::NormalDevice(T mean, T stddev) : RandomDevice<T, E>(), m_dis
 template <typename T, typename E>
 T NormalDevice<T, E>::operator()()
 {
-	return m_distribution(RandomDevice<T, E>::m_engine);
+    return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
 //=============================================================================
@@ -101,12 +101,12 @@ template <typename T, typename E = std::default_random_engine>
 class UniformIntegerDevice : public RandomDevice<T, E>
 {
 public:
-	UniformIntegerDevice();
-	UniformIntegerDevice(T, T);
-	T operator()();
+    UniformIntegerDevice();
+    UniformIntegerDevice(T, T);
+    T operator()();
 
 private:
-	std::uniform_int_distribution<T> m_distribution;
+    std::uniform_int_distribution<T> m_distribution;
 };
 
 template <typename T, typename E>
@@ -122,7 +122,7 @@ UniformIntegerDevice<T, E>::UniformIntegerDevice(T min, T max) : RandomDevice<T,
 template <typename T, typename E>
 T UniformIntegerDevice<T, E>::operator()()
 {
-	return m_distribution(RandomDevice<T, E>::m_engine);
+    return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
 //=============================================================================
@@ -132,12 +132,12 @@ template <typename T, typename E = std::default_random_engine>
 class UniformRealDevice : public RandomDevice<T, E>
 {
 public:
-	UniformRealDevice();
-	UniformRealDevice(T, T);
-	T operator()();
+    UniformRealDevice();
+    UniformRealDevice(T, T);
+    T operator()();
 
 private:
-	std::uniform_real_distribution<T> m_distribution;
+    std::uniform_real_distribution<T> m_distribution;
 };
 
 template <typename T, typename E>
@@ -153,7 +153,7 @@ UniformRealDevice<T, E>::UniformRealDevice(T min, T max) : RandomDevice<T, E>(),
 template <typename T, typename E>
 T UniformRealDevice<T, E>::operator()()
 {
-	return m_distribution(RandomDevice<T, E>::m_engine);
+    return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
 //=============================================================================
@@ -163,12 +163,12 @@ template <typename E = std::default_random_engine>
 class BernoulliDevice : public RandomDevice<bool, E>
 {
 public:
-	BernoulliDevice();
-	BernoulliDevice(double);
-	bool operator()();
+    BernoulliDevice();
+    BernoulliDevice(double);
+    bool operator()();
 
 private:
-	std::bernoulli_distribution m_distribution;
+    std::bernoulli_distribution m_distribution;
 };
 
 template <typename E>
@@ -184,7 +184,7 @@ BernoulliDevice<E>::BernoulliDevice(double trueProbability) : RandomDevice<bool,
 template <typename E>
 bool BernoulliDevice<E>::operator()()
 {
-	return m_distribution(RandomDevice<bool, E>::m_engine);
+    return m_distribution(RandomDevice<bool, E>::m_engine);
 }
 
 //=============================================================================
@@ -194,12 +194,12 @@ template <typename T, typename E = std::default_random_engine>
 class BinomialDevice : public RandomDevice<T, E>
 {
 public:
-	BinomialDevice();
-	BinomialDevice(T, double);
-	T operator()();
+    BinomialDevice();
+    BinomialDevice(T, double);
+    T operator()();
 
 private:
-	std::binomial_distribution<T> m_distribution;
+    std::binomial_distribution<T> m_distribution;
 };
 
 template <typename T, typename E>
@@ -215,7 +215,7 @@ BinomialDevice<T, E>::BinomialDevice(T max, double probability) : RandomDevice<T
 template <typename T, typename E>
 T BinomialDevice<T, E>::operator()()
 {
-	return m_distribution(RandomDevice<T, E>::m_engine);
+    return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
 //=============================================================================
@@ -225,12 +225,12 @@ template <typename T, typename E = std::default_random_engine>
 class GeometricDevice : public RandomDevice<T, E>
 {
 public:
-	GeometricDevice();
-	GeometricDevice(double);
-	T operator()();
+    GeometricDevice();
+    GeometricDevice(double);
+    T operator()();
 
 private:
-	std::geometric_distribution<T> m_distribution;
+    std::geometric_distribution<T> m_distribution;
 };
 
 template <typename T, typename E>
@@ -246,7 +246,7 @@ GeometricDevice<T, E>::GeometricDevice(double probability) : RandomDevice<T, E>(
 template <typename T, typename E>
 T GeometricDevice<T, E>::operator()()
 {
-	return m_distribution(RandomDevice<T, E>::m_engine);
+    return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
 //=============================================================================
@@ -256,12 +256,12 @@ template <typename T, typename E = std::default_random_engine>
 class ExponentialDevice : public RandomDevice<T, E>
 {
 public:
-	ExponentialDevice();
-	ExponentialDevice(T);
-	T operator()();
+    ExponentialDevice();
+    ExponentialDevice(T);
+    T operator()();
 
 private:
-	std::exponential_distribution<T> m_distribution;
+    std::exponential_distribution<T> m_distribution;
 };
 
 template <typename T, typename E>
@@ -277,7 +277,7 @@ ExponentialDevice<T, E>::ExponentialDevice(T lambda) : RandomDevice<T, E>(), m_d
 template <typename T, typename E>
 T ExponentialDevice<T, E>::operator()()
 {
-	return m_distribution(RandomDevice<T, E>::m_engine);
+    return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
-}}
+}

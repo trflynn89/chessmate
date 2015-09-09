@@ -2,13 +2,13 @@
 
 #include <memory>
 
-#include <ChessMateEngine.h>
+#include <Engine/MoveSelector.h>
 #include <Game/BitBoard.h>
 #include <Game/Message.h>
 #include <Movement/Move.h>
 #include <Util/Socket/Socket.h>
 
-namespace ChessMate { namespace Game {
+namespace Game {
 
 DEFINE_CLASS_PTRS(ChessGame);
 
@@ -21,100 +21,116 @@ DEFINE_CLASS_PTRS(ChessGame);
  */
 class ChessGame : public std::enable_shared_from_this<ChessGame>
 {
+    /**
+     * Enumerated list of game difficulties.
+     */
+    enum Difficulty {
+        EASY,
+        MEDIUM,
+        HARD
+    };
+
 public:
-	/**
-	 * Constructor to set the game's client socket.
-	 *
-	 * @param SocketPtr The client socket, to be stored as a weak reference.
-	 */
-	ChessGame(const Util::Socket::SocketPtr &);
+    /**
+     * Create a ChessGame instance from the initialization message received
+     * from the game client.
+     *
+     * @param SocketPtr A shared pointer to client socket.
+     * @param Message The START_GAME message containing the client's settings.
+     *
+     * @return A shared pointer around the created ChessGame instance.
+     */
+    static ChessGamePtr Create(const Util::SocketPtr &, const Message &);
 
-	/**
-	 * Destructor to close the client socket.
-	 */
-	~ChessGame();
+    /**
+     * Constructor to set the game's client socket.
+     *
+     * @param SocketPtr A shared pointer to client socket.
+     * @param color_type The color of the engine.
+     * @param value_type The difficulty of the engine.
+     */
+    ChessGame(const Util::SocketPtr &, const color_type &, const value_type &);
 
-	/**
-	 * @return This game's ID.
-	 */
-	int GetGameID() const;
+    /**
+     * Destructor to close the client socket.
+     */
+    ~ChessGame();
 
-	/**
-	 * @return This game's board.
-	 */
-	ChessMate::Game::BitBoard *GetBoard() const;
+    /**
+     * @return This game's ID - same as the client's socket ID.
+     */
+    int GetGameID() const;
 
-	/**
-	 * Check if the game is still valid, i.e. the client socket is still open.
-	 *
-	 * @return True if the game is in a valid state, false otherwise.
-	 */
-	bool IsValid() const;
+    /**
+     * Check if the game is still valid, i.e. the client socket is still open.
+     *
+     * @return True if the game is in a valid state, false otherwise.
+     */
+    bool IsValid() const;
 
-	/**
-	 * If a move is valid, make it.
-	 *
-	 * @return True if the move was valid, false otherwise.
-	 */
-	bool MakeMove(ChessMate::Movement::Move &) const;
+    /**
+     * If a move is valid, make it.
+     *
+     * @param Move The move to attempt to make.
+     *
+     * @return True if the move was valid, false otherwise.
+     */
+    bool MakeMove(Movement::Move &) const;
 
-	/**
-	 * Process a message and perform any appropriate action.
-	 *
-	 * @return True if the game should continue, false otherwise.
-	 */
-	bool ProcessMessage(const Message &);
+    /**
+     * Process a message and perform any appropriate action.
+     *
+     * @return True if the game should continue, false otherwise.
+     */
+    bool ProcessMessage(const Message &);
 
 private:
-	/**
-	 * Send a message to the client.
-	 *
-	 * @param The message to send.
-	 */
-	bool sendMessage(const Message &) const;
+    /**
+     * Send a message to the client.
+     *
+     * @param Message The message to send.
+     *
+     * @return True if the message could be sent.
+     */
+    bool sendMessage(const Message &) const;
 
-	/**
-	 * Initialize the game and its board.
-	 *
-	 * @param Color of the engine.
-	 * @param Difficulty of the engine.
-	 */
-	void initializeGame(color_t, value_t);
+    /**
+     * Retrieve a move's PGN string and determine stalemate status.
+     *
+     * Stalemate status:
+     * 0 = Not in stalemate
+     * 1 = No valid moves
+     * 2 = 50 moves rule reached
+     * 3 = 3 move repetition
+     *
+     * @param Move The move to convert to a PGN string.
+     *
+     * @return String of the format "pgnString stalemateStatus".
+     */
+    std::string makeMoveAndStalemateMsg(Movement::Move &move) const;
 
-	/**
-	 * Retrieve a move's PGN string and determine stalemate status.
-	 *
-	 * Stalemate status:
-	 * 0 = Not in stalemate
-	 * 1 = No valid moves
-	 * 2 = 50 moves rule reached
-	 * 3 = 3 move repetition
-	 *
-	 * @return String of the format "pgnString stalemateStatus".
-	 */
-	std::string makeMoveAndStalemateMsg(ChessMate::Movement::Move &move) const;
+    /**
+     * @return True if there are any valid moves that can be made.
+     */
+    bool anyValidMoves() const;
 
-	/**
-	 * @return True if there are any valid moves that can be made.
-	 */
-	bool anyValidMoves() const;
+    /**
+     * Use the engine to figure out the best move on the current board.
+     *
+     * @return The best move calculated by the engine.
+     */
+    Movement::Move getBestMove();
 
-	/**
-	 * Use the engine to figure out the best move on the current board.
-	 *
-	 * @return The best move calculated by the engine.
-	 */
-	ChessMate::Movement::Move getBestMove();
+    int m_gameId;
 
-	int m_gameId;
+    Util::SocketWPtr m_wpClientSocket;
 
-	Util::Socket::SocketWPtr m_wpClientSocket;
+    value_type m_maxDepth;
+    bool m_checkMaxDepth;
 
-	color_t m_engineColor;
-	value_t m_maxDepth;
-	bool m_checkMaxDepth;
+    Game::BitBoardPtr m_spBoard;
 
-	ChessMate::Game::BitBoard *m_board;
+    Engine::MoveSelector m_moveSelector;
 };
 
-}}
+}

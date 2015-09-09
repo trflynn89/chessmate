@@ -1,141 +1,144 @@
-/**
- * Implementation of the MoveSelector interface.
- *
- * @author Timothy Flynn(timothy.flynn@outlook.com)
- * @version March 3, 2013
- */
 #include <algorithm>
 
 #include "MoveSelector.h"
 #include <Movement/ValidMoveSet.h>
-#include <Engine/Evaluator.h>
 
-using std::max;
-using std::min;
+namespace Engine {
 
-using ChessMate::Game::BitBoard;
-using ChessMate::Engine::Evaluator;
-using ChessMate::Movement::Move;
-using ChessMate::Movement::ValidMoveSet;
-using ChessMate::Movement::validMoveList_t;
-
-namespace ChessMate { namespace Engine {
-
-//=============================================================================
-Move MoveSelector::GetBestMove(color_t engineColor, BitBoard *board, value_t maxDepth) const
+namespace
 {
-	BitBoard b = *board;
-	value_t val = -32767;
-
-	// Get the list of possible moves
-	ValidMoveSet vms = ValidMoveSet(b);
-	validMoveList_t moves = vms.GetMyValidMoves();
-	Move bestMove = moves[0];
-
-	//DWORD start = GetTickCount();
-
-	// Iterate through each possible move, one thread each
-	for (value_t i=0; i<vms.GetNumMyValidMoves(); i++)
-	{
-		Move m = moves[i];
-
-		value_t oldVal = val;
-		value_t min = MinValue(engineColor, Result(b, m), maxDepth, -32767, 32767);
-		val = max(val, min);
-
-		// If the move is better, select it
-		if (val > oldVal)
-		{
-			bestMove = m;
-		}
-
-		//std::cout << ".";
-	}
-
-	//DWORD end = GetTickCount();
-
-	//std::cout << "\nTime: " << (end-start) << std::endl;
-
-	return bestMove;
+    static const int s_posInfinity =  32767;
+    static const int s_negInfinity = -32767;
 }
 
 //=============================================================================
-value_t MoveSelector::MaxValue(color_t engineColor, BitBoard board,
-	value_t depth, value_t alpha, value_t beta) const
+MoveSelector::MoveSelector(
+    const Game::BitBoardPtr &spBoard,
+    const Game::color_type &engineColor
+) :
+    m_wpBoard(spBoard),
+    m_engineColor(engineColor),
+    m_evaluator(engineColor)
 {
-	ValidMoveSet vms = ValidMoveSet(board);
-	value_t score = Evaluator(engineColor, board, vms).EvaluateBoardScore();
-	
-	// If in an end state, return the utility
-	if (depth <= 1 || score == 32767 || score == -32767 || score == 0)
-	{
-		return score;
-	}
-
-	validMoveList_t moves = vms.GetMyValidMoves();
-	value_t v = -32767;
-
-	// For each possible action from the given board
-	for (value_t i=0; i<vms.GetNumMyValidMoves(); i++)
-	{
-		Move m = moves[i];
-
-		v = max(v, MinValue(engineColor, Result(board, m), depth-1, alpha, beta));
-
-		// If the new value is better than beta, prune the branch
-		if (score >= beta)
-		{
-			return v;
-		}
-
-		// Update alpha
-		alpha = max(alpha, v);
-	}
-
-	return v;
 }
 
 //=============================================================================
-value_t MoveSelector::MinValue(color_t engineColor, BitBoard board,
-	value_t depth, value_t alpha, value_t beta) const
+Movement::Move MoveSelector::GetBestMove(const Game::value_type &maxDepth) const
 {
-	ValidMoveSet vms = ValidMoveSet(board);
-	value_t score = Evaluator(engineColor, board, vms).EvaluateBoardScore();
-	
-	// If in an end state, return the utility
-	if (depth <= 1 || score == 32767 || score == -32767 || score == 0)
-	{
-		return score;
-	}
+    Game::BitBoardPtr spBoard = m_wpBoard.lock();
 
-	validMoveList_t moves = vms.GetMyValidMoves();
-	value_t v = 32767;
+    Movement::ValidMoveSet vms(spBoard);
+    Movement::validMoveList_t moves = vms.GetMyValidMoves();
 
-	// For each possible action from the given board
-	for (value_t i=0; i<vms.GetNumMyValidMoves(); i++)
-	{
-		Move m = moves[i];
+    Game::value_type bestValue = s_negInfinity;
+    Movement::Move bestMove;
 
-		v = min(v, MaxValue(engineColor, Result(board, m), depth-1, alpha, beta));
+    for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    {
+        Game::BitBoardPtr spResult = result(spBoard, moves[i]);
 
-		// If the new value is better than alpha, prune the branch
-		if (score <= alpha)
-		{
-			return v;
-		}
+        Game::value_type oldVal = bestValue;
+        Game::value_type min = minValue(spResult, maxDepth, s_negInfinity, s_posInfinity);
+        bestValue = std::max(bestValue, min);
 
-		// Update beta
-		beta = min(beta, v);
-	}
+        if (bestValue > oldVal)
+        {
+            bestMove = moves[i];
+        }
+    }
 
-	return v;
+    return bestMove;
 }
 
 //=============================================================================
-BitBoard MoveSelector::Result(BitBoard board, Move move) const
+Game::value_type MoveSelector::maxValue(
+    const Game::BitBoardPtr &spBoard,
+    const Game::value_type &depth,
+    Game::value_type alpha,
+    Game::value_type beta
+) const
 {
-	board.MakeMove(move);
-	return board;
+    Movement::ValidMoveSet vms(spBoard);
+    Game::value_type score = m_evaluator.Score(spBoard, vms);
+
+    if (reachedEndState(depth, score))
+    {
+        return score;
+    }
+
+    Movement::validMoveList_t moves = vms.GetMyValidMoves();
+    Game::value_type v = s_negInfinity;
+
+    for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    {
+        Game::BitBoardPtr spResult = result(spBoard, moves[i]);
+        v = std::max(v, minValue(spResult, depth-1, alpha, beta));
+
+        if (score >= beta)
+        {
+            return v;
+        }
+
+        alpha = std::max(alpha, v);
+    }
+
+    return v;
 }
 
-}}
+//=============================================================================
+Game::value_type MoveSelector::minValue(
+    const Game::BitBoardPtr &spBoard,
+    const Game::value_type &depth,
+    Game::value_type alpha,
+    Game::value_type beta
+) const
+{
+    Movement::ValidMoveSet vms(spBoard);
+    Game::value_type score = m_evaluator.Score(spBoard, vms);
+
+    if (reachedEndState(depth, score))
+    {
+        return score;
+    }
+
+    Movement::validMoveList_t moves = vms.GetMyValidMoves();
+    Game::value_type v = s_posInfinity;
+
+    for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    {
+        Game::BitBoardPtr spResult = result(spBoard, moves[i]);
+        v = std::min(v, maxValue(spResult, depth-1, alpha, beta));
+
+        if (score <= alpha)
+        {
+            return v;
+        }
+
+        beta = std::min(beta, v);
+    }
+
+    return v;
+}
+
+//=============================================================================
+Game::BitBoardPtr MoveSelector::result(
+    const Game::BitBoardPtr &spBoard,
+    Movement::Move move
+) const
+{
+    Game::BitBoard copy(*spBoard);
+    copy.MakeMove(move);
+
+    return std::make_shared<Game::BitBoard>(copy);
+}
+
+//=============================================================================
+bool MoveSelector::reachedEndState(
+    const Game::value_type &depth,
+    const Game::value_type &score
+) const
+{
+    return ((depth <= 1) || (score == s_posInfinity) || (score == s_negInfinity) || (score == 0));
+}
+
+}

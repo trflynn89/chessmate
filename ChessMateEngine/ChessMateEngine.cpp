@@ -11,7 +11,6 @@
 #include <string>
 #include <thread>
 
-#include <ChessMateEngine.h>
 #include <Game/GameManager.h>
 #include <Movement/MoveSet.h>
 #include <Util/Logging/Logger.h>
@@ -19,179 +18,186 @@
 #include <Util/Socket/SocketManagerImpl.h>
 #include <Util/System/System.h>
 
-using std::atomic_bool;
-using std::atomic_int;
-using std::chrono::seconds;
-using std::make_shared;
-using std::string;
-using std::this_thread::sleep_for;
-
-using ChessMate::Game::GameManager;
-using ChessMate::Game::GameManagerPtr;
-using ChessMate::Movement::MoveSet;
-using Util::Logging::Logger;
-using Util::Logging::LoggerPtr;
-using Util::Socket::Socket;
-using Util::Socket::SocketPtr;
-using Util::Socket::SocketManager;
-using Util::Socket::SocketManagerImpl;
-using Util::Socket::SocketManagerPtr;
-using Util::System::System;
-
 //=============================================================================
-atomic_bool g_aKeepRunning(true);
-atomic_int g_aExitSignal(0);
+static int g_chessMatePort(12389);
+
+static std::atomic_bool g_aKeepRunning(true);
+static std::atomic_int g_aExitSignal(0);
 
 //=============================================================================
 void CleanExit(int sig)
 {
-	g_aExitSignal.store(sig);
-	g_aKeepRunning.store(false);
+    g_aExitSignal.store(sig);
+    g_aKeepRunning.store(false);
 }
 
 //=============================================================================
 void HandleSignal(int sig)
 {
-	LOGI(-1, "Received signal %d", sig);
-	LOGC("Received signal %d", sig);
+    LOGI(-1, "Received signal %d", sig);
+    LOGC("Received signal %d", sig);
 
-	switch (sig)
-	{
-	case SIGINT:
-	case SIGTERM:
-		CleanExit(0);
-		break;
+    Util::LoggerPtr spLogger = Util::Logger::GetInstance();
+
+    bool fatalSignal = false;
+    bool cleanExit = false;
+    bool flushLog = false;
+
+    switch (sig)
+    {
+    case SIGINT:
+    case SIGTERM:
+        LOGC("Non-fatal signal caught, exiting");
+        cleanExit = true;
+        break;
 
 #ifdef CHESSMATE_LINUX
-	case SIGUSR1:
-		LOGC("Flushing the logger");
+    case SIGUSR1:
+        LOGC("Flushing the logger");
+        flushLog = true;
+        break;
 
-		Logger::GetInstance()->Flush();
-		break;
-
-	case SIGSYS:
-	case SIGBUS:
+    case SIGSYS:
+    case SIGBUS:
 #endif // CHESSMATE_LINUX
-	case SIGILL:
-	case SIGFPE:
-	case SIGABRT:
-	case SIGSEGV:
-		System::PrintBacktrace(10);
-		Logger::GetInstance()->Flush();
-		CleanExit(sig);
-		break;
+    case SIGILL:
+    case SIGFPE:
+    case SIGABRT:
+    case SIGSEGV:
+        LOGC("Fatal signal caught, flushing the logger and exiting");
+        fatalSignal = true;
+        cleanExit = true;
+        flushLog = true;
+        break;
 
-	default:
-		break;
-	}
+    default:
+        break;
+    }
+
+    if (flushLog && spLogger)
+    {
+        spLogger->Flush();
+    }
+
+    if (cleanExit)
+    {
+        int exitCode = 0;
+
+        if (fatalSignal)
+        {
+            Util::System::PrintBacktrace(10);
+            exitCode = sig;
+        }
+
+        CleanExit(exitCode);
+    }
 }
 
 //=============================================================================
 void SetupSignalHandler()
 {
-	signal(SIGINT, HandleSignal);
-	signal(SIGTERM, HandleSignal);
+    signal(SIGINT, HandleSignal);
+    signal(SIGTERM, HandleSignal);
 #ifdef CHESSMATE_LINUX
-	// TODO USR1 and USR2 don't exist in Windows - how to flush buffer with signals?
-	signal(SIGUSR1, HandleSignal);
-	signal(SIGSYS, HandleSignal);
-	signal(SIGBUS, HandleSignal);
+    // TODO USR1 and USR2 don't exist in Windows - how to flush buffer with signals?
+    signal(SIGUSR1, HandleSignal);
+    signal(SIGSYS, HandleSignal);
+    signal(SIGBUS, HandleSignal);
 #endif // CHESSMATE_LINUX
-	signal(SIGILL, HandleSignal);
-	signal(SIGFPE, HandleSignal);
-	signal(SIGABRT, HandleSignal);
-	signal(SIGSEGV, HandleSignal);
+    signal(SIGILL, HandleSignal);
+    signal(SIGFPE, HandleSignal);
+    signal(SIGABRT, HandleSignal);
+    signal(SIGSEGV, HandleSignal);
 }
 
 //=============================================================================
-LoggerPtr InitLogger()
+Util::LoggerPtr InitLogger()
 {
-	LoggerPtr spLogger = make_shared<Logger>();
-	Logger::SetInstance(spLogger);
+    auto spLogger = std::make_shared<Util::Logger>();
+    Util::Logger::SetInstance(spLogger);
 
-	return spLogger;
+    return spLogger;
 }
 
 //=============================================================================
-SocketManagerPtr InitSocketManager()
+Util::SocketManagerPtr InitSocketManager()
 {
-	SocketManagerPtr spSocketManager = make_shared<SocketManagerImpl>();
-	spSocketManager->StartSocketManager();
+    auto spSocketManager = std::make_shared<Util::SocketManagerImpl>();
+    spSocketManager->StartSocketManager();
 
-	return spSocketManager;
+    return spSocketManager;
 }
 
 //=============================================================================
-void StopSocketManager(SocketManagerPtr &spSocketManager)
+void StopSocketManager(Util::SocketManagerPtr &spSocketManager)
 {
-	if (spSocketManager)
-	{
-		spSocketManager->StopSocketManager();
-	}
+    if (spSocketManager)
+    {
+        spSocketManager->StopSocketManager();
+    }
 }
 
 //=============================================================================
-GameManagerPtr InitGameManager(const SocketManagerPtr &spSocketManager)
+Game::GameManagerPtr InitGameManager(const Util::SocketManagerPtr &spSocketManager)
 {
-	GameManagerPtr spGameManager = make_shared<GameManager>(spSocketManager);
+    auto spGameManager = std::make_shared<Game::GameManager>(spSocketManager);
 
-	if (!spGameManager->StartGameManager(CHESSMATE_PORT))
-	{
-		spGameManager.reset();
-		CleanExit(0);
-	}
+    if (!spGameManager->StartGameManager(g_chessMatePort))
+    {
+        spGameManager.reset();
+        CleanExit(1);
+    }
 
-	return spGameManager;
+    return spGameManager;
 }
 
 //=============================================================================
-void StopGameManager(GameManagerPtr &spGameManager)
+void StopGameManager(Game::GameManagerPtr &spGameManager)
 {
-	if (spGameManager)
-	{
-		spGameManager->StopGameManager();
-	}
+    if (spGameManager)
+    {
+        spGameManager->StopGameManager();
+    }
 }
 
 //=============================================================================
 int main(int argc, char **argv)
 {
-	bool flushLogOnExit = false;
+    bool flushLogOnExit = false;
 
-	for (int i = 1; i < argc; ++i)
-	{
-		string arg(argv[i]);
+    for (int i = 1; i < argc; ++i)
+    {
+        std::string arg(argv[i]);
 
-		if (arg == "-f")
-		{
-			flushLogOnExit = true;
-		}
-	}
+        if (arg == "-f")
+        {
+            flushLogOnExit = true;
+        }
+    }
 
-	SetupSignalHandler();
+    SetupSignalHandler();
 
-	LoggerPtr spLogger = InitLogger();
+    Util::LoggerPtr spLogger = InitLogger();
+    Movement::MoveSet::Initialize();
 
-	MoveSet::Initialize();
+    Util::SocketManagerPtr spSocketManager = InitSocketManager();
+    Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);
 
-	SocketManagerPtr spSocketManager = InitSocketManager();
-	GameManagerPtr spGameManager = InitGameManager(spSocketManager);
+    while (g_aKeepRunning.load())
+    {
+        // TODO perform system monitoring, provide CLI
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
-	while (g_aKeepRunning.load())
-	{
-		// TODO perform system monitoring, provide CLI
-		sleep_for(seconds(1));
-	}
+    StopGameManager(spGameManager);
+    StopSocketManager(spSocketManager);
 
-	StopGameManager(spGameManager);
-	StopSocketManager(spSocketManager);
+    if (flushLogOnExit)
+    {
+        LOGC("Flushing the logger");
+        spLogger->Flush();
+    }
 
-	if (flushLogOnExit)
-	{
-		LOGC("Flushing the logger");
-		spLogger->Flush();
-	}
-
-	LOGC("Exiting ChessMateEngine");
-	return g_aExitSignal.load();
+    LOGC("Exiting ChessMateEngine");
+    return g_aExitSignal.load();
 }

@@ -24,9 +24,6 @@ endif
 CFLAGS := -std=c11 $(CF_ALL)
 CXXFLAGS := -std=c++11 $(CF_ALL)
 
-# Arhive flags
-ARFLAGS := rcs
-
 # Linker flags
 LDFLAGS :=
 LDLIBS :=

@@ -5,7 +5,7 @@
 #include <Util/Utilities.h>
 #include <Util/Socket/Socket.h>
 
-namespace Util { namespace Socket {
+namespace Util {
 
 DEFINE_CLASS_PTRS(SocketImpl);
 
@@ -18,31 +18,31 @@ DEFINE_CLASS_PTRS(SocketImpl);
 class SocketImpl : public Socket
 {
 public:
-	SocketImpl();
-	~SocketImpl();
+    SocketImpl();
+    ~SocketImpl();
 
-	static int InAddrAny();
+    static int InAddrAny();
 
-	void Close();
+    void Close();
 
-	bool InitTcpSocket();
-	bool InitUdpSocket();
+    bool InitTcpSocket();
+    bool InitUdpSocket();
 
-	bool IsErrorFree();
+    bool IsErrorFree();
 
-	bool SetAsync();
+    bool SetAsync();
 
-	bool Bind(int, int) const;
-	bool BindForReuse(int, int) const;
-	bool Listen();
-	bool Connect(const std::string &, int);
-	SocketPtr Accept() const;
+    bool Bind(int, int) const;
+    bool BindForReuse(int, int) const;
+    bool Listen();
+    bool Connect(const std::string &, int);
+    SocketPtr Accept() const;
 
-	unsigned int Send(const std::string &) const;
-	unsigned int Send(const std::string &, bool &) const;
+    unsigned int Send(const std::string &) const;
+    unsigned int Send(const std::string &, bool &) const;
 
-	std::string Recv() const;
-	std::string Recv(bool &) const;
+    std::string Recv() const;
+    std::string Recv(bool &) const;
 };
 
-}}
+}

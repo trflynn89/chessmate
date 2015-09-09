@@ -1,271 +1,261 @@
-/**
- * Implementation of the Socket interface.
- *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
- * @version November 11, 2013
- */
 #include "Socket.h"
 #include "SocketImpl.h"
 
 #include <Util/Logging/Logger.h>
 #include <Util/String/String.h>
 
-using std::atomic_int;
-using std::string;
-using std::vector;
-
-namespace Util { namespace Socket {
+namespace Util {
 
 //=============================================================================
 const char Socket::s_socketEoM = 0x04;
-atomic_int Socket::s_aNumSockets(0);
+std::atomic_int Socket::s_aNumSockets(0);
 
 //=============================================================================
 Socket::Socket() :
-	m_socketHandle(-1),
-	m_clientIp(-1),
-	m_clientPort(-1),
-	m_isAsync(false),
-	m_isListening(false),
-	m_aConnectedState(Socket::NOT_CONNECTED),
- 	m_socketId(s_aNumSockets.fetch_add(1))
+    m_socketHandle(-1),
+    m_clientIp(-1),
+    m_clientPort(-1),
+    m_isAsync(false),
+    m_isListening(false),
+    m_aConnectedState(Socket::NOT_CONNECTED),
+    m_socketId(s_aNumSockets.fetch_add(1))
 {
 }
 
 //=============================================================================
 int Socket::InAddrAny()
 {
-	return SocketImpl::InAddrAny();
+    return SocketImpl::InAddrAny();
 }
 
 //=============================================================================
 bool Socket::IsValid() const
 {
-	return (m_socketHandle > 0);
+    return (m_socketHandle > 0);
 }
 
 //=============================================================================
 bool Socket::IsAsync() const
 {
-	return m_isAsync;
+    return m_isAsync;
 }
 
 //=============================================================================
 int Socket::GetHandle() const
 {
-	return m_socketHandle;
+    return m_socketHandle;
 }
 
 //=============================================================================
 int Socket::GetClientIp() const
 {
-	return m_clientIp;
+    return m_clientIp;
 }
 
 //=============================================================================
 int Socket::GetClientPort() const
 {
-	return m_clientPort;
+    return m_clientPort;
 }
 
 //=============================================================================
 int Socket::GetSocketId() const
 {
-	return m_socketId;
+    return m_socketId;
 }
 
 //=============================================================================
 bool Socket::IsListening() const
 {
-	return m_isListening;
+    return m_isListening;
 }
 
 //=============================================================================
 bool Socket::IsConnecting() const
 {
-	return (m_aConnectedState.load() == Socket::CONNECTING);
+    return (m_aConnectedState.load() == Socket::CONNECTING);
 }
 
 //=============================================================================
 bool Socket::IsConnected() const
 {
-	return (m_aConnectedState.load() == Socket::CONNECTED);
+    return (m_aConnectedState.load() == Socket::CONNECTED);
 }
 
 //=============================================================================
-Socket::ConnectedState Socket::ConnectAsync(string hostname, int port)
+Socket::ConnectedState Socket::ConnectAsync(std::string hostname, int port)
 {
-	Socket::ConnectedState state = NOT_CONNECTED;
+    Socket::ConnectedState state = NOT_CONNECTED;
 
-	if (IsAsync())
-	{
-		if (Connect(hostname, port))
-		{
-			LOGD(m_socketId, "Connected to %s:%d", hostname.c_str(), port);
-			state = CONNECTED;
-		}
-		else if (IsConnecting())
-		{
-			LOGD(m_socketId, "Connect to %s:%d in progress", hostname.c_str(), port);
+    if (IsAsync())
+    {
+        if (Connect(hostname, port))
+        {
+            LOGD(m_socketId, "Connected to %s:%d", hostname, port);
+            state = CONNECTED;
+        }
+        else if (IsConnecting())
+        {
+            LOGD(m_socketId, "Connect to %s:%d in progress", hostname, port);
 
-			AsyncConnect connect(m_socketId, hostname, port);
-			m_pendingConnects.Push(connect);
+            AsyncConnect connect(m_socketId, hostname, port);
+            m_pendingConnects.Push(connect);
 
-			state = CONNECTING;
-		}
-		else
-		{
-			LOGW(m_socketId, "Could not connect to %s:%d, closing socket",
-				hostname.c_str(), port);
+            state = CONNECTING;
+        }
+        else
+        {
+            LOGW(m_socketId, "Could not connect to %s:%d, closing socket",
+                hostname, port);
 
-			Close();
-		}
-	}
+            Close();
+        }
+    }
 
-	return state;
+    return state;
 }
 
 //=============================================================================
-bool Socket::SendAsync(const string &msg)
+bool Socket::SendAsync(const std::string &msg)
 {
-	static const string eom(1, s_socketEoM);
+    static const std::string eom(1, s_socketEoM);
 
-	if (IsAsync())
-	{
-		AsyncRequest request(m_socketId, msg + eom);
-		m_pendingSends.Push(request);
+    if (IsAsync())
+    {
+        AsyncRequest request(m_socketId, msg + eom);
+        m_pendingSends.Push(request);
 
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 //=============================================================================
 void Socket::ServiceConnectRequests(AsyncConnect::ConnectQueue &completedConnects)
 {
-	bool wouldBlock = false;
+    bool wouldBlock = false;
 
-	while (IsValid() && !m_pendingConnects.IsEmpty() && !wouldBlock)
-	{
-		AsyncConnect connect;
-		m_pendingConnects.Pop(connect);
+    while (IsValid() && !m_pendingConnects.IsEmpty() && !wouldBlock)
+    {
+        AsyncConnect connect;
+        m_pendingConnects.Pop(connect);
 
-		if (connect.IsValid())
-		{
-			const string hostname = connect.GetHostname();
-			const int port = connect.GetPort();
+        if (connect.IsValid())
+        {
+            const std::string hostname = connect.GetHostname();
+            const int port = connect.GetPort();
 
-			if (IsErrorFree())
-			{
-				LOGD(m_socketId, "Connected to %s:%d", hostname.c_str(), port);
-				m_aConnectedState.store(Socket::CONNECTED);
+            if (IsErrorFree())
+            {
+                LOGD(m_socketId, "Connected to %s:%d", hostname, port);
+                m_aConnectedState.store(Socket::CONNECTED);
 
-				completedConnects.Push(connect);
-			}
-			else
-			{
-				LOGW(m_socketId, "Could not connect to %s:%d, closing socket",
-					hostname.c_str(), port);
-				m_aConnectedState.store(Socket::NOT_CONNECTED);
+                completedConnects.Push(connect);
+            }
+            else
+            {
+                LOGW(m_socketId, "Could not connect to %s:%d, closing socket",
+                    hostname, port);
+                m_aConnectedState.store(Socket::NOT_CONNECTED);
 
-				Close();
-			}
-		}
-	}
+                Close();
+            }
+        }
+    }
 }
 
 //=============================================================================
 void Socket::ServiceSendRequests(AsyncRequest::RequestQueue &completedSends)
 {
-	bool wouldBlock = false;
+    bool wouldBlock = false;
 
-	while (IsValid() && !m_pendingSends.IsEmpty() && !wouldBlock)
-	{
-		AsyncRequest request;
-		m_pendingSends.Pop(request);
+    while (IsValid() && !m_pendingSends.IsEmpty() && !wouldBlock)
+    {
+        AsyncRequest request;
+        m_pendingSends.Pop(request);
 
-		if (request.IsValid())
-		{
-			const string &msg = request.GetRequest();
-			unsigned int bytesSent = Send(msg, wouldBlock);
+        if (request.IsValid())
+        {
+            const std::string &msg = request.GetRequest();
+            unsigned int bytesSent = Send(msg, wouldBlock);
 
-			if (bytesSent == msg.length())
-			{
-				LOGD(m_socketId, "Sent %u bytes", bytesSent);
-				completedSends.Push(request);
-			}
-			else if (wouldBlock)
-			{
-				LOGI(m_socketId, "Send would block - sent %u of %u bytes, "
-					"will finish later", bytesSent, msg.length());
+            if (bytesSent == msg.length())
+            {
+                LOGD(m_socketId, "Sent %u bytes", bytesSent);
+                completedSends.Push(request);
+            }
+            else if (wouldBlock)
+            {
+                LOGI(m_socketId, "Send would block - sent %u of %u bytes, "
+                    "will finish later", bytesSent, msg.length());
 
-				SendAsync(msg.substr(bytesSent, string::npos));
-			}
-			else
-			{
-				LOGW(m_socketId, "Can't send, closing socket");
-				Close();
-			}
-		}
-	}
+                SendAsync(msg.substr(bytesSent, std::string::npos));
+            }
+            else
+            {
+                LOGW(m_socketId, "Can't send, closing socket");
+                Close();
+            }
+        }
+    }
 }
 
 //=============================================================================
 void Socket::ServiceRecvRequests(AsyncRequest::RequestQueue &completedReceives)
 {
-	bool wouldBlock = false;
+    bool wouldBlock = false;
 
-	while (IsValid() && !wouldBlock)
-	{
-		string received = Recv(wouldBlock);
+    while (IsValid() && !wouldBlock)
+    {
+        std::string received = Recv(wouldBlock);
 
-		if (received.length() > 0)
-		{
-			LOGD(m_socketId, "Received %u bytes, %u in buffer",
-				received.length(), m_receiveBuffer.length());
+        if (received.length() > 0)
+        {
+            LOGD(m_socketId, "Received %u bytes, %u in buffer",
+                received.length(), m_receiveBuffer.length());
 
-			m_receiveBuffer += received;
+            m_receiveBuffer += received;
 
-			for (string &message : splitReceiveBuffer())
-			{
-				LOGD(m_socketId, "Completed message, %u bytes", message.length());
+            for (std::string &message : splitReceiveBuffer())
+            {
+                LOGD(m_socketId, "Completed message, %u bytes", message.length());
 
-				AsyncRequest request(m_socketId, message);
-				completedReceives.Push(request);
-			}
-		}
-		else if (wouldBlock)
-		{
-			LOGI(m_socketId, "Receive would block - received %u bytes, "
-				"will finish later", m_receiveBuffer.length());
-		}
-		else
-		{
-			LOGW(m_socketId, "Can't receive, closing socket");
-			Close();
-		}
-	}
+                AsyncRequest request(m_socketId, message);
+                completedReceives.Push(request);
+            }
+        }
+        else if (wouldBlock)
+        {
+            LOGI(m_socketId, "Receive would block - received %u bytes, "
+                "will finish later", m_receiveBuffer.length());
+        }
+        else
+        {
+            LOGW(m_socketId, "Can't receive, closing socket");
+            Close();
+        }
+    }
 }
 
 //=============================================================================
-vector<string> Socket::splitReceiveBuffer()
+std::vector<std::string> Socket::splitReceiveBuffer()
 {
-	vector<string> messages = Util::String::String::Split(m_receiveBuffer, s_socketEoM);
+    std::vector<std::string> messages = String::Split(m_receiveBuffer, s_socketEoM);
 
-	// Check if the buffer ends with a complete message
-	// If not, keep the last part in the buffer
-	if (m_receiveBuffer.rfind(s_socketEoM) != (m_receiveBuffer.length() - 1))
-	{
-		m_receiveBuffer = messages.back();
-		messages.pop_back();
-	}
-	else
-	{
-		m_receiveBuffer.clear();
-	}
+    // Check if the buffer ends with a complete message
+    // If not, keep the last part in the buffer
+    if (m_receiveBuffer.rfind(s_socketEoM) != (m_receiveBuffer.length() - 1))
+    {
+        m_receiveBuffer = messages.back();
+        messages.pop_back();
+    }
+    else
+    {
+        m_receiveBuffer.clear();
+    }
 
-	return messages;
+    return messages;
 }
 
-}}
+}

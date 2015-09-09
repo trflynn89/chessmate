@@ -3,23 +3,25 @@
 #include <climits>
 #include <iostream>
 
-// Enumeration to define the level of a log.
+/**
+ * Enumeration to define the level of a log.
+ */
 enum LogLevel
 {
-	LOG_DEBUG,
-	LOG_INFO,
-	LOG_WARNING,
-	LOG_ERROR,
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
 
-	NUM_LEVELS
+    NUM_LEVELS
 };
 
 // Max allowed message length (bytes) per log. Default 256B.
 #ifndef MAX_MESSAGE_SIZE
-	#define MAX_MESSAGE_SIZE 256
+    #define MAX_MESSAGE_SIZE 256
 #endif
 
-namespace Util { namespace Logging {
+namespace Util {
 
 /**
  * Struct to store data about single log. A log contains:
@@ -37,26 +39,26 @@ namespace Util { namespace Logging {
  */
 struct Log
 {
-	unsigned int m_index = UINT_MAX;
-	LogLevel m_level = NUM_LEVELS;
-	double m_time = -1.0;
-	int m_gameId = -1;
-	char m_function[100];
-	unsigned int m_line = -1;
-	char m_message[MAX_MESSAGE_SIZE + 1];
+    unsigned int m_index = UINT_MAX;
+    LogLevel m_level = NUM_LEVELS;
+    double m_time = -1.0;
+    int m_gameId = -1;
+    char m_function[100];
+    unsigned int m_line = -1;
+    char m_message[MAX_MESSAGE_SIZE + 1];
 
-	friend std::ostream &operator<<(std::ostream &stream, Log log)
-	{
-		stream << log.m_index << "\t";
-		stream << log.m_level << "\t";
-		stream << log.m_time << "\t";
-		stream << log.m_gameId << "\t";
-		stream << log.m_function << "\t";
-		stream << log.m_line << "\t";
-		stream << log.m_message << "\n";
+    friend std::ostream &operator<<(std::ostream &stream, Log log)
+    {
+        stream << log.m_index << "\t";
+        stream << log.m_level << "\t";
+        stream << log.m_time << "\t";
+        stream << log.m_gameId << "\t";
+        stream << log.m_function << "\t";
+        stream << log.m_line << "\t";
+        stream << log.m_message << "\n";
 
-		return stream;
-	}
+        return stream;
+    }
 };
 
-}}
+}

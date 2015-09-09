@@ -1,3 +1,13 @@
+#pragma once
+
+#include <Game/BoardTypes.h>
+#include <Movement/Move.h>
+#include <Util/Utilities.h>
+
+namespace Game {
+
+DEFINE_CLASS_PTRS(BitBoard);
+
 /**
  * Class to represent a chess board. Uses a bit board representation. There are
  * 8 64-bit data types stored and maintained in the class - one for each piece
@@ -7,334 +17,340 @@
  * H8.
  *
  * This class also stores information about the state of the board, such as its
- * score (according to board evaluation), if anyone is in check, if stalemate 
- * has occurred, the last move to have occurred, if en passant is possible, 
+ * score (according to board evaluation), if anyone is in check, if stalemate
+ * has occurred, the last move to have occurred, if en passant is possible,
  * which side can castle, and counters for game termination (via the 50 move
  * rule or 3 move repetition rule).
  *
  * @author Timothy Flynn (timothy.flynn@outlook.com)
  * @version March 3, 2013
  */
-#ifndef _BIT_BOARD_H_
-#define _BIT_BOARD_H_
-
-#include <Movement/Move.h>
-#include <ChessMateEngine.h>
-
-namespace ChessMate { namespace Game {
-
-class BitBoard 
+class BitBoard
 {
 public:
-	/**
-	 * Default constructor.
-	 */
-	BitBoard();
+    /**
+     * Default constructor.
+     */
+    BitBoard();
 
-	/**
-	 * Copy constructor.
-	 *
-	 * @param The board to copy.
-	 */
-	BitBoard(const BitBoard &);
+    /**
+     * Copy constructor.
+     *
+     * @param BitBoard The board to copy.
+     */
+    BitBoard(const BitBoard &);
 
-	/**
-	 * Move a piece on the board. 
-	 * Note: no validation is performed here. The piece will be moved blindly.
-	 *
-	 * @param The move to make.
-	 */
-	void MakeMove(ChessMate::Movement::Move &);
+    /**
+     * Move a piece on the board.
+     * Note: no validation is performed here. The piece will be moved blindly.
+     *
+     * @param Move The move to make.
+     */
+    void MakeMove(Movement::Move &);
 
-	/**
-	 * Determine if a piece is a pawn.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a pawn.
-	 */
-	bool IsPawn(square_t, square_t) const;
+    /**
+     * Determine if a piece is a pawn.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a pawn.
+     */
+    bool IsPawn(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a knight.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a knight.
-	 */
-	bool IsKnight(square_t, square_t) const;
+    /**
+     * Determine if a piece is a knight.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a knight.
+     */
+    bool IsKnight(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a bishop.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a bishop.
-	 */
-	bool IsBishop(square_t, square_t) const;
+    /**
+     * Determine if a piece is a bishop.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a bishop.
+     */
+    bool IsBishop(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a rook.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a rook.
-	 */
-	bool IsRook(square_t, square_t) const;
+    /**
+     * Determine if a piece is a rook.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a rook.
+     */
+    bool IsRook(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a queen.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a queen.
-	 */
-	bool IsQueen(square_t, square_t) const;
+    /**
+     * Determine if a piece is a queen.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a queen.
+     */
+    bool IsQueen(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a king.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a king.
-	 */
-	bool IsKing(square_t, square_t) const;
+    /**
+     * Determine if a piece is a king.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a king.
+     */
+    bool IsKing(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a white piece.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a white piece.
-	 */
-	bool IsWhite(square_t, square_t) const;
+    /**
+     * Determine if a piece is a white piece.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a white piece.
+     */
+    bool IsWhite(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a piece is a black piece.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a black piece.
-	 */
-	bool IsBlack(square_t, square_t) const;
+    /**
+     * Determine if a piece is a black piece.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a black piece.
+     */
+    bool IsBlack(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a location is empty.
-	 *
-	 * @param The rank of the piece to check.
-	 * @param The file of the piece to check.
-	 * @return True if the piece is a black piece.
-	 */
-	bool IsEmpty(square_t, square_t) const;
+    /**
+     * Determine if a location is empty.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return True if the piece is a black piece.
+     */
+    bool IsEmpty(const square_type &, const square_type &) const;
 
-	/**
-	 * Determine if a square if under attack by a certain color.
-	 *
-	 * @param The rank of the square to check.
-	 * @param The file of the piece to check.
-	 * @param The color of the attacking player.
-	 * @return True if the attacking player is attacking the square.
-	 */
-	bool IsUnderAttack(square_t, square_t, color_t) const;
+    /**
+     * Get the color of the piece that is occupying the given location.
+     *
+     * @param square_type The rank of the piece to check.
+     * @param square_type The file of the piece to check.
+     *
+     * @return The color of the piece, or NONE.
+     */
+    color_type GetOccupant(const square_type &, const square_type &) const;
 
-	/**
-	 * @return True if white is in check after the last move.
-	 */
-	bool IsWhiteInCheck() const;
+    /**
+     * Determine if a square if under attack by a certain color.
+     *
+     * @param square_type The rank of the square to check.
+     * @param square_type The file of the piece to check.
+     * @param color_type The color of the attacking player.
+     *
+     * @return True if the attacking player is attacking the square.
+     */
+    bool IsUnderAttack(const square_type &, const square_type &, const color_type &) const;
 
-	/**
-	 * @return True if black is in check after the last move.
-	 */
-	bool IsBlackInCheck() const;
+    /**
+     * @return True if white is in check after the last move.
+     */
+    bool IsWhiteInCheck() const;
 
-	/**
-	 * Set the end game flag.
-	 *
-	 * @param True if the game is in the end game, false otherwise.
-	 */
-	void SetEndGame(bool);
+    /**
+     * @return True if black is in check after the last move.
+     */
+    bool IsBlackInCheck() const;
 
-	/**
-	 * @return True if the game is in the end game, false otherwise.
-	 */
-	bool IsEndGame() const;
+    /**
+     * Set the end game flag.
+     *
+     * @param bool True if the game is in the end game, false otherwise.
+     */
+    void SetEndGame(bool);
 
-	/**
-	 * @return True if the game is in stalemate from fifty move rule.
-	 */
-	bool IsStalemateViaFiftyMoves() const;
+    /**
+     * @return True if the game is in the end game, false otherwise.
+     */
+    bool IsEndGame() const;
 
-	/**
-	 * @return True if the game is in stalemate from three move repetition rule.
-	 */
-	bool IsStalemateViaThreeMoveRep() const;
+    /**
+     * @return True if the game is in stalemate from fifty move rule.
+     */
+    bool IsStalemateViaFiftyMoves() const;
 
-	/**
-	 * @return The current player in turn (color_W or color_B).
-	 */
-	color_t GetPlayerInTurn() const;
+    /**
+     * @return True if the game is in stalemate from three move repetition rule.
+     */
+    bool IsStalemateViaRepetition() const;
 
-	/**
-	 * @return The color of the pawn that set the en passant flag, or color_N.
-	 */
-	color_t GetEnPassantColor() const;
+    /**
+     * @return The current player in turn (WHITE or BLACK).
+     */
+    color_type GetPlayerInTurn() const;
 
-	/**
-	 * @return The location of the pawn that set the en passant flag, or -1.
-	 */
-	square_t GetEnPassantPosition() const;
-	
-	/**
-	 * @return The location of the white king.
-	 */
-	square_t GetWhiteKingLocation() const;
+    /**
+     * @return The color of the pawn that set the en passant flag, or color_N.
+     */
+    color_type GetEnPassantColor() const;
 
-	/**
-	 * @return True if the white king has moved.
-	 */
-	bool HasWhiteMovedKing() const;
+    /**
+     * @return The location of the pawn that set the en passant flag, or -1.
+     */
+    square_type GetEnPassantPosition() const;
 
-	/**
-	 * @return True if the white queen has moved.
-	 */
-	bool HasWhiteMovedQueen() const;
+    /**
+     * @return The location of the white king.
+     */
+    square_type GetWhiteKingLocation() const;
 
-	/**
-	 * @return True if the white kingside rook has moved.
-	 */
-	bool HasWhiteMovedKingsideRook() const;
+    /**
+     * @return True if the white king has moved.
+     */
+    bool HasWhiteMovedKing() const;
 
-	/**
-	 * @return True if the white queenside rook has moved.
-	 */
-	bool HasWhiteMovedQueensideRook() const;
+    /**
+     * @return True if the white queen has moved.
+     */
+    bool HasWhiteMovedQueen() const;
 
-	/**
-	 * @return The location of the black king.
-	 */
-	square_t GetBlackKingLocation() const;
+    /**
+     * @return True if the white kingside rook has moved.
+     */
+    bool HasWhiteMovedKingsideRook() const;
 
-	/**
-	 * @return True if the black king has moved.
-	 */
-	bool HasBlackMovedKing() const;
+    /**
+     * @return True if the white queenside rook has moved.
+     */
+    bool HasWhiteMovedQueensideRook() const;
 
-	/**
-	 * @return True if the black queen has moved.
-	 */
-	bool HasBlackMovedQueen() const;
+    /**
+     * @return The location of the black king.
+     */
+    square_type GetBlackKingLocation() const;
 
-	/**
-	 * @return True if the black kingside rook has moved.
-	 */
-	bool HasBlackMovedKingsideRook() const;
+    /**
+     * @return True if the black king has moved.
+     */
+    bool HasBlackMovedKing() const;
 
-	/**
-	 * @return True if the black queenside rook has moved.
-	 */
-	bool HasBlackMovedQueensideRook() const;
+    /**
+     * @return True if the black queen has moved.
+     */
+    bool HasBlackMovedQueen() const;
 
-	/**
-	 * @return True if white has castled.
-	 */
-	bool HasWhiteCastled() const;
+    /**
+     * @return True if the black kingside rook has moved.
+     */
+    bool HasBlackMovedKingsideRook() const;
 
-	/**
-	 * @return True if black has castled.
-	 */
-	bool HasBlackCastled() const;
+    /**
+     * @return True if the black queenside rook has moved.
+     */
+    bool HasBlackMovedQueensideRook() const;
 
-	/**
-	 * Overloaded operator << for printing the board.
-	 *
-	 * @param The stream to print to.
-	 * @param The board to print.
-	 */
-	friend std::ostream &operator<<(std::ostream &, BitBoard);
+    /**
+     * @return True if white has castled.
+     */
+    bool HasWhiteCastled() const;
+
+    /**
+     * @return True if black has castled.
+     */
+    bool HasBlackCastled() const;
+
+    /**
+     * Overloaded operator << for printing the board.
+     *
+     * @param ostream The stream to print to.
+     * @param BitBoard The board to print.
+     */
+    friend std::ostream &operator<<(std::ostream &, BitBoard);
 
 private:
-	/** Piece locations **/
-	bitboard_t m_pawn;
-	bitboard_t m_knight;
-	bitboard_t m_bishop;
-	bitboard_t m_rook;
-	bitboard_t m_queen;
-	bitboard_t m_king;
-	bitboard_t m_white;
-	bitboard_t m_black;
+    /**
+     * Set which squares are under attack by both sides.
+     */
+    void generateAttackedSquares();
 
-	/** Board state **/
+    /**
+     * Set the en passant flags if one is possible.
+     *
+     * @param square_type The starting rank of the move.
+     * @param square_type The starting file of the move.
+     * @param square_type The ending rank of the move.
+     * @param square_type The ending file of the move.
+     */
+    void recordEnPassant(const square_type &, const square_type &, const square_type &, const square_type &);
 
-	// Squares under attack
-	bitboard_t m_attackedByWhite;
-	bitboard_t m_attackedByBlack;
+    /**
+     * Set the flags for whether either side is in check.
+     */
+    void setCheckFlags();
 
-	// Score of the board used for evaluation. The score is relative - positive
-	// is good for white, negative is good for black
-	int m_boardScore; 
+    // Piece locations
+    board_type m_pawn;
+    board_type m_knight;
+    board_type m_bishop;
+    board_type m_rook;
+    board_type m_queen;
+    board_type m_king;
+    board_type m_white;
+    board_type m_black;
 
-	// Current player in turn
-	color_t m_playerInTurn;
+    // Squares under attack
+    board_type m_attackedByWhite;
+    board_type m_attackedByBlack;
 
-	// Last move that has occured
-	ChessMate::Movement::Move m_lastMove;
+    // Score of the board used for evaluation. The score is relative - positive
+    // is good for white, negative is good for black
+    int m_boardScore;
 
-	// Locations of the king
-	square_t m_whiteKingLocation;
-	square_t m_blackKingLocation;
+    // Current player in turn
+    color_type m_playerInTurn;
 
-	// Flags for check and stale mate
-	bool m_whiteInCheck;
-	bool m_blackInCheck;
+    // Last move that has occured
+    Movement::Move m_lastMove;
 
-	// Keep track of whether the game is in the end game phase
-	bool m_endGame;
+    // Locations of the king
+    square_type m_whiteKingLocation;
+    square_type m_blackKingLocation;
 
-	// Flags for whether specific pieces have moved
-	bool m_whiteMovedKing;
-	bool m_whiteMovedQueen;
-	bool m_whiteMovedKingsideRook;
-	bool m_whiteMovedQueensideRook;
-	bool m_blackMovedKing;
-	bool m_blackMovedQueen;
-	bool m_blackMovedKingsideRook;
-	bool m_blackMovedQueensideRook;
+    // Flags for check and stale mate
+    bool m_whiteInCheck;
+    bool m_blackInCheck;
 
-	// Flags for castling
-	bool m_whiteCastled;
-	bool m_blackCastled;
+    // Keep track of whether the game is in the end game phase
+    bool m_endGame;
 
-	// Counters for game-termination rules
-	short m_fiftyMoveCount;
-	short m_repeatedMoveCount;
+    // Flags for whether specific pieces have moved
+    bool m_whiteMovedKing;
+    bool m_whiteMovedQueen;
+    bool m_whiteMovedKingsideRook;
+    bool m_whiteMovedQueensideRook;
+    bool m_blackMovedKing;
+    bool m_blackMovedQueen;
+    bool m_blackMovedKingsideRook;
+    bool m_blackMovedQueensideRook;
 
-	// En passant flags
-	color_t m_enPassantColor;
-	square_t m_enPassantPosition; // 0-63. Position where a pawn would move to.
+    // Flags for castling
+    bool m_whiteCastled;
+    bool m_blackCastled;
 
-	/** Helper methods **/
+    // Counters for game-termination rules
+    short m_fiftyMoveCount;
+    short m_repeatedMoveCount;
 
-	/**
-	 * Set which squares are under attack by both sides.
-	 */
-	void generateAttackedSquares();
-
-	/**
-	 * Set the en passant flags if one is possible.
-	 *
-	 * @param The starting rank of the move.
-	 * @param The starting file of the move.
-	 * @param The ending rank of the move.
-	 * @param The ending file of the move.
-	 */
-	void recordEnPassant(square_t, square_t, square_t, square_t);
-
-	/**
-	 * Set the flags for whether either side is in check.
-	 */
-	void SetCheckFlags();
+    // En passant flags
+    color_type m_enPassantColor;
+    square_type m_enPassantPosition; // 0-63. Position where a pawn would move to.
 };
 
-}}
-
-#endif
+}

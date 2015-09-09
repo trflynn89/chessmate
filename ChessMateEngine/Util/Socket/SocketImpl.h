@@ -3,7 +3,7 @@
 #include <Util/Utilities.h>
 
 #if defined(BUILD_WINDOWS)
-	#include "WinSocket.h"
+    #include "WinSocket.h"
 #elif defined (BUILD_LINUX)
-	#include "NixSocket.h"
+    #include "NixSocket.h"
 #endif

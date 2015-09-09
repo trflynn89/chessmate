@@ -1,118 +1,110 @@
-/**
- * Implementation of the String interface.
- *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
- * @version September 7, 2014
- */
 #include "String.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <sstream>
 
-using std::getline;
-using std::mt19937;
-using std::string;
-using std::stringstream;
-using std::vector;
-
-using Util::Random::UniformIntegerDevice;
-
-namespace Util { namespace String {
+namespace Util {
 
 //=============================================================================
-const string String::s_alphaNum =
-	"0123456789"
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	"abcdefghijklmnopqrstuvwxyz";
+const std::string String::s_alphaNum =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
 
 const unsigned int String::s_asciiSize = 256;
 
-UniformIntegerDevice<unsigned int, mt19937> String::s_randomDevice(0, String::s_alphaNum.size() - 1);
+UniformIntegerDevice<unsigned int, std::mt19937> String::s_randomDevice(0, String::s_alphaNum.size() - 1);
 
 //=============================================================================
-vector<string> String::Split(const string &input, char delim)
+std::vector<std::string> String::Split(const std::string &input, char delim)
 {
-	string item;
-	stringstream ss(input);
-	vector<string> elems;
+    std::string item;
+    std::stringstream ss(input);
+    std::vector<std::string> elems;
 
-	while (getline(ss, item, delim))
-	{
-		if (!item.empty())
-		{
-			elems.push_back(item);
-		}
-	}
+    while (std::getline(ss, item, delim))
+    {
+        if (!item.empty())
+        {
+            elems.push_back(item);
+        }
+    }
 
-	return elems;
+    return elems;
 }
 
 //=============================================================================
-void String::ReplaceAll(string &target, const string &search, const string &replace)
+void String::ReplaceAll(std::string &target, const std::string &search, const std::string &replace)
 {
-	size_t pos = target.find(search);
+    size_t pos = target.find(search);
 
-	while (!search.empty() && (pos != string::npos))
-	{
-		target.replace(pos, search.length(), replace);
-		pos = target.find(search);
-	}
+    while (!search.empty() && (pos != std::string::npos))
+    {
+        target.replace(pos, search.length(), replace);
+        pos = target.find(search);
+    }
 }
 
 //=============================================================================
-void String::RemoveAll(string &target, const string &search)
+void String::RemoveAll(std::string &target, const std::string &search)
 {
-	static const string empty;
-	ReplaceAll(target, search, empty);
+    static const std::string empty;
+    ReplaceAll(target, search, empty);
 }
 
 //=============================================================================
-string String::GenerateRandomString(const unsigned int len)
+std::string String::GenerateRandomString(const unsigned int len)
 {
-	string ret;
-	ret.reserve(len);
+    std::string ret;
+    ret.reserve(len);
 
-	for (unsigned int i = 0; i < len; ++i)
-	{
-		ret += s_alphaNum[s_randomDevice()];
-	}
+    for (unsigned int i = 0; i < len; ++i)
+    {
+        ret += s_alphaNum[s_randomDevice()];
+    }
 
-	return ret;
+    return ret;
 }
 
 //=============================================================================
-float String::CalculateEntropy(const string &source)
+float String::CalculateEntropy(const std::string &source)
 {
-	long charCount[s_asciiSize] = { 0 };
+    long charCount[s_asciiSize] = { 0 };
 
-	// Count the number of occurences of each ASCII character in the string
-	for (auto it = source.begin(); it != source.end(); ++it)
-	{
-		unsigned int ascii = static_cast<unsigned int>(*it);
+    // Count the number of occurences of each ASCII character in the string
+    for (auto it = source.begin(); it != source.end(); ++it)
+    {
+        unsigned int ascii = static_cast<unsigned int>(*it);
 
-		if (ascii < s_asciiSize)
-		{
-			++charCount[ascii];
-		}
-	}
+        if (ascii < s_asciiSize)
+        {
+            ++charCount[ascii];
+        }
+    }
 
-	float entropy = 0.0;
-	float length = static_cast<float>(source.length());
+    float entropy = 0.0;
+    float length = static_cast<float>(source.length());
 
-	// Calculate the entropy
-	for (unsigned int i = 0; i < s_asciiSize; ++i)
-	{
-		long count = charCount[i];
+    // Calculate the entropy
+    for (unsigned int i = 0; i < s_asciiSize; ++i)
+    {
+        long count = charCount[i];
 
-		if (count > 0)
-		{
-			float pct = static_cast<float>(count) / length;
-			entropy -= (pct * log2(pct));
-		}
-	}
+        if (count > 0)
+        {
+            float pct = static_cast<float>(count) / length;
+            entropy -= (pct * log2(pct));
+        }
+    }
 
-	return entropy;
+    return entropy;
 }
 
-}}
+//=============================================================================
+void String::format(std::ostringstream &stream, const char *fmt)
+{
+    stream << fmt;
+}
+
+}

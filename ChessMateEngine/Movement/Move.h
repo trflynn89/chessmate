@@ -1,209 +1,221 @@
+#pragma once
+
+#include <array>
+#include <iostream>
+#include <string>
+
+#include <Game/BoardTypes.h>
+
+#define MAX_NUM_MOVES       8
+#define MAX_NUM_MOVES_TOT   512 // TODO determine best size
+
+namespace Movement {
+
+class Move;
+typedef std::array<Move, MAX_NUM_MOVES>     moveList_t;
+typedef std::array<moveList_t, Game::BOARD_SIZE>  moveList2d_t;
+typedef std::array<Move, MAX_NUM_MOVES_TOT> validMoveList_t;
+
 /**
  * Class to store data about a move.
  *
  * @author Timothy Flynn (timothy.flynn@outlook.com)
  * @version March 3, 2013
  */
-#ifndef _MOVE_H_
-#define _MOVE_H_
-
-#include <array>
-#include <iostream>
-#include <string>
-
-#include <ChessMateEngine.h>
-
-namespace ChessMate { namespace Movement {
-
-// Move lists
-class Move;
-typedef std::array<Move, MAX_NUM_MOVES>		moveList_t;
-typedef std::array<moveList_t, BOARD_SIZE>	moveList2d_t;
-typedef std::array<Move, MAX_NUM_MOVES_TOT>	validMoveList_t;
-
-class Move {
+class Move
+{
 public:
-	/**
-	 * Default constructor.
-	 */
-	Move();
+    /**
+     * Default constructor.
+     */
+    Move();
 
-	/**
-	 * Constructor to set the move data.
-	 *
-	 * @param The starting rank of the move.
-	 * @param The starting file of the move.
-	 * @param The ending rank of the move.
-	 * @param The ending file of the move.
-	 */
-	Move(square_t, square_t, square_t, square_t);
+    /**
+     * Constructor to set the move data.
+     *
+     * @param square_type The starting rank of the move.
+     * @param square_type The starting file of the move.
+     * @param square_type The ending rank of the move.
+     * @param square_type The ending file of the move.
+     */
+    Move(
+        const Game::square_type &,
+        const Game::square_type &,
+        const Game::square_type &,
+        const Game::square_type &
+    );
 
-	/**
-	 * Constructor to set the move data.
-	 *
-	 * @param The starting rank of the move.
-	 * @param The starting file of the move.
-	 * @param The ending rank of the move.
-	 * @param The ending file of the move.
-	 * @param The promotion piece.
-	 */
-	Move(square_t, square_t, square_t, square_t, square_t);
+    /**
+     * Constructor to set the move data.
+     *
+     * @param square_type The starting rank of the move.
+     * @param square_type The starting file of the move.
+     * @param square_type The ending rank of the move.
+     * @param square_type The ending file of the move.
+     * @param piece_type The promotion piece.
+     */
+    Move(
+        const Game::square_type &,
+        const Game::square_type &,
+        const Game::square_type &,
+        const Game::square_type &,
+        const Game::piece_type &
+    );
 
-	/**
-	 * Constructor to parse a move in PGN format.
-	 *
-	 * @param The PGN formatted string.
-	 * @param The color of the player who generated the move.
-	 */
-	Move(const std::string, color_t);
+    /**
+     * Constructor to parse a move in PGN format.
+     *
+     * @param string The PGN formatted string.
+     * @param color_type The color of the player who generated the move.
+     */
+    Move(const std::string &, Game::color_type);
 
-	/**
-	 * @return The move's start file.
-	 */
-	square_t GetStartFile() const;
+    /**
+     * @return The move's start file.
+     */
+    Game::square_type GetStartFile() const;
 
-	/**
-	 * @return The move's start rank.
-	 */
-	square_t GetStartRank() const;
+    /**
+     * @return The move's start rank.
+     */
+    Game::square_type GetStartRank() const;
 
-	/**
-	 * @return The move's end file.
-	 */
-	square_t GetEndFile() const;
+    /**
+     * @return The move's end file.
+     */
+    Game::square_type GetEndFile() const;
 
-	/**
-	 * @return The move's end rank.
-	 */
-	square_t GetEndRank() const;
+    /**
+     * @return The move's end rank.
+     */
+    Game::square_type GetEndRank() const;
 
-	/**
-	 * @return The move formatted into a PGN string.
-	 */
-	std::string GetPGNString() const;
+    /**
+     * @return The move formatted into a PGN string.
+     */
+    std::string GetPGNString() const;
 
-	/**
-	 * @return The piece being moved.
-	 */
-	piece_t GetMovingPiece() const;
+    /**
+     * @return The piece being moved.
+     */
+    Game::piece_type GetMovingPiece() const;
 
-	/**
-	 * Set the piece being moved.
-	 */
-	void SetMovingPiece(piece_t);
+    /**
+     * Set the piece being moved.
+     */
+    void SetMovingPiece(Game::piece_type);
 
-	/**
-	 * @return This move's promotion piece.
-	 */
-	piece_t GetPromotionPiece() const;
+    /**
+     * @return This move's promotion piece.
+     */
+    Game::piece_type GetPromotionPiece() const;
 
-	/**
-	 * Set this move's promotion piece.
-	 */
-	void SetPromotionPiece(piece_t);
+    /**
+     * Set this move's promotion piece.
+     */
+    void SetPromotionPiece(Game::piece_type);
 
-	/**
-	 * @return True if this move captures a piece.
-	 */
-	bool IsCapture() const;
+    /**
+     * @return True if this move captures a piece.
+     */
+    bool IsCapture() const;
 
-	/**
-	 * Set that this move captures a piece.
-	 */
-	void SetCapture();
+    /**
+     * Set that this move captures a piece.
+     */
+    void SetCapture();
 
-	/**
-	 * @return True if this puts a player in check.
-	 */
-	bool IsCheck() const;
+    /**
+     * @return True if this puts a player in check.
+     */
+    bool IsCheck() const;
 
-	/**
-	 * Set that this move puts a player in check.
-	 */
-	void SetCheck();
+    /**
+     * Set that this move puts a player in check.
+     */
+    void SetCheck();
 
-	/**
-	 * @return True if this puts a player in checkmate.
-	 */
-	bool IsCheckmate() const;
+    /**
+     * @return True if this puts a player in checkmate.
+     */
+    bool IsCheckmate() const;
 
-	/**
-	 * Set that this move puts a player in checkmate.
-	 */
-	void SetCheckmate();
+    /**
+     * Set that this move puts a player in checkmate.
+     */
+    void SetCheckmate();
 
-	/**
-	 * @return True if this move is an en passant.
-	 */
-	bool IsEnPassant() const;
+    /**
+     * @return True if this move is an en passant.
+     */
+    bool IsEnPassant() const;
 
-	/**
-	 * Set that this move is an en passant.
-	 */
-	void SetEnPassant();
+    /**
+     * Set that this move is an en passant.
+     */
+    void SetEnPassant();
 
-	/**
-	 * @return True if this move is a kingside castle.
-	 */
-	bool IsKingsideCastle() const;
+    /**
+     * @return True if this move is a kingside castle.
+     */
+    bool IsKingsideCastle() const;
 
-	/**
-	 * Set that this move is a kingside castle.
-	 */
-	void SetKingsideCastle();
+    /**
+     * Set that this move is a kingside castle.
+     */
+    void SetKingsideCastle();
 
-	/**
-	 * @return True if this move is a queenside castle.
-	 */
-	bool IsQueensideCastle() const;
+    /**
+     * @return True if this move is a queenside castle.
+     */
+    bool IsQueensideCastle() const;
 
-	/**
-	 * Set that this move is a queenside castle.
-	 */
-	void SetQueensideCastle();
+    /**
+     * Set that this move is a queenside castle.
+     */
+    void SetQueensideCastle();
 
-	/**
-	 * Overloaded operator == for comparing moves.
-	 *
-	 * @param The move to compare.
-	 * @return True if the moves are identical, false otherwise.
-	 */
-	bool operator==(const Move &move) const;
+    /**
+     * Overloaded operator == for comparing moves.
+     *
+     * @param Move The move to compare.
+     *
+     * @return True if the moves are identical, false otherwise.
+     */
+    bool operator==(const Move &move) const;
 
-	/**
-	 * Overloaded operator << for printing the move.
-	 *
-	 * @param The stream to print to.
-	 * @param The move to print.
-	 */
-	friend std::ostream &operator<<(std::ostream &stream, Move move)
-	{
-		stream << move.m_sRank << " ";
-		stream << move.m_sFile << " ";
-		stream << move.m_eRank << " ";
-		stream << move.m_eFile;
+    /**
+     * Overloaded operator << for printing the move.
+     *
+     * @param stream The stream to print to.
+     * @param Move The move to print.
+     */
+    friend std::ostream &operator<<(std::ostream &stream, Move move)
+    {
+        stream << move.m_sRank << " ";
+        stream << move.m_sFile << " ";
+        stream << move.m_eRank << " ";
+        stream << move.m_eFile;
 
-		return stream;
-	}
+        return stream;
+    }
 
 private:
-	square_t m_sRank;
-	square_t m_sFile;
-	square_t m_eRank;
-	square_t m_eFile;
+    Game::square_type m_sRank;
+    Game::square_type m_sFile;
+    Game::square_type m_eRank;
+    Game::square_type m_eFile;
 
-	piece_t m_movingPiece;
-	piece_t m_promotionPiece;
+    Game::piece_type m_movingPiece;
+    Game::piece_type m_promotionPiece;
 
-	bool m_IsCheck;
-	bool m_IsCheckmate;
-	bool m_IsStalemate;
-	bool m_IsCapture;
-	bool m_IsKingsideCastle;
-	bool m_IsQueensideCastle;
-	bool m_IsEnPassant;
+    bool m_IsCheck;
+    bool m_IsCheckmate;
+    bool m_IsStalemate;
+    bool m_IsCapture;
+    bool m_IsKingsideCastle;
+    bool m_IsQueensideCastle;
+    bool m_IsEnPassant;
 };
 
-}}
-
-#endif
+}

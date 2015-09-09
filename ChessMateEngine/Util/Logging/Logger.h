@@ -10,55 +10,56 @@
 
 #include <Util/Utilities.h>
 #include <Util/Logging/Log.h>
+#include <Util/String/String.h>
 
 //=============================================================================
-#define LOGD(gameId, format, ...)                                             \
+#define LOG(level, gameId, fmt)                                               \
 (                                                                             \
-	Util::Logging::Logger::AddLog                                             \
-	(                                                                         \
-		LOG_DEBUG, gameId, __FUNCTION__, __LINE__, format, ##__VA_ARGS__      \
-	)                                                                         \
+    Util::Logger::AddLog                                                      \
+    (                                                                         \
+        level, gameId, __FUNCTION__, __LINE__, fmt                            \
+    )                                                                         \
 )
 
 //=============================================================================
-#define LOGI(gameId, format, ...)                                             \
+#define LOGD(gameId, fmt, ...)                                                \
 (                                                                             \
-	Util::Logging::Logger::AddLog                                             \
-	(                                                                         \
-		LOG_INFO, gameId, __FUNCTION__, __LINE__, format, ##__VA_ARGS__       \
-	)                                                                         \
+    LOG(LOG_DEBUG, gameId, Util::String::Format(fmt, ##__VA_ARGS__))          \
 )
 
 //=============================================================================
-#define LOGW(gameId, format, ...)                                             \
+#define LOGI(gameId, fmt, ...)                                                \
 (                                                                             \
-	Util::Logging::Logger::AddLog                                             \
-	(                                                                         \
-		LOG_WARNING, gameId, __FUNCTION__, __LINE__, format, ##__VA_ARGS__    \
-	)                                                                         \
+    LOG(LOG_INFO, gameId, Util::String::Format(fmt, ##__VA_ARGS__))           \
 )
 
 //=============================================================================
-#define LOGE(gameId, format, ...)                                             \
+#define LOGW(gameId, fmt, ...)                                                \
 (                                                                             \
-	Util::Logging::Logger::AddLog                                             \
-	(                                                                         \
-		LOG_ERROR, gameId, __FUNCTION__, __LINE__, format, ##__VA_ARGS__      \
-	)                                                                         \
+    LOG(LOG_WARN, gameId, Util::String::Format(fmt, ##__VA_ARGS__))           \
 )
 
 //=============================================================================
-#define LOGC(format, ...)                                                     \
+#define LOGE(gameId, fmt, ...)                                                \
 (                                                                             \
-	Util::Logging::Logger::ConsoleLog(format, ##__VA_ARGS__)                  \
+    LOG(LOG_ERROR, gameId, Util::String::Format(fmt, ##__VA_ARGS__))          \
+)
+
+//=============================================================================
+#define LOGC(fmt, ...)                                                        \
+(                                                                             \
+    Util::Logger::ConsoleLog                                                  \
+    (                                                                         \
+        Util::String::Format(fmt, ##__VA_ARGS__)                              \
+    )                                                                         \
 )
 
 // Max log size (MB) to store in memory. Default 256MB.
 #ifndef MAX_LOG_SIZE
-	#define MAX_LOG_SIZE 256
+    #define MAX_LOG_SIZE 256
 #endif
 
-namespace Util { namespace Logging {
+namespace Util {
 
 DEFINE_CLASS_PTRS(Logger);
 
@@ -93,62 +94,83 @@ DEFINE_CLASS_PTRS(Logger);
 class Logger
 {
 public:
-	Logger();
+    Logger();
 
-	~Logger();
+    ~Logger();
 
-	static void SetInstance(const LoggerPtr &);
-	static LoggerPtr GetInstance();
+    /**
+     * Set the logger instance so that the LOG* macros function.
+     *
+     * @param LoggerPtr The logger instance.
+     */
+    static void SetInstance(const LoggerPtr &);
 
-	/**
-	 * Log to the console in a thread-safe manner.
-	 *
-	 * @param const char * The variadic message to store.
-	 */
-	static void ConsoleLog(const char *, ...);
+    /**
+     * @return The logger instance.
+     */
+    static LoggerPtr GetInstance();
 
-	/**
-	 * Add a log to the logging system.
-	 *
-	 * @param LogLevel The level (debug, info, etc.) of this log.
-	 * @param int The ID of the game storing this entry.
-	 * @param const char * Name of the function storing this log.
-	 * @param unsigned int The line number this log point occurs.
-	 * @param const char * The variadic message to store.
-	 */
-	static void AddLog(LogLevel, int, const char *, unsigned int, const char *, ...);
+    /**
+     * Log to the console in a thread-safe manner.
+     *
+     * @param string The message to log.
+     */
+    static void ConsoleLog(const std::string &);
 
-	/**
-	 * Flush the log to a file who's name is randomly generated.
-	 */
-	void Flush();
+    /**
+     * Add a log to the static logger instance.
+     *
+     * @param LogLevel The level (debug, info, etc.) of this log.
+     * @param int The ID of the game storing this entry.
+     * @param const char * Name of the function storing this log.
+     * @param unsigned int The line number this log point occurs.
+     * @param string The message to log.
+     */
+    static void AddLog(LogLevel, int, const char *, unsigned int, const std::string &);
+
+    /**
+     * Flush the log to a file who's name is randomly generated.
+     */
+    void Flush();
 
 private:
-	static std::string GetSystemTime();
+    /**
+     * Add a log to this logger instance.
+     *
+     * @param LogLevel The level (debug, info, etc.) of this log.
+     * @param int The ID of the game storing this entry.
+     * @param const char * Name of the function storing this log.
+     * @param unsigned int The line number this log point occurs.
+     * @param string The message to log.
+     */
+    void addLog(LogLevel, int, const char *, unsigned int, const std::string &);
 
-	void addLog(LogLevel, int, const char *, unsigned int, const char *, va_list);
+    /**
+     * @return The current system type as a string.
+     */
+    static std::string getSystemTime();
 
-	static LoggerWPtr s_wpInstance;
-	static std::mutex s_consoleMutex;
+    static LoggerWPtr s_wpInstance;
+    static std::mutex s_consoleMutex;
 
-	const unsigned int m_maxIndex;
+    const unsigned int m_maxIndex;
 
-	std::vector<Log> m_logBuffer;
-	std::atomic_ullong m_logIndex;
+    std::vector<Log> m_logBuffer;
+    std::atomic_ullong m_logIndex;
 
-	std::atomic_bool m_flushingLog;
+    std::atomic_bool m_flushingLog;
 
-	const unsigned int m_maxDebugIndex;
-	const unsigned int m_maxInfoIndex;
-	const unsigned int m_maxWarningIndex;
-	const unsigned int m_maxErrorIndex;
+    const unsigned int m_maxDebugIndex;
+    const unsigned int m_maxInfoIndex;
+    const unsigned int m_maxWarningIndex;
+    const unsigned int m_maxErrorIndex;
 
-	std::atomic<unsigned int> m_debugIndex;
-	std::atomic<unsigned int> m_infoIndex;
-	std::atomic<unsigned int> m_warningIndex;
-	std::atomic<unsigned int> m_errorIndex;
+    std::atomic<unsigned int> m_debugIndex;
+    std::atomic<unsigned int> m_infoIndex;
+    std::atomic<unsigned int> m_warningIndex;
+    std::atomic<unsigned int> m_errorIndex;
 
-	std::chrono::high_resolution_clock::time_point m_startTime;
+    std::chrono::high_resolution_clock::time_point m_startTime;
 };
 
-}}
+}
