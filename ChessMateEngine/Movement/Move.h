@@ -12,14 +12,14 @@
 namespace Movement {
 
 class Move;
-typedef std::array<Move, MAX_NUM_MOVES>     moveList_t;
-typedef std::array<moveList_t, Game::BOARD_SIZE>  moveList2d_t;
+typedef std::array<Move, MAX_NUM_MOVES> moveList_t;
+typedef std::array<moveList_t, Game::BOARD_SIZE> moveList2d_t;
 typedef std::array<Move, MAX_NUM_MOVES_TOT> validMoveList_t;
 
 /**
  * Class to store data about a move.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version March 3, 2013
  */
 class Move
@@ -182,7 +182,7 @@ public:
      *
      * @return True if the moves are identical, false otherwise.
      */
-    bool operator==(const Move &move) const;
+    bool operator == (const Move &move) const;
 
     /**
      * Overloaded operator << for printing the move.
@@ -190,21 +190,13 @@ public:
      * @param stream The stream to print to.
      * @param Move The move to print.
      */
-    friend std::ostream &operator<<(std::ostream &stream, Move move)
-    {
-        stream << move.m_sRank << " ";
-        stream << move.m_sFile << " ";
-        stream << move.m_eRank << " ";
-        stream << move.m_eFile;
-
-        return stream;
-    }
+    friend std::ostream &operator << (std::ostream &, const Move &);
 
 private:
-    Game::square_type m_sRank;
-    Game::square_type m_sFile;
-    Game::square_type m_eRank;
-    Game::square_type m_eFile;
+    Game::square_type m_startRank;
+    Game::square_type m_startFile;
+    Game::square_type m_endRank;
+    Game::square_type m_endFile;
 
     Game::piece_type m_movingPiece;
     Game::piece_type m_promotionPiece;

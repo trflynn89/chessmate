@@ -24,7 +24,7 @@ typedef std::function<void(int)> ClosedClientCallback;
  * sockets. A single thread is created to perform all IO. Completed IO is
  * pushed onto queues, which other threads may read from.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version November 11, 2013
  */
 class SocketManager : public std::enable_shared_from_this<SocketManager>

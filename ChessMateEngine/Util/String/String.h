@@ -11,7 +11,7 @@ namespace Util {
 /**
  * Static class to provide string utilities not provided by the STL.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version September 7, 2014
  */
 class String

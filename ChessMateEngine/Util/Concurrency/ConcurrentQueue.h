@@ -10,7 +10,7 @@ namespace Util {
 /**
  * Wrapper around a std::queue to provide thread safe access.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version November 26, 2014
  */
 template <typename T>

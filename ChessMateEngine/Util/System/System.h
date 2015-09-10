@@ -7,7 +7,7 @@ namespace Util {
 /**
  * Static class to provide interface to system calls.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version November 11, 2013
  */
 class System

@@ -14,7 +14,7 @@ namespace Util {
  * Stores data pertintent to all asynchronous data. All constructors are
  * protected to prevent instantiation.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 28, 2014
  */
 class AsyncBase
@@ -47,7 +47,7 @@ protected:
 /**
  * An asynchronous read/write request.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 28, 2014
  */
 class AsyncRequest : public AsyncBase
@@ -84,7 +84,7 @@ private:
 /**
  * An asynchronous connect request.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 28, 2014
  */
 class AsyncConnect : public AsyncBase

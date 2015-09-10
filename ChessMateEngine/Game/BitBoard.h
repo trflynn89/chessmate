@@ -22,7 +22,7 @@ DEFINE_CLASS_PTRS(BitBoard);
  * which side can castle, and counters for game termination (via the 50 move
  * rule or 3 move repetition rule).
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version March 3, 2013
  */
 class BitBoard
@@ -272,7 +272,7 @@ public:
      * @param ostream The stream to print to.
      * @param BitBoard The board to print.
      */
-    friend std::ostream &operator<<(std::ostream &, BitBoard);
+    friend std::ostream &operator << (std::ostream &, const BitBoard &);
 
 private:
     /**

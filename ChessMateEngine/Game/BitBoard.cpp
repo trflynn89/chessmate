@@ -943,7 +943,7 @@ void BitBoard::setCheckFlags()
 }
 
 //=============================================================================
-std::ostream &operator<<(std::ostream &stream, BitBoard board)
+std::ostream &operator << (std::ostream &stream, const BitBoard &board)
 {
     for (square_type i = NUM_RANKS - 1; i >= 0; --i)
     {

@@ -17,7 +17,7 @@ namespace Movement {
  * Note: since performance is not an issue when the Initialize method is called,
  * the methods have not been very optimized. It is simply made to be correct.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version March 3, 2013
  */
 class MoveSet
@@ -270,48 +270,48 @@ private:
     static void initializeKingMoves();
 
     // List of moves for each piece
-    static moveList2d_t m_whitePawnMoves;
-    static moveList2d_t m_blackPawnMoves;
-    static moveList2d_t m_knightMoves;
-    static moveList2d_t m_bishopMovesNE;
-    static moveList2d_t m_bishopMovesNW;
-    static moveList2d_t m_bishopMovesSE;
-    static moveList2d_t m_bishopMovesSW;
-    static moveList2d_t m_rookMovesN;
-    static moveList2d_t m_rookMovesS;
-    static moveList2d_t m_rookMovesE;
-    static moveList2d_t m_rookMovesW;
-    static moveList2d_t m_queenMovesN;
-    static moveList2d_t m_queenMovesS;
-    static moveList2d_t m_queenMovesE;
-    static moveList2d_t m_queenMovesW;
-    static moveList2d_t m_queenMovesNE;
-    static moveList2d_t m_queenMovesNW;
-    static moveList2d_t m_queenMovesSE;
-    static moveList2d_t m_queenMovesSW;
-    static moveList2d_t m_kingMoves;
+    static moveList2d_t s_whitePawnMoves;
+    static moveList2d_t s_blackPawnMoves;
+    static moveList2d_t s_knightMoves;
+    static moveList2d_t s_bishopMovesNE;
+    static moveList2d_t s_bishopMovesNW;
+    static moveList2d_t s_bishopMovesSE;
+    static moveList2d_t s_bishopMovesSW;
+    static moveList2d_t s_rookMovesN;
+    static moveList2d_t s_rookMovesS;
+    static moveList2d_t s_rookMovesE;
+    static moveList2d_t s_rookMovesW;
+    static moveList2d_t s_queenMovesN;
+    static moveList2d_t s_queenMovesS;
+    static moveList2d_t s_queenMovesE;
+    static moveList2d_t s_queenMovesW;
+    static moveList2d_t s_queenMovesNE;
+    static moveList2d_t s_queenMovesNW;
+    static moveList2d_t s_queenMovesSE;
+    static moveList2d_t s_queenMovesSW;
+    static moveList2d_t s_kingMoves;
 
     // Number of moves for each piece
-    static numMoves_t m_numWhitePawnMoves;
-    static numMoves_t m_numBlackPawnMoves;
-    static numMoves_t m_numKnightMoves;
-    static numMoves_t m_numBishopMovesNE;
-    static numMoves_t m_numBishopMovesNW;
-    static numMoves_t m_numBishopMovesSE;
-    static numMoves_t m_numBishopMovesSW;
-    static numMoves_t m_numRookMovesN;
-    static numMoves_t m_numRookMovesS;
-    static numMoves_t m_numRookMovesE;
-    static numMoves_t m_numRookMovesW;
-    static numMoves_t m_numQueenMovesN;
-    static numMoves_t m_numQueenMovesS;
-    static numMoves_t m_numQueenMovesE;
-    static numMoves_t m_numQueenMovesW;
-    static numMoves_t m_numQueenMovesNE;
-    static numMoves_t m_numQueenMovesNW;
-    static numMoves_t m_numQueenMovesSE;
-    static numMoves_t m_numQueenMovesSW;
-    static numMoves_t m_numKingMoves;
+    static numMoves_t s_numWhitePawnMoves;
+    static numMoves_t s_numBlackPawnMoves;
+    static numMoves_t s_numKnightMoves;
+    static numMoves_t s_numBishopMovesNE;
+    static numMoves_t s_numBishopMovesNW;
+    static numMoves_t s_numBishopMovesSE;
+    static numMoves_t s_numBishopMovesSW;
+    static numMoves_t s_numRookMovesN;
+    static numMoves_t s_numRookMovesS;
+    static numMoves_t s_numRookMovesE;
+    static numMoves_t s_numRookMovesW;
+    static numMoves_t s_numQueenMovesN;
+    static numMoves_t s_numQueenMovesS;
+    static numMoves_t s_numQueenMovesE;
+    static numMoves_t s_numQueenMovesW;
+    static numMoves_t s_numQueenMovesNE;
+    static numMoves_t s_numQueenMovesNW;
+    static numMoves_t s_numQueenMovesSE;
+    static numMoves_t s_numQueenMovesSW;
+    static numMoves_t s_numKingMoves;
 };
 
 }

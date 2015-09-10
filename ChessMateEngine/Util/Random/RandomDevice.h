@@ -21,7 +21,7 @@ namespace Util {
  *     NormalDevice<float, std::minstd_real> device(20.0, 5.0);
  *     float randomFloat = device();
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version February 14, 2015
  */
 template <typename T, typename E = std::default_random_engine>

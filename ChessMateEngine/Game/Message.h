@@ -12,7 +12,7 @@ DEFINE_CLASS_PTRS(Message);
  * Class to represent a message send over the wire. Contains a message type
  * and message data.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version March 3, 2013
  */
 class Message

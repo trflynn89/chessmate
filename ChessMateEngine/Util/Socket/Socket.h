@@ -16,7 +16,7 @@ DEFINE_CLASS_PTRS(Socket);
  * Virtual interface to represent a network socket. This interface is platform
  * independent - OS dependent implementations should inherit from this class.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version November 11, 2013
  */
 class Socket

@@ -34,7 +34,7 @@ namespace Util {
  * 6. The line number the log is on.
  * 7. The message being logged.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 19, 2012
  */
 struct Log
@@ -47,7 +47,7 @@ struct Log
     unsigned int m_line = -1;
     char m_message[MAX_MESSAGE_SIZE + 1];
 
-    friend std::ostream &operator<<(std::ostream &stream, Log log)
+    friend std::ostream &operator << (std::ostream &stream, const Log &log)
     {
         stream << log.m_index << "\t";
         stream << log.m_level << "\t";

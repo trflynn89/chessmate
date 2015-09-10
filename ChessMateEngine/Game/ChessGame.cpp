@@ -93,13 +93,13 @@ bool ChessGame::MakeMove(Movement::Move &move) const
     {
         if (move == list[i])
         {
-            LOGD(m_gameId, "Made valid move: %s", move.GetPGNString());
+            LOGD(m_gameId, "Made valid move: %s", move);
             m_spBoard->MakeMove(move);
             return true;
         }
     }
 
-    LOGD(m_gameId, "Made invalid move: %s", move.GetPGNString());
+    LOGD(m_gameId, "Made invalid move: %s", move);
     return false;
 }
 
@@ -224,7 +224,7 @@ Movement::Move ChessGame::getBestMove()
 {
     LOGD(m_gameId, "Searching for best move");
     Movement::Move m = m_moveSelector.GetBestMove(m_maxDepth);
-    LOGD(m_gameId, "Best move is %s", m.GetPGNString());
+    LOGD(m_gameId, "Best move is %s", m);
 
     m_spBoard->MakeMove(m); // Always promote to queen for now
 

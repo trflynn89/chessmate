@@ -12,7 +12,7 @@ DEFINE_CLASS_PTRS(SocketImpl);
 /**
  * Windows implementation of the Socket interface.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 12, 2012
  */
 class SocketImpl : public Socket

@@ -15,10 +15,7 @@
 //=============================================================================
 #define LOG(level, gameId, fmt)                                               \
 (                                                                             \
-    Util::Logger::AddLog                                                      \
-    (                                                                         \
-        level, gameId, __FUNCTION__, __LINE__, fmt                            \
-    )                                                                         \
+    Util::Logger::AddLog(level, gameId, __FUNCTION__, __LINE__, fmt)          \
 )
 
 //=============================================================================
@@ -48,10 +45,7 @@
 //=============================================================================
 #define LOGC(fmt, ...)                                                        \
 (                                                                             \
-    Util::Logger::ConsoleLog                                                  \
-    (                                                                         \
-        Util::String::Format(fmt, ##__VA_ARGS__)                              \
-    )                                                                         \
+    Util::Logger::ConsoleLog(Util::String::Format(fmt, ##__VA_ARGS__))        \
 )
 
 // Max log size (MB) to store in memory. Default 256MB.
@@ -88,7 +82,7 @@ DEFINE_CLASS_PTRS(Logger);
  *
  * The LOGC macro is also provided for thread-safe console logging.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 19, 2012
  */
 class Logger

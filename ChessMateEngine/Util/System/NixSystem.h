@@ -5,7 +5,7 @@ namespace Util {
 /**
  * Linux declaration of the SocketImpl interface.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version November 11, 2013
  */
 class SystemImpl

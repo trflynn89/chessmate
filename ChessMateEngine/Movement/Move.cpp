@@ -4,10 +4,10 @@ namespace Movement {
 
 //=============================================================================
 Move::Move() :
-    m_sRank(-1),
-    m_sFile(-1),
-    m_eRank(-1),
-    m_eFile(-1),
+    m_startRank(-1),
+    m_startFile(-1),
+    m_endRank(-1),
+    m_endFile(-1),
     m_movingPiece(-1),
     m_promotionPiece(-1),
     m_IsCheck(false),
@@ -27,10 +27,10 @@ Move::Move(
     const Game::square_type &eRank,
     const Game::square_type &eFile
 ) :
-    m_sRank(sRank),
-    m_sFile(sFile),
-    m_eRank(eRank),
-    m_eFile(eFile),
+    m_startRank(sRank),
+    m_startFile(sFile),
+    m_endRank(eRank),
+    m_endFile(eFile),
     m_movingPiece(-1),
     m_promotionPiece(-1),
     m_IsCheck(false),
@@ -51,10 +51,10 @@ Move::Move(
     const Game::square_type &eFile,
     const Game::piece_type &promotionPiece
 ) :
-    m_sRank(sRank),
-    m_sFile(sFile),
-    m_eRank(eRank),
-    m_eFile(eFile),
+    m_startRank(sRank),
+    m_startFile(sFile),
+    m_endRank(eRank),
+    m_endFile(eFile),
     m_movingPiece(-1),
     m_promotionPiece(promotionPiece),
     m_IsCheck(false),
@@ -84,18 +84,18 @@ Move::Move(const std::string &move, Game::color_type player) :
         m_movingPiece = Game::KING;
         m_IsKingsideCastle = true;
 
-        m_sFile = Game::FILE_E;
-        m_eFile = Game::FILE_G;
+        m_startFile = Game::FILE_E;
+        m_endFile = Game::FILE_G;
 
         if (player == Game::WHITE)
         {
-            m_sRank = Game::RANK_1;
-            m_eRank = Game::RANK_1;
+            m_startRank = Game::RANK_1;
+            m_endRank = Game::RANK_1;
         }
         else
         {
-            m_sRank = Game::RANK_8;
-            m_eRank = Game::RANK_8;
+            m_startRank = Game::RANK_8;
+            m_endRank = Game::RANK_8;
         }
 
         return;
@@ -105,18 +105,18 @@ Move::Move(const std::string &move, Game::color_type player) :
         m_movingPiece = Game::KING;
         m_IsQueensideCastle = true;
 
-        m_sFile = Game::FILE_E;
-        m_eFile = Game::FILE_C;
+        m_startFile = Game::FILE_E;
+        m_endFile = Game::FILE_C;
 
         if (player == Game::WHITE)
         {
-            m_sRank = Game::RANK_1;
-            m_eRank = Game::RANK_1;
+            m_startRank = Game::RANK_1;
+            m_endRank = Game::RANK_1;
         }
         else
         {
-            m_sRank = Game::RANK_8;
-            m_eRank = Game::RANK_8;
+            m_startRank = Game::RANK_8;
+            m_endRank = Game::RANK_8;
         }
 
         return;
@@ -156,8 +156,8 @@ Move::Move(const std::string &move, Game::color_type player) :
     }
 
     // Parse starting position
-    m_sFile = move[ix++] - 'a';
-    m_sRank = move[ix++] - '1';
+    m_startFile = move[ix++] - 'a';
+    m_startRank = move[ix++] - '1';
 
     // Parse for capture
     if (move[ix] == 'x')
@@ -167,8 +167,8 @@ Move::Move(const std::string &move, Game::color_type player) :
     }
 
     // Parse ending position
-    m_eFile = move[ix++] - 'a';
-    m_eRank = move[ix++] - '1';
+    m_endFile = move[ix++] - 'a';
+    m_endRank = move[ix++] - '1';
 
     // Special moves
     while (ix < move.length())
@@ -221,25 +221,25 @@ Move::Move(const std::string &move, Game::color_type player) :
 //=============================================================================
 Game::square_type Move::GetStartFile() const
 {
-    return m_sFile;
+    return m_startFile;
 }
 
 //=============================================================================
 Game::square_type Move::GetStartRank() const
 {
-    return m_sRank;
+    return m_startRank;
 }
 
 //=============================================================================
 Game::square_type Move::GetEndFile() const
 {
-    return m_eFile;
+    return m_endFile;
 }
 
 //=============================================================================
 Game::square_type Move::GetEndRank() const
 {
-    return m_eRank;
+    return m_endRank;
 }
 
 //=============================================================================
@@ -279,8 +279,8 @@ std::string Move::GetPGNString() const
     }
 
     // Append the start file and start rank
-    ret += ('a' + m_sFile);
-    ret += ('1' + m_sRank);
+    ret += ('a' + m_startFile);
+    ret += ('1' + m_startRank);
 
     // If move is capture, indicate such
     if (m_IsCapture)
@@ -289,8 +289,8 @@ std::string Move::GetPGNString() const
     }
 
     // Append the end file and end rank
-    ret += ('a' + m_eFile);
-    ret += ('1' + m_eRank);
+    ret += ('a' + m_endFile);
+    ret += ('1' + m_endRank);
 
     // If move is a promotion, indicate the promotion piece
     if (m_promotionPiece == Game::KNIGHT)
@@ -426,15 +426,22 @@ void Move::SetQueensideCastle()
 }
 
 //=============================================================================
-bool Move::operator==(const Move &move) const
+bool Move::operator == (const Move &move) const
 {
     return
     (
-        (m_sRank == move.m_sRank) &&
-        (m_sFile == move.m_sFile) &&
-        (m_eRank == move.m_eRank) &&
-        (m_eFile == move.m_eFile)
+        (m_startRank == move.m_startRank) &&
+        (m_startFile == move.m_startFile) &&
+        (m_endRank == move.m_endRank) &&
+        (m_endFile == move.m_endFile)
     );
+}
+
+//=============================================================================
+std::ostream &operator << (std::ostream &stream, const Move &move)
+{
+    stream << move.GetPGNString();
+    return stream;
 }
 
 }

@@ -23,7 +23,7 @@ DEFINE_CLASS_PTRS(GameManager);
  * Provides an interface for managing chess games. Allows for adding new games
  * to the manager, and for stopping any game(s).
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version September 9, 2014
  */
 class GameManager : public std::enable_shared_from_this<GameManager>

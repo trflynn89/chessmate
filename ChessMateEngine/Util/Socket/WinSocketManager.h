@@ -10,7 +10,7 @@ namespace Util {
 /**
  * Windows implementation of the SocketManager interface.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 12, 2012
  */
 class SocketManagerImpl : public SocketManager

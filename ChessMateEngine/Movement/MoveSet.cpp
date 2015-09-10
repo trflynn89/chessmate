@@ -3,47 +3,47 @@
 namespace Movement {
 
 //=========================================================================
-moveList2d_t MoveSet::m_whitePawnMoves;
-moveList2d_t MoveSet::m_blackPawnMoves;
-moveList2d_t MoveSet::m_knightMoves;
-moveList2d_t MoveSet::m_bishopMovesNE;
-moveList2d_t MoveSet::m_bishopMovesNW;
-moveList2d_t MoveSet::m_bishopMovesSE;
-moveList2d_t MoveSet::m_bishopMovesSW;
-moveList2d_t MoveSet::m_rookMovesE;
-moveList2d_t MoveSet::m_rookMovesN;
-moveList2d_t MoveSet::m_rookMovesS;
-moveList2d_t MoveSet::m_rookMovesW;
-moveList2d_t MoveSet::m_queenMovesE;
-moveList2d_t MoveSet::m_queenMovesN;
-moveList2d_t MoveSet::m_queenMovesNE;
-moveList2d_t MoveSet::m_queenMovesNW;
-moveList2d_t MoveSet::m_queenMovesS;
-moveList2d_t MoveSet::m_queenMovesSE;
-moveList2d_t MoveSet::m_queenMovesSW;
-moveList2d_t MoveSet::m_queenMovesW;
-moveList2d_t MoveSet::m_kingMoves;
+moveList2d_t MoveSet::s_whitePawnMoves;
+moveList2d_t MoveSet::s_blackPawnMoves;
+moveList2d_t MoveSet::s_knightMoves;
+moveList2d_t MoveSet::s_bishopMovesNE;
+moveList2d_t MoveSet::s_bishopMovesNW;
+moveList2d_t MoveSet::s_bishopMovesSE;
+moveList2d_t MoveSet::s_bishopMovesSW;
+moveList2d_t MoveSet::s_rookMovesE;
+moveList2d_t MoveSet::s_rookMovesN;
+moveList2d_t MoveSet::s_rookMovesS;
+moveList2d_t MoveSet::s_rookMovesW;
+moveList2d_t MoveSet::s_queenMovesE;
+moveList2d_t MoveSet::s_queenMovesN;
+moveList2d_t MoveSet::s_queenMovesNE;
+moveList2d_t MoveSet::s_queenMovesNW;
+moveList2d_t MoveSet::s_queenMovesS;
+moveList2d_t MoveSet::s_queenMovesSE;
+moveList2d_t MoveSet::s_queenMovesSW;
+moveList2d_t MoveSet::s_queenMovesW;
+moveList2d_t MoveSet::s_kingMoves;
 
-numMoves_t MoveSet::m_numWhitePawnMoves;
-numMoves_t MoveSet::m_numBlackPawnMoves;
-numMoves_t MoveSet::m_numKnightMoves;
-numMoves_t MoveSet::m_numBishopMovesNE;
-numMoves_t MoveSet::m_numBishopMovesNW;
-numMoves_t MoveSet::m_numBishopMovesSE;
-numMoves_t MoveSet::m_numBishopMovesSW;
-numMoves_t MoveSet::m_numRookMovesN;
-numMoves_t MoveSet::m_numRookMovesS;
-numMoves_t MoveSet::m_numRookMovesE;
-numMoves_t MoveSet::m_numRookMovesW;
-numMoves_t MoveSet::m_numQueenMovesN;
-numMoves_t MoveSet::m_numQueenMovesS;
-numMoves_t MoveSet::m_numQueenMovesE;
-numMoves_t MoveSet::m_numQueenMovesW;
-numMoves_t MoveSet::m_numQueenMovesNE;
-numMoves_t MoveSet::m_numQueenMovesNW;
-numMoves_t MoveSet::m_numQueenMovesSE;
-numMoves_t MoveSet::m_numQueenMovesSW;
-numMoves_t MoveSet::m_numKingMoves;
+numMoves_t MoveSet::s_numWhitePawnMoves;
+numMoves_t MoveSet::s_numBlackPawnMoves;
+numMoves_t MoveSet::s_numKnightMoves;
+numMoves_t MoveSet::s_numBishopMovesNE;
+numMoves_t MoveSet::s_numBishopMovesNW;
+numMoves_t MoveSet::s_numBishopMovesSE;
+numMoves_t MoveSet::s_numBishopMovesSW;
+numMoves_t MoveSet::s_numRookMovesN;
+numMoves_t MoveSet::s_numRookMovesS;
+numMoves_t MoveSet::s_numRookMovesE;
+numMoves_t MoveSet::s_numRookMovesW;
+numMoves_t MoveSet::s_numQueenMovesN;
+numMoves_t MoveSet::s_numQueenMovesS;
+numMoves_t MoveSet::s_numQueenMovesE;
+numMoves_t MoveSet::s_numQueenMovesW;
+numMoves_t MoveSet::s_numQueenMovesNE;
+numMoves_t MoveSet::s_numQueenMovesNW;
+numMoves_t MoveSet::s_numQueenMovesSE;
+numMoves_t MoveSet::s_numQueenMovesSW;
+numMoves_t MoveSet::s_numKingMoves;
 
 //=========================================================================
 void MoveSet::Initialize()
@@ -51,53 +51,53 @@ void MoveSet::Initialize()
     // Set all moves to (-1, -1, -1, -1) and all sizes to 0
     for (Game::square_type i=0; i<Game::BOARD_SIZE; i++)
     {
-        m_whitePawnMoves[i].fill(Move());
+        s_whitePawnMoves[i].fill(Move());
 
-        m_blackPawnMoves[i].fill(Move());
+        s_blackPawnMoves[i].fill(Move());
 
-        m_knightMoves[i].fill(Move());
+        s_knightMoves[i].fill(Move());
 
-        m_bishopMovesNE[i].fill(Move());
-        m_bishopMovesNW[i].fill(Move());
-        m_bishopMovesSE[i].fill(Move());
-        m_bishopMovesSW[i].fill(Move());
+        s_bishopMovesNE[i].fill(Move());
+        s_bishopMovesNW[i].fill(Move());
+        s_bishopMovesSE[i].fill(Move());
+        s_bishopMovesSW[i].fill(Move());
 
-        m_rookMovesE[i].fill(Move());
-        m_rookMovesN[i].fill(Move());
-        m_rookMovesS[i].fill(Move());
-        m_rookMovesW[i].fill(Move());
+        s_rookMovesE[i].fill(Move());
+        s_rookMovesN[i].fill(Move());
+        s_rookMovesS[i].fill(Move());
+        s_rookMovesW[i].fill(Move());
 
-        m_queenMovesE[i].fill(Move());
-        m_queenMovesN[i].fill(Move());
-        m_queenMovesNE[i].fill(Move());
-        m_queenMovesNW[i].fill(Move());
-        m_queenMovesS[i].fill(Move());
-        m_queenMovesSE[i].fill(Move());
-        m_queenMovesSW[i].fill(Move());
-        m_queenMovesW[i].fill(Move());
+        s_queenMovesE[i].fill(Move());
+        s_queenMovesN[i].fill(Move());
+        s_queenMovesNE[i].fill(Move());
+        s_queenMovesNW[i].fill(Move());
+        s_queenMovesS[i].fill(Move());
+        s_queenMovesSE[i].fill(Move());
+        s_queenMovesSW[i].fill(Move());
+        s_queenMovesW[i].fill(Move());
 
-        m_kingMoves[i].fill(Move());
+        s_kingMoves[i].fill(Move());
 
-        m_numWhitePawnMoves[i] = 0;
-        m_numBlackPawnMoves[i] = 0;
-        m_numKnightMoves[i] = 0;
-        m_numBishopMovesNE[i] = 0;
-        m_numBishopMovesNW[i] = 0;
-        m_numBishopMovesSE[i] = 0;
-        m_numBishopMovesSW[i] = 0;
-        m_numRookMovesN[i] = 0;
-        m_numRookMovesS[i] = 0;
-        m_numRookMovesE[i] = 0;
-        m_numRookMovesW[i] = 0;
-        m_numQueenMovesN[i] = 0;
-        m_numQueenMovesS[i] = 0;
-        m_numQueenMovesE[i] = 0;
-        m_numQueenMovesW[i] = 0;
-        m_numQueenMovesNE[i] = 0;
-        m_numQueenMovesNW[i] = 0;
-        m_numQueenMovesSE[i] = 0;
-        m_numQueenMovesSW[i] = 0;
-        m_numKingMoves[i] = 0;
+        s_numWhitePawnMoves[i] = 0;
+        s_numBlackPawnMoves[i] = 0;
+        s_numKnightMoves[i] = 0;
+        s_numBishopMovesNE[i] = 0;
+        s_numBishopMovesNW[i] = 0;
+        s_numBishopMovesSE[i] = 0;
+        s_numBishopMovesSW[i] = 0;
+        s_numRookMovesN[i] = 0;
+        s_numRookMovesS[i] = 0;
+        s_numRookMovesE[i] = 0;
+        s_numRookMovesW[i] = 0;
+        s_numQueenMovesN[i] = 0;
+        s_numQueenMovesS[i] = 0;
+        s_numQueenMovesE[i] = 0;
+        s_numQueenMovesW[i] = 0;
+        s_numQueenMovesNE[i] = 0;
+        s_numQueenMovesNW[i] = 0;
+        s_numQueenMovesSE[i] = 0;
+        s_numQueenMovesSW[i] = 0;
+        s_numKingMoves[i] = 0;
     }
 
     initializeWhitePawnMoves();
@@ -118,241 +118,241 @@ void MoveSet::Destroy()
 //=========================================================================
 moveList2d_t MoveSet::GetWhitePawnMoves()
 {
-    return m_whitePawnMoves;
+    return s_whitePawnMoves;
 }
 
 //=========================================================================
 int MoveSet::GetNumWhitePawnMoves(Game::square_type i)
 {
-    return m_numWhitePawnMoves[i];
+    return s_numWhitePawnMoves[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetBlackPawnMoves()
 {
-    return m_blackPawnMoves;
+    return s_blackPawnMoves;
 }
 
 //=========================================================================
 int MoveSet::GetNumBlackPawnMoves(Game::square_type i)
 {
-    return m_numBlackPawnMoves[i];
+    return s_numBlackPawnMoves[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetKnightMoves()
 {
-    return m_knightMoves;
+    return s_knightMoves;
 }
 
 //=========================================================================
 int MoveSet::GetNumKnightMoves(Game::square_type i)
 {
-    return m_numKnightMoves[i];
+    return s_numKnightMoves[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetBishopMovesNE()
 {
-    return m_bishopMovesNE;
+    return s_bishopMovesNE;
 }
 
 //=========================================================================
 int MoveSet::GetNumBishopMovesNE(Game::square_type i)
 {
-    return m_numBishopMovesNE[i];
+    return s_numBishopMovesNE[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetBishopMovesNW()
 {
-    return m_bishopMovesNW;
+    return s_bishopMovesNW;
 }
 
 //=========================================================================
 int MoveSet::GetNumBishopMovesNW(Game::square_type i)
 {
-    return m_numBishopMovesNW[i];
+    return s_numBishopMovesNW[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetBishopMovesSE()
 {
-    return m_bishopMovesSE;
+    return s_bishopMovesSE;
 }
 
 //=========================================================================
 int MoveSet::GetNumBishopMovesSE(Game::square_type i)
 {
-    return m_numBishopMovesSE[i];
+    return s_numBishopMovesSE[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetBishopMovesSW()
 {
-    return m_bishopMovesSW;
+    return s_bishopMovesSW;
 }
 
 //=========================================================================
 int MoveSet::GetNumBishopMovesSW(Game::square_type i)
 {
-    return m_numBishopMovesSW[i];
+    return s_numBishopMovesSW[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetRookMovesN()
 {
-    return m_rookMovesN;
+    return s_rookMovesN;
 }
 
 //=========================================================================
 int MoveSet::GetNumRookMovesN(Game::square_type i)
 {
-    return m_numRookMovesN[i];
+    return s_numRookMovesN[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetRookMovesS()
 {
-    return m_rookMovesS;
+    return s_rookMovesS;
 }
 
 //=========================================================================
 int MoveSet::GetNumRookMovesS(Game::square_type i)
 {
-    return m_numRookMovesS[i];
+    return s_numRookMovesS[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetRookMovesE()
 {
-    return m_rookMovesE;
+    return s_rookMovesE;
 }
 
 //=========================================================================
 int MoveSet::GetNumRookMovesE(Game::square_type i)
 {
-    return m_numRookMovesE[i];
+    return s_numRookMovesE[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetRookMovesW()
 {
-    return m_rookMovesW;
+    return s_rookMovesW;
 }
 
 //=========================================================================
 int MoveSet::GetNumRookMovesW(Game::square_type i)
 {
-    return m_numRookMovesW[i];
+    return s_numRookMovesW[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesN()
 {
-    return m_queenMovesN;
+    return s_queenMovesN;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesN(Game::square_type i)
 {
-    return m_numQueenMovesN[i];
+    return s_numQueenMovesN[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesS()
 {
-    return m_queenMovesS;
+    return s_queenMovesS;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesS(Game::square_type i)
 {
-    return m_numQueenMovesS[i];
+    return s_numQueenMovesS[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesE()
 {
-    return m_queenMovesE;
+    return s_queenMovesE;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesE(Game::square_type i)
 {
-    return m_numQueenMovesE[i];
+    return s_numQueenMovesE[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesW()
 {
-    return m_queenMovesW;
+    return s_queenMovesW;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesW(Game::square_type i)
 {
-    return m_numQueenMovesW[i];
+    return s_numQueenMovesW[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesNE()
 {
-    return m_queenMovesNE;
+    return s_queenMovesNE;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesNE(Game::square_type i)
 {
-    return m_numQueenMovesNE[i];
+    return s_numQueenMovesNE[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesNW()
 {
-    return m_queenMovesNW;
+    return s_queenMovesNW;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesNW(Game::square_type i)
 {
-    return m_numQueenMovesNW[i];
+    return s_numQueenMovesNW[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesSE()
 {
-    return m_queenMovesSE;
+    return s_queenMovesSE;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesSE(Game::square_type i)
 {
-    return m_numQueenMovesSE[i];
+    return s_numQueenMovesSE[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetQueenMovesSW()
 {
-    return m_queenMovesSW;
+    return s_queenMovesSW;
 }
 
 //=========================================================================
 int MoveSet::GetNumQueenMovesSW(Game::square_type i)
 {
-    return m_numQueenMovesSW[i];
+    return s_numQueenMovesSW[i];
 }
 
 //=========================================================================
 moveList2d_t MoveSet::GetKingMoves()
 {
-    return m_kingMoves;
+    return s_kingMoves;
 }
 
 //=========================================================================
 int MoveSet::GetNumKingMoves(Game::square_type i)
 {
-    return m_numKingMoves[i];
+    return s_numKingMoves[i];
 }
 
 //=========================================================================
@@ -370,26 +370,26 @@ void MoveSet::initializeWhitePawnMoves()
         if (rank < Game::RANK_8 && file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank+1, file+1);
-            m_numWhitePawnMoves[i]++;
+            s_numWhitePawnMoves[i]++;
         }
         if (rank < Game::RANK_8 && file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank+1, file-1);
-            m_numWhitePawnMoves[i]++;
+            s_numWhitePawnMoves[i]++;
         }
 
         // One move forward
         moves[n++] = Move(rank, file, rank+1, file);
-        m_numWhitePawnMoves[i]++;
+        s_numWhitePawnMoves[i]++;
 
         // Two moves forward
         if (rank == Game::RANK_2)
         {
             moves[n++] = Move(rank, file, rank+2, file);
-            m_numWhitePawnMoves[i]++;
+            s_numWhitePawnMoves[i]++;
         }
 
-        m_whitePawnMoves[i] = moves;
+        s_whitePawnMoves[i] = moves;
     }
 }
 
@@ -408,26 +408,26 @@ void MoveSet::initializeBlackPawnMoves()
         if (rank > Game::RANK_1 && file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank-1, file+1);
-            m_numBlackPawnMoves[i]++;
+            s_numBlackPawnMoves[i]++;
         }
         if (rank > Game::RANK_1 && file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank-1, file-1);
-            m_numBlackPawnMoves[i]++;
+            s_numBlackPawnMoves[i]++;
         }
 
         // One move forward
         moves[n++] = Move(rank, file, rank-1, file);
-        m_numBlackPawnMoves[i]++;
+        s_numBlackPawnMoves[i]++;
 
         // Two moves forward
         if (rank == Game::RANK_7)
         {
             moves[n++] = Move(rank, file, rank-2, file);
-            m_numBlackPawnMoves[i]++;
+            s_numBlackPawnMoves[i]++;
         }
 
-        m_blackPawnMoves[i] = moves;
+        s_blackPawnMoves[i] = moves;
     }
 }
 
@@ -446,59 +446,59 @@ void MoveSet::initializeKnightMoves()
         if (rank < Game::RANK_8  && file < Game::FILE_G)
         {
             moves[n++] = Move(rank, file, rank+1, file+2);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // North 1, west 2
         if (rank < Game::RANK_8 && file > Game::FILE_B)
         {
             moves[n++] = Move(rank, file, rank+1, file-2);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // North 2, east 1
         if (rank < Game::RANK_7 && file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank+2, file+1);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // North 2, west 1
         if (rank < Game::RANK_7 && file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank+2, file-1);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // South 1, east 2
         if (rank > Game::RANK_1 && file < Game::FILE_G)
         {
             moves[n++] = Move(rank, file, rank-1, file+2);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // South 1, west 2
         if (rank > Game::RANK_1 && file > Game::FILE_B)
         {
             moves[n++] = Move(rank, file, rank-1, file-2);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // South 2, east 1
         if (rank > Game::RANK_2 && file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank-2, file+1);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
         // South 2, west 1
         if (rank > Game::RANK_2 && file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank-2, file-1);
-            m_numKnightMoves[i]++;
+            s_numKnightMoves[i]++;
         }
 
-        m_knightMoves[i] = moves;
+        s_knightMoves[i] = moves;
     }
 }
 
@@ -517,8 +517,8 @@ void MoveSet::initializeBishopMoves()
         while (r < Game::RANK_8 && f < Game::FILE_H)
         {
             r++; f++;
-            m_bishopMovesNE[i][n++] = Move(rank, file, r, f);
-            m_numBishopMovesNE[i]++;
+            s_bishopMovesNE[i][n++] = Move(rank, file, r, f);
+            s_numBishopMovesNE[i]++;
         }
 
         // North-west
@@ -528,8 +528,8 @@ void MoveSet::initializeBishopMoves()
         while (r < Game::RANK_8 && f > Game::FILE_A)
         {
             r++; f--;
-            m_bishopMovesNW[i][n++] = Move(rank, file, r, f);
-            m_numBishopMovesNW[i]++;
+            s_bishopMovesNW[i][n++] = Move(rank, file, r, f);
+            s_numBishopMovesNW[i]++;
         }
 
         // South-east
@@ -539,8 +539,8 @@ void MoveSet::initializeBishopMoves()
         while (r > Game::RANK_1 && f < Game::FILE_H)
         {
             r--; f++;
-            m_bishopMovesSE[i][n++] = Move(rank, file, r, f);
-            m_numBishopMovesSE[i]++;
+            s_bishopMovesSE[i][n++] = Move(rank, file, r, f);
+            s_numBishopMovesSE[i]++;
         }
 
         // South-west
@@ -550,8 +550,8 @@ void MoveSet::initializeBishopMoves()
         while (r > Game::RANK_1 && f > Game::FILE_A)
         {
             r--; f--;
-            m_bishopMovesSW[i][n++] = Move(rank, file, r, f);
-            m_numBishopMovesSW[i]++;
+            s_bishopMovesSW[i][n++] = Move(rank, file, r, f);
+            s_numBishopMovesSW[i]++;
         }
     }
 }
@@ -570,8 +570,8 @@ void MoveSet::initializeRookMoves()
         while (r < Game::RANK_8)
         {
             r++;
-            m_rookMovesN[i][n++] = Move(rank, file, r, file);
-            m_numRookMovesN[i]++;
+            s_rookMovesN[i][n++] = Move(rank, file, r, file);
+            s_numRookMovesN[i]++;
         }
 
         // South
@@ -580,8 +580,8 @@ void MoveSet::initializeRookMoves()
         while (r > Game::RANK_1)
         {
             r--;
-            m_rookMovesS[i][n++] = Move(rank, file, r, file);
-            m_numRookMovesS[i]++;
+            s_rookMovesS[i][n++] = Move(rank, file, r, file);
+            s_numRookMovesS[i]++;
         }
 
         // East
@@ -590,8 +590,8 @@ void MoveSet::initializeRookMoves()
         while (f < Game::FILE_H)
         {
             f++;
-            m_rookMovesE[i][n++] = Move(rank, file, rank, f);
-            m_numRookMovesE[i]++;
+            s_rookMovesE[i][n++] = Move(rank, file, rank, f);
+            s_numRookMovesE[i]++;
         }
 
         // West
@@ -600,8 +600,8 @@ void MoveSet::initializeRookMoves()
         while (f > Game::FILE_A)
         {
             f--;
-            m_rookMovesW[i][n++] = Move(rank, file, rank, f);
-            m_numRookMovesW[i]++;
+            s_rookMovesW[i][n++] = Move(rank, file, rank, f);
+            s_numRookMovesW[i]++;
         }
     }
 }
@@ -620,8 +620,8 @@ void MoveSet::initializeQueenMoves()
         while (r < Game::RANK_8)
         {
             r++;
-            m_queenMovesN[i][n++] = Move(rank, file, r, file);
-            m_numQueenMovesN[i]++;
+            s_queenMovesN[i][n++] = Move(rank, file, r, file);
+            s_numQueenMovesN[i]++;
         }
 
         // South
@@ -630,8 +630,8 @@ void MoveSet::initializeQueenMoves()
         while (r > Game::RANK_1)
         {
             r--;
-            m_queenMovesS[i][n++] = Move(rank, file, r, file);
-            m_numQueenMovesS[i]++;
+            s_queenMovesS[i][n++] = Move(rank, file, r, file);
+            s_numQueenMovesS[i]++;
         }
 
         // East
@@ -640,8 +640,8 @@ void MoveSet::initializeQueenMoves()
         while (f < Game::FILE_H)
         {
             f++;
-            m_queenMovesE[i][n++] = Move(rank, file, rank, f);
-            m_numQueenMovesE[i]++;
+            s_queenMovesE[i][n++] = Move(rank, file, rank, f);
+            s_numQueenMovesE[i]++;
         }
 
         // West
@@ -650,8 +650,8 @@ void MoveSet::initializeQueenMoves()
         while (f > Game::FILE_A)
         {
             f--;
-            m_queenMovesW[i][n++] = Move(rank, file, rank, f);
-            m_numQueenMovesW[i]++;
+            s_queenMovesW[i][n++] = Move(rank, file, rank, f);
+            s_numQueenMovesW[i]++;
         }
 
         // North-east
@@ -661,8 +661,8 @@ void MoveSet::initializeQueenMoves()
         while (r < Game::RANK_8 && f < Game::FILE_H)
         {
             r++; f++;
-            m_queenMovesNE[i][n++] = Move(rank, file, r, f);
-            m_numQueenMovesNE[i]++;
+            s_queenMovesNE[i][n++] = Move(rank, file, r, f);
+            s_numQueenMovesNE[i]++;
         }
 
         // North-west
@@ -672,8 +672,8 @@ void MoveSet::initializeQueenMoves()
         while (r < Game::RANK_8 && f > Game::FILE_A)
         {
             r++; f--;
-            m_queenMovesNW[i][n++] = Move(rank, file, r, f);
-            m_numQueenMovesNW[i]++;
+            s_queenMovesNW[i][n++] = Move(rank, file, r, f);
+            s_numQueenMovesNW[i]++;
         }
 
         // South-east
@@ -683,8 +683,8 @@ void MoveSet::initializeQueenMoves()
         while (r > Game::RANK_1 && f < Game::FILE_H)
         {
             r--; f++;
-            m_queenMovesSE[i][n++] = Move(rank, file, r, f);
-            m_numQueenMovesSE[i]++;
+            s_queenMovesSE[i][n++] = Move(rank, file, r, f);
+            s_numQueenMovesSE[i]++;
         }
 
         // South-west
@@ -694,8 +694,8 @@ void MoveSet::initializeQueenMoves()
         while (r > Game::RANK_1 && f > Game::FILE_A)
         {
             r--; f--;
-            m_queenMovesSW[i][n++] = Move(rank, file, r, f);
-            m_numQueenMovesSW[i]++;
+            s_queenMovesSW[i][n++] = Move(rank, file, r, f);
+            s_numQueenMovesSW[i]++;
         }
     }
 }
@@ -715,56 +715,56 @@ void MoveSet::initializeKingMoves()
         if (rank < Game::RANK_8)
         {
             moves[n++] = Move(rank, file, rank+1, file);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // South
         if (rank > Game::RANK_1)
         {
             moves[n++] = Move(rank, file, rank-1, file);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // East
         if (file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank, file+1);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // West
         if (file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank, file-1);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // North-east
         if (rank < Game::RANK_8 && file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank+1, file+1);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // North-west
         if (rank < Game::RANK_8 && file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank+1, file-1);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // South-east
         if (rank > Game::RANK_1 && file < Game::FILE_H)
         {
             moves[n++] = Move(rank, file, rank-1, file+1);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // South-west
         if (rank > Game::RANK_1 && file > Game::FILE_A)
         {
             moves[n++] = Move(rank, file, rank-1, file-1);
-            m_numKingMoves[i]++;
+            s_numKingMoves[i]++;
         }
 
         // Castle
@@ -772,10 +772,10 @@ void MoveSet::initializeKingMoves()
         {
             moves[n++] = Move(rank, file, rank, file+2);
             moves[n++] = Move(rank, file, rank, file-2);
-            m_numKingMoves[i] += 2;
+            s_numKingMoves[i] += 2;
         }
 
-        m_kingMoves[i] = moves;
+        s_kingMoves[i] = moves;
     }
 }
 

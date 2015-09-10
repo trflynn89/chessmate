@@ -13,7 +13,7 @@ namespace Engine {
  * - The more negative the score is, the better the board is for the human.
  * - A score of 0 is a draw.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version March 3, 2013
  */
 class Evaluator

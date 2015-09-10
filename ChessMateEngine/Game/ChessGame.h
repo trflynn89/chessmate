@@ -16,7 +16,7 @@ DEFINE_CLASS_PTRS(ChessGame);
  * Class to represent a single chess game, and to maintain its board and
  * communication to its client.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version September 9, 2014
  */
 class ChessGame : public std::enable_shared_from_this<ChessGame>

@@ -11,7 +11,7 @@ namespace Movement {
  * to generate a single list of actually possible moves given a board config.
  * Unlike the MoveSet file, this should be called after every move.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@gmail.com)
  * @version March 3, 2013
  */
 class ValidMoveSet

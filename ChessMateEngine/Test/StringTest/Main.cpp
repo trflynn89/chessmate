@@ -118,29 +118,27 @@ bool EntropyTest()
 }
 
 //=============================================================================
-bool formatTest(const std::string &expected, const std::string &actual)
-{
-    if (expected != actual)
-    {
-        LOGC("Expected %s, but got %s", expected, actual);
-        return true;
-    }
-
-    return false;
-}
-
-//=============================================================================
 bool FormatTest()
 {
     int numErrors = 0;
 
-    numErrors += formatTest("", Util::String::Format(""));
-    numErrors += formatTest("%", Util::String::Format("%"));
-    numErrors += formatTest("%%", Util::String::Format("%%"));
-    numErrors += formatTest("%d", Util::String::Format("%d"));
-    numErrors += formatTest("This is a test", Util::String::Format("This is a test"));
-    numErrors += formatTest("test 1 true 2.100000 false 1.230000e+002", Util::String::Format("test %d %d %f %d %e", 1, true, 2.1f, false, 123.0));
-    numErrors += formatTest("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
+    auto test = [&numErrors](const std::string &expected, const std::string &actual)
+    {
+        if (expected != actual)
+        {
+            LOGC("Expected \"%s\", but got \"%s\"", expected, actual);
+            ++numErrors;
+        }
+    };
+
+    test("", Util::String::Format(""));
+    test("%", Util::String::Format("%"));
+    test("%%", Util::String::Format("%%"));
+    test("%d", Util::String::Format("%d"));
+    test("This is a test", Util::String::Format("This is a test"));
+    test("there are no formatters", Util::String::Format("there are no formatters", 1, 2, 3, 4));
+    test("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
+    test("test 1 true 2.100000 false 1.230000e+002 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
 
     return (numErrors == 0);
 }
