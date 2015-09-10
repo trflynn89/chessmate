@@ -1,9 +1,11 @@
-#include "MoveSet2.h"
+#include "WholeMoveSet.h"
+
+#include <Game/BoardTypes.h>
 
 namespace Movement {
 
 //=========================================================================
-MoveSet::MoveSet() :
+WholeMoveSet::WholeMoveSet() :
     m_whitePawnMoves(Game::BOARD_SIZE),
     m_blackPawnMoves(Game::BOARD_SIZE),
     m_knightMoves(Game::BOARD_SIZE),
@@ -35,127 +37,127 @@ MoveSet::MoveSet() :
 }
 
 //=========================================================================
-MoveLists MoveSet::GetWhitePawnMoves() const
+MoveLists WholeMoveSet::GetWhitePawnMoves() const
 {
     return m_whitePawnMoves;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetBlackPawnMoves() const
+MoveLists WholeMoveSet::GetBlackPawnMoves() const
 {
     return m_blackPawnMoves;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetKnightMoves() const
+MoveLists WholeMoveSet::GetKnightMoves() const
 {
     return m_knightMoves;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetBishopMovesNE() const
+MoveLists WholeMoveSet::GetBishopMovesNE() const
 {
     return m_bishopMovesNE;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetBishopMovesNW() const
+MoveLists WholeMoveSet::GetBishopMovesNW() const
 {
     return m_bishopMovesNW;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetBishopMovesSE() const
+MoveLists WholeMoveSet::GetBishopMovesSE() const
 {
     return m_bishopMovesSE;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetBishopMovesSW() const
+MoveLists WholeMoveSet::GetBishopMovesSW() const
 {
     return m_bishopMovesSW;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetRookMovesN() const
+MoveLists WholeMoveSet::GetRookMovesN() const
 {
     return m_rookMovesN;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetRookMovesS() const
+MoveLists WholeMoveSet::GetRookMovesS() const
 {
     return m_rookMovesS;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetRookMovesE() const
+MoveLists WholeMoveSet::GetRookMovesE() const
 {
     return m_rookMovesE;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetRookMovesW() const
+MoveLists WholeMoveSet::GetRookMovesW() const
 {
     return m_rookMovesW;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesN() const
+MoveLists WholeMoveSet::GetQueenMovesN() const
 {
     return m_queenMovesN;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesS() const
+MoveLists WholeMoveSet::GetQueenMovesS() const
 {
     return m_queenMovesS;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesE() const
+MoveLists WholeMoveSet::GetQueenMovesE() const
 {
     return m_queenMovesE;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesW() const
+MoveLists WholeMoveSet::GetQueenMovesW() const
 {
     return m_queenMovesW;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesNE() const
+MoveLists WholeMoveSet::GetQueenMovesNE() const
 {
     return m_queenMovesNE;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesNW() const
+MoveLists WholeMoveSet::GetQueenMovesNW() const
 {
     return m_queenMovesNW;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesSE() const
+MoveLists WholeMoveSet::GetQueenMovesSE() const
 {
     return m_queenMovesSE;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetQueenMovesSW() const
+MoveLists WholeMoveSet::GetQueenMovesSW() const
 {
     return m_queenMovesSW;
 }
 
 //=========================================================================
-MoveLists MoveSet::GetKingMoves() const
+MoveLists WholeMoveSet::GetKingMoves() const
 {
     return m_kingMoves;
 }
 
 //=========================================================================
-void MoveSet::initializeWhitePawnMoves()
+void WholeMoveSet::initializeWhitePawnMoves()
 {
     for (Game::square_type i = 8; i < 56; ++i)
     {
@@ -186,7 +188,7 @@ void MoveSet::initializeWhitePawnMoves()
 }
 
 //=========================================================================
-void MoveSet::initializeBlackPawnMoves()
+void WholeMoveSet::initializeBlackPawnMoves()
 {
     for (Game::square_type i = 8; i < 56; ++i)
     {
@@ -217,7 +219,7 @@ void MoveSet::initializeBlackPawnMoves()
 }
 
 //=========================================================================
-void MoveSet::initializeKnightMoves()
+void WholeMoveSet::initializeKnightMoves()
 {
     for (Game::square_type i = 0; i < Game::BOARD_SIZE; ++i)
     {
@@ -277,7 +279,7 @@ void MoveSet::initializeKnightMoves()
 }
 
 //=========================================================================
-void MoveSet::initializeBishopMoves()
+void WholeMoveSet::initializeBishopMoves()
 {
     for (Game::square_type i = 0; i < Game::BOARD_SIZE; ++i)
     {
@@ -319,7 +321,7 @@ void MoveSet::initializeBishopMoves()
 }
 
 //=========================================================================
-void MoveSet::initializeRookMoves()
+void WholeMoveSet::initializeRookMoves()
 {
     for (Game::square_type i = 0; i < Game::BOARD_SIZE;++ i)
     {
@@ -357,7 +359,7 @@ void MoveSet::initializeRookMoves()
 }
 
 //=========================================================================
-void MoveSet::initializeQueenMoves()
+void WholeMoveSet::initializeQueenMoves()
 {
     for (Game::square_type i = 0; i < Game::BOARD_SIZE;++ i)
     {
@@ -427,7 +429,7 @@ void MoveSet::initializeQueenMoves()
 }
 
 //=========================================================================
-void MoveSet::initializeKingMoves()
+void WholeMoveSet::initializeKingMoves()
 {
     for (Game::square_type i = 0; i < Game::BOARD_SIZE; ++i)
     {

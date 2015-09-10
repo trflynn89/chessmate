@@ -12,7 +12,7 @@ $(eval $(call WILDCARD_SOURCES))
 # Define source files
 SRC_$(d) += \
     $(d)/../../Movement/Move.cpp \
-    $(d)/../../Movement/MoveSet2.cpp
+    $(d)/../../Movement/WholeMoveSet.cpp
 
 # Define rule to build and run the test
 test: $(TGT_BIN)

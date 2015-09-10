@@ -38,7 +38,7 @@ $(eval $(call ADD_TEST_TARGET, SocketTest, Test/SocketTest))
 $(eval $(call ADD_TEST_TARGET, StringTest, Test/StringTest))
 $(eval $(call ADD_TEST_TARGET, MessageTest, Test/MessageTest))
 $(eval $(call ADD_TEST_TARGET, ConcurrencyTest, Test/ConcurrencyTest))
-$(eval $(call ADD_TEST_TARGET, MoveSetTest, Test/MoveSetTest))
+$(eval $(call ADD_TEST_TARGET, MovementTest, Test/MovementTest))
 
 ### END define all targets
 

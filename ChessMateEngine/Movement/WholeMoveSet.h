@@ -5,7 +5,6 @@
 #include <list>
 
 #include <Movement/Move.h>
-#include <Game/BoardTypes.h>
 
 namespace Movement {
 
@@ -19,13 +18,13 @@ typedef std::vector<MoveList> MoveLists;
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version September 9, 2015
  */
-class MoveSet
+class WholeMoveSet
 {
 public:
     /**
      * Initialize the move sets.
      */
-    MoveSet();
+    WholeMoveSet();
 
     /**
      * @return All possible moves a white pawn can make.
