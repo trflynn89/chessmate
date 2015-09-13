@@ -20,29 +20,20 @@ public:
     /**
      * Default constructor.
      *
+     * @param MoveSetPtr The list of possible moves.
      * @param BitBoardPtr The board to generate moves for.
      */
-    ValidMoveSet(const Game::BitBoardPtr &);
+    ValidMoveSet(const MoveSetWPtr &, const Game::BitBoardPtr &);
 
     /**
      * @return The list of the turn player's valid moves.
      */
-    validMoveList_t GetMyValidMoves() const;
+    MoveList GetMyValidMoves() const;
 
     /**
      * @return The list of the opponent's valid moves.
      */
-    validMoveList_t GetOppValidMoves() const;
-
-    /**
-     * @return The number of the turn player's valid moves.
-     */
-    Game::value_type GetNumMyValidMoves() const;
-
-    /**
-     * @return The number of the opponent's valid moves.
-     */
-    Game::value_type GetNumOppValidMoves() const;
+    MoveList GetOppValidMoves() const;
 
     /**
      * @return A given square's attack value.
@@ -58,9 +49,10 @@ private:
     /**
      * Generate a list of moves all pieces can make.
      *
+     * @param MoveSetPtr The list of possible moves.
      * @param BitBoardPtr The board to generate moves for.
      */
-    void generateValidMoves(const Game::BitBoardPtr &);
+    void generateValidMoves(const MoveSetPtr &, const Game::BitBoardPtr &);
 
     /**
      * Given a list of sliding moves, add the move to the list if it is valid.
@@ -69,22 +61,17 @@ private:
      * @param piece_type The sliding piece.
      * @param color_type The sliding piece's color.
      * @param value_type The sliding piece's value.
-     * @param moveList_t The list of moves to check.
-     * @param value_type The size of the move list to check.
+     * @param MoveList The list of moves to check.
      */
     void addSlidingMoveIfValid(
         const Game::BitBoardPtr &,
-        Game::piece_type,
-        Game::color_type,
-        Game::value_type,
-        moveList_t,
-        Game::value_type);
+        const Game::piece_type &,
+        const Game::color_type &,
+        const Game::value_type &,
+        MoveList);
 
-    validMoveList_t m_myValidMoves;
-    validMoveList_t m_oppValidMoves;
-
-    Game::value_type m_numMyValidMoves;
-    Game::value_type m_numOppValidMoves;
+    MoveList m_myValidMoves;
+    MoveList m_oppValidMoves;
 
     Game::value_type m_attackValue[Game::BOARD_SIZE];
     Game::value_type m_defendValue[Game::BOARD_SIZE];

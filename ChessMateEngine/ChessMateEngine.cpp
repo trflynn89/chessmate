@@ -12,7 +12,6 @@
 #include <thread>
 
 #include <Game/GameManager.h>
-#include <Movement/MoveSet.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
@@ -178,8 +177,6 @@ int main(int argc, char **argv)
     SetupSignalHandler();
 
     Util::LoggerPtr spLogger = InitLogger();
-    Movement::MoveSet::Initialize();
-
     Util::SocketManagerPtr spSocketManager = InitSocketManager();
     Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);
 

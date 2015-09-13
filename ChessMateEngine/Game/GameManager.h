@@ -10,6 +10,7 @@
 
 #include <Game/ChessGame.h>
 #include <Game/Message.h>
+#include <Movement/MoveSet.h>
 #include <Util/Socket/Socket.h>
 #include <Util/Socket/SocketManager.h>
 
@@ -179,6 +180,8 @@ private:
 
     FutureVector m_workerFutures;
     std::atomic_bool m_aKeepRunning;
+
+    Movement::MoveSetPtr m_spMoveSet;
 };
 
 }

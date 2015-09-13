@@ -16,7 +16,8 @@ namespace
 //=============================================================================
 GameManager::GameManager(const Util::SocketManagerPtr &spSocketManager) :
     m_wpSocketManager(spSocketManager),
-    m_aKeepRunning(true)
+    m_aKeepRunning(true),
+    m_spMoveSet(std::make_shared<Movement::MoveSet>())
 {
 }
 
@@ -263,7 +264,7 @@ ChessGamePtr GameManager::createOrFindGame(int socketId, const Message &message)
 
         if (spSocket)
         {
-            ChessGamePtr spGame = ChessGame::Create(spSocket, message);
+            ChessGamePtr spGame = ChessGame::Create(spSocket, m_spMoveSet, message);
             m_gamesMap[socketId] = spGame;
         }
         else

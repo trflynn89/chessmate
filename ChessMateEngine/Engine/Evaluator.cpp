@@ -101,11 +101,12 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
         s_whitePawnFileValue[i] = 0;
         s_blackPawnFileValue[i] = 0;
     }
+
     s_whiteBishopCount = 0;
     s_blackBishopCount = 0;
 
     // Check for game over
-    if (vms.GetNumMyValidMoves() == 0)
+    if (vms.GetMyValidMoves().empty())
     {
         if (spBoard->IsWhiteInCheck())
         {
@@ -130,30 +131,15 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     // Check for checks
     if (spBoard->IsWhiteInCheck())
     {
-        score -= 75;
-        if (spBoard->IsEndGame())
-        {
-            score -= 20;
-        }
+        score -= (spBoard->IsEndGame() ? 95 : 75);
     }
     else if (spBoard->IsBlackInCheck())
     {
-        score += 75;
-        if (spBoard->IsEndGame())
-        {
-            score += 20;
-        }
+        score += (spBoard->IsEndGame() ? 95 : 75);
     }
 
     // Add for tempo
-    if (spBoard->GetPlayerInTurn() == Game::WHITE)
-    {
-        score += 10;
-    }
-    else
-    {
-        score -= 10;
-    }
+    score += ((spBoard->GetPlayerInTurn() == Game::WHITE) ? 10 : -10);
 
     // Try to prevent opponent from castling
     if (spBoard->HasWhiteCastled())
@@ -166,7 +152,7 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Loop through all pieces
-    for (Game::square_type s=0; s<Game::BOARD_SIZE; ++s)
+    for (Game::square_type s = 0; s < Game::BOARD_SIZE; ++s)
     {
         Game::square_type rank = GET_RANK(s);
         Game::square_type file = GET_FILE(s);
@@ -174,17 +160,9 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
         if (!spBoard->IsEmpty(rank, file))
         {
             int pieceScore = evaluateSinglePiece(spBoard, vms, rank, file);
-            ++remainingPieces;
 
-            // Evaluate the piece
-            if (spBoard->IsWhite(rank, file))
-            {
-                score += pieceScore;
-            }
-            else
-            {
-                score -= pieceScore;
-            }
+            score += (spBoard->IsWhite(rank, file) ? pieceScore : -pieceScore);
+            ++remainingPieces;
         }
     }
 
@@ -199,8 +177,8 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     {
         if (s_whitePawnFileValue[i] > 0)
         {
-            if ((i > Game::FILE_A && s_whitePawnFileValue[i - 1] == 0) ||
-                (i < Game::FILE_H && s_whitePawnFileValue[i + 1] == 0))
+            if (((i > Game::FILE_A) && (s_whitePawnFileValue[i - 1] == 0)) ||
+                ((i < Game::FILE_H) && (s_whitePawnFileValue[i + 1] == 0)))
             {
                 score -= 15;
             }
@@ -212,8 +190,8 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     {
         if (s_blackPawnFileValue[i] > 0)
         {
-            if ((i > Game::FILE_A && s_blackPawnFileValue[i - 1] == 0) ||
-                (i < Game::FILE_H && s_blackPawnFileValue[i + 1] == 0))
+            if (((i > Game::FILE_A) && (s_blackPawnFileValue[i - 1] == 0)) ||
+                ((i < Game::FILE_H) && (s_blackPawnFileValue[i + 1] == 0)))
             {
                 score += 15;
             }
@@ -223,7 +201,7 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     // Check for white passed pawns
     for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
     {
-        if (s_whitePawnFileValue[i] > 0 && s_blackPawnFileValue[i] == 0)
+        if ((s_whitePawnFileValue[i] > 0) && (s_blackPawnFileValue[i] == 0))
         {
             score += s_whitePawnFileValue[i];
         }
@@ -232,20 +210,13 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     // Check for black passed pawns
     for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
     {
-        if (s_blackPawnFileValue[i] > 0 && s_whitePawnFileValue[i] == 0)
+        if ((s_blackPawnFileValue[i] > 0) && (s_whitePawnFileValue[i] == 0))
         {
             score += s_blackPawnFileValue[i];
         }
     }
 
-    if (m_engineColor == Game::WHITE)
-    {
-        return score;
-    }
-    else
-    {
-        return -score;
-    }
+    return ((m_engineColor == Game::WHITE) ? score : -score);
 }
 
 //=============================================================================
@@ -256,8 +227,8 @@ int Evaluator::evaluateSinglePiece(
     const Game::square_type &file
 ) const
 {
-    Movement::validMoveList_t myMoveSet = vms.GetMyValidMoves();
-    Movement::validMoveList_t oppMoveSet = vms.GetOppValidMoves();
+    Movement::MoveList myMoveSet = vms.GetMyValidMoves();
+    Movement::MoveList oppMoveSet = vms.GetOppValidMoves();
 
     Game::square_type loc = GET_SQUARE(rank, file);
     Game::color_type pieceColor = spBoard->GetOccupant(rank, file);
@@ -269,12 +240,13 @@ int Evaluator::evaluateSinglePiece(
     }
 
     // Account for the attacked/defended value of the piece
+    bool useMyMoves = (pieceColor == spBoard->GetPlayerInTurn());
+
     Game::value_type defendedValue = 0;
     Game::value_type attackedValue = 0;
-    bool useMyMoves = true;
 
     // Get correct attack/defense values
-    if (pieceColor == spBoard->GetPlayerInTurn())
+    if (useMyMoves)
     {
         defendedValue = vms.GetDefendValue(rank, file);
         attackedValue = vms.GetAttackValue(rank, file);
@@ -283,7 +255,6 @@ int Evaluator::evaluateSinglePiece(
     {
         defendedValue = vms.GetAttackValue(rank, file);
         attackedValue = vms.GetDefendValue(rank, file);
-        useMyMoves = false;
     }
 
     score += defendedValue;
@@ -296,26 +267,13 @@ int Evaluator::evaluateSinglePiece(
     }
 
     // Add points for mobility
-    if (useMyMoves)
+    Movement::MoveList &moveSet = (useMyMoves ? myMoveSet : oppMoveSet);
+
+    for (auto it = moveSet.begin(); it != moveSet.end(); ++it)
     {
-        for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+        if ((it->GetStartRank() == rank) && (it->GetStartFile() == file))
         {
-            Movement::Move m = myMoveSet[i];
-            if (m.GetStartRank() == rank && m.GetStartFile() == file)
-            {
-                ++score;
-            }
-        }
-    }
-    else
-    {
-        for (Game::value_type i = 0; i < vms.GetNumOppValidMoves(); ++i)
-        {
-            Movement::Move m = oppMoveSet[i];
-            if (m.GetStartRank() == rank && m.GetStartFile() == file)
-            {
-                ++score;
-            }
+            ++score;
         }
     }
 
@@ -523,14 +481,15 @@ int Evaluator::evaluateSinglePiece(
 
         // Keep king mobile
         Game::value_type numberOfKingMoves = 0;
-        for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+
+        for (auto it = myMoveSet.begin(); it != myMoveSet.end(); ++it)
         {
-            Movement::Move m = myMoveSet[i];
-            if (m.GetStartRank() == rank && m.GetStartFile() == file)
+            if ((it->GetStartRank() == rank) && (it->GetStartFile() == file))
             {
                 ++numberOfKingMoves;
             }
         }
+
         if (numberOfKingMoves < 2)
         {
             score -= 5;

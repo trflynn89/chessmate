@@ -6,6 +6,7 @@
 #include <Game/BitBoard.h>
 #include <Game/Message.h>
 #include <Movement/Move.h>
+#include <Movement/MoveSet.h>
 #include <Util/Socket/Socket.h>
 
 namespace Game {
@@ -35,21 +36,32 @@ public:
      * Create a ChessGame instance from the initialization message received
      * from the game client.
      *
-     * @param SocketPtr A shared pointer to client socket.
+     * @param SocketPtr The game client's socket.
+     * @param MoveSetPtr The list of possible moves.
      * @param Message The START_GAME message containing the client's settings.
      *
      * @return A shared pointer around the created ChessGame instance.
      */
-    static ChessGamePtr Create(const Util::SocketPtr &, const Message &);
+    static ChessGamePtr Create(
+        const Util::SocketPtr &,
+        const Movement::MoveSetPtr &,
+        const Message &
+    );
 
     /**
      * Constructor to set the game's client socket.
      *
-     * @param SocketPtr A shared pointer to client socket.
+     * @param SocketPtr The game client's socket.
+     * @param MoveSetPtr The list of possible moves.
      * @param color_type The color of the engine.
      * @param value_type The difficulty of the engine.
      */
-    ChessGame(const Util::SocketPtr &, const color_type &, const value_type &);
+    ChessGame(
+        const Util::SocketPtr &,
+        const Movement::MoveSetPtr &,
+        const color_type &,
+        const value_type &
+    );
 
     /**
      * Destructor to close the client socket.
@@ -124,6 +136,7 @@ private:
     int m_gameId;
 
     Util::SocketWPtr m_wpClientSocket;
+    Movement::MoveSetWPtr m_wpMoveSet;
 
     value_type m_maxDepth;
     bool m_checkMaxDepth;

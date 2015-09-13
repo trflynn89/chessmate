@@ -4,6 +4,7 @@
 #include <Game/BitBoard.h>
 #include <Game/BoardTypes.h>
 #include <Movement/Move.h>
+#include <Movement/MoveSet.h>
 
 namespace Engine {
 
@@ -20,10 +21,15 @@ public:
     /**
      * Constructor.
      *
+     * @param MoveSetPtr The list of possible moves.
      * @param BitBoardPtr Shared pointer to the game's board.
      * @param color_type The engine color.
      */
-    MoveSelector(const Game::BitBoardPtr &, const Game::color_type &);
+    MoveSelector(
+        const Movement::MoveSetPtr &,
+        const Game::BitBoardPtr &,
+        const Game::color_type &
+    );
 
     /**
      * Use min-max to determine the best move that can be made.
@@ -90,6 +96,7 @@ private:
      */
     bool reachedEndState(const Game::value_type &, const Game::value_type &) const;
 
+    Movement::MoveSetWPtr m_wpMoveSet;
     Game::BitBoardWPtr m_wpBoard;
     Game::color_type m_engineColor;
 

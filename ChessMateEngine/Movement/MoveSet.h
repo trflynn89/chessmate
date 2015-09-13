@@ -1,317 +1,189 @@
 #pragma once
 
 #include <array>
+#include <vector>
+#include <list>
 
 #include <Movement/Move.h>
-#include <Game/BoardTypes.h>
-
-typedef std::array<Game::value_type, Game::BOARD_SIZE> numMoves_t;
+#include <Util/Utilities.h>
 
 namespace Movement {
 
+DEFINE_CLASS_PTRS(MoveSet);
+
+typedef std::vector<Move> MoveList;
+
 /**
- * This file calculates a list of all possible moves for every piece at every
- * possible location, regardless of board setup. The Initialize() method should
- * be called during the initialization process for the engine.
- *
- * Note: since performance is not an issue when the Initialize method is called,
- * the methods have not been very optimized. It is simply made to be correct.
+ * Class to calculate a list of all possible moves for every piece at every
+ * possible location, regardless of board setup.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version March 3, 2013
+ * @version September 13, 2015
  */
 class MoveSet
 {
 public:
     /**
-     * Initialize the move set.
+     * Initialize the move sets.
      */
-    static void Initialize();
-
-    /**
-     * Destroy the move set.
-     */
-    static void Destroy();
+    MoveSet();
 
     /**
      * @return All possible moves a white pawn can make.
      */
-    static moveList2d_t GetWhitePawnMoves();
-
-    /**
-     * @return The number of moves a white pawn can make from a given square.
-     */
-    static int GetNumWhitePawnMoves(Game::square_type);
+    MoveList GetWhitePawnMoves(int) const;
 
     /**
      * @return All possible moves a black pawn can make.
      */
-    static moveList2d_t GetBlackPawnMoves();
-
-    /**
-     * @return The number of moves a black pawn can make from a given square.
-     */
-    static int GetNumBlackPawnMoves(Game::square_type);
+    MoveList GetBlackPawnMoves(int) const;
 
     /**
      * @return All possible moves a knight can make.
      */
-    static moveList2d_t GetKnightMoves();
-
-    /**
-     * @return The number of moves a knight can make from a given square.
-     */
-    static int GetNumKnightMoves(Game::square_type);
+    MoveList GetKnightMoves(int) const;
 
     /**
      * @return All possible moves a bishop can make in a NE direction.
      */
-    static moveList2d_t GetBishopMovesNE();
-
-    /**
-     * @return The number of moves a bishop can make NE from a given square.
-     */
-    static int GetNumBishopMovesNE(Game::square_type);
+    MoveList GetBishopMovesNE(int) const;
 
     /**
      * @return All possible moves a bishop can make in a NW direction.
      */
-    static moveList2d_t GetBishopMovesNW();
-
-    /**
-     * @return The number of moves a bishop can make NW from a given square.
-     */
-    static int GetNumBishopMovesNW(Game::square_type);
+    MoveList GetBishopMovesNW(int) const;
 
     /**
      * @return All possible moves a bishop can make in a SE direction.
      */
-    static moveList2d_t GetBishopMovesSE();
-
-    /**
-     * @return The number of moves a bishop can make SE from a given square.
-     */
-    static int GetNumBishopMovesSE(Game::square_type);
+    MoveList GetBishopMovesSE(int) const;
 
     /**
      * @return All possible moves a bishop can make in a SW direction.
      */
-    static moveList2d_t GetBishopMovesSW();
-
-    /**
-     * @return The number of moves a bishop can make SW from a given square.
-     */
-    static int GetNumBishopMovesSW(Game::square_type);
+    MoveList GetBishopMovesSW(int) const;
 
     /**
      * @return All possible moves a rook can make in a N direction.
      */
-    static moveList2d_t GetRookMovesN();
-
-    /**
-     * @return The number of moves a rook can make N from a given square.
-     */
-    static int GetNumRookMovesN(Game::square_type);
+    MoveList GetRookMovesN(int) const;
 
     /**
      * @return All possible moves a rook can make in a S direction.
      */
-    static moveList2d_t GetRookMovesS();
-
-    /**
-     * @return The number of moves a rook can make S from a given square.
-     */
-    static int GetNumRookMovesS(Game::square_type);
+    MoveList GetRookMovesS(int) const;
 
     /**
      * @return All possible moves a rook can make in an E direction.
      */
-    static moveList2d_t GetRookMovesE();
-
-    /**
-     * @return The number of moves a rook can make E from a given square.
-     */
-    static int GetNumRookMovesE(Game::square_type);
+    MoveList GetRookMovesE(int) const;
 
     /**
      * @return All possible moves a rook can make in a W direction.
      */
-    static moveList2d_t GetRookMovesW();
-
-    /**
-     * @return The number of moves a rook can make W from a given square.
-     */
-    static int GetNumRookMovesW(Game::square_type);
+    MoveList GetRookMovesW(int) const;
 
     /**
      * @return All possible moves a queen can make in a N direction.
      */
-    static moveList2d_t GetQueenMovesN();
-
-    /**
-     * @return The number of moves a queen can make N from a given square.
-     */
-    static int GetNumQueenMovesN(Game::square_type);
+    MoveList GetQueenMovesN(int) const;
 
     /**
      * @return All possible moves a queen can make in a S direction.
      */
-    static moveList2d_t GetQueenMovesS();
-
-    /**
-     * @return The number of moves a queen can make S from a given square.
-     */
-    static int GetNumQueenMovesS(Game::square_type);
+    MoveList GetQueenMovesS(int) const;
 
     /**
      * @return All possible moves a queen can make in an E direction.
      */
-    static moveList2d_t GetQueenMovesE();
-
-    /**
-     * @return The number of moves a queen can make E from a given square.
-     */
-    static int GetNumQueenMovesE(Game::square_type);
+    MoveList GetQueenMovesE(int) const;
 
     /**
      * @return All possible moves a queen can make in a W direction.
      */
-    static moveList2d_t GetQueenMovesW();
-
-    /**
-     * @return The number of moves a queen can make W from a given square.
-     */
-    static int GetNumQueenMovesW(Game::square_type);
+    MoveList GetQueenMovesW(int) const;
 
     /**
      * @return All possible moves a queen can make in a NE direction.
      */
-    static moveList2d_t GetQueenMovesNE();
-
-    /**
-     * @return The number of moves a queen can make NE from a given square.
-     */
-    static int GetNumQueenMovesNE(Game::square_type);
+    MoveList GetQueenMovesNE(int) const;
 
     /**
      * @return All possible moves a queen can make in a NW direction.
      */
-    static moveList2d_t GetQueenMovesNW();
-
-    /**
-     * @return The number of moves a queen can make NW from a given square.
-     */
-    static int GetNumQueenMovesNW(Game::square_type);
+    MoveList GetQueenMovesNW(int) const;
 
     /**
      * @return All possible moves a queen can make in a SE direction.
      */
-    static moveList2d_t GetQueenMovesSE();
-
-    /**
-     * @return The number of moves a queen can make SE from a given square.
-     */
-    static int GetNumQueenMovesSE(Game::square_type);
+    MoveList GetQueenMovesSE(int) const;
 
     /**
      * @return All possible moves a queen can make in a SW direction.
      */
-    static moveList2d_t GetQueenMovesSW();
-
-    /**
-     * @return The number of moves a queen can make SW from a given square.
-     */
-    static int GetNumQueenMovesSW(Game::square_type);
+    MoveList GetQueenMovesSW(int) const;
 
     /**
      * @return All possible moves a king can make
      */
-    static moveList2d_t GetKingMoves();
-
-    /**
-     * @return The number of moves a king can make from a given square.
-     */
-    static int GetNumKingMoves(Game::square_type);
+    MoveList GetKingMoves(int) const;
 
 private:
     /**
      * Initialize the moves a white pawn can make.
      */
-    static void initializeWhitePawnMoves();
+    void initializeWhitePawnMoves();
 
     /**
      * Initialize the moves a black pawn can make.
      */
-    static void initializeBlackPawnMoves();
+    void initializeBlackPawnMoves();
 
     /**
      * Initialize the moves a knight can make.
      */
-    static void initializeKnightMoves();
+    void initializeKnightMoves();
 
     /**
      * Initialize the moves a bishop can make.
      */
-    static void initializeBishopMoves();
+    void initializeBishopMoves();
 
     /**
      * Initialize the moves a rook can make.
      */
-    static void initializeRookMoves();
+    void initializeRookMoves();
 
     /**
      * Initialize the moves a queen can make.
      */
-    static void initializeQueenMoves();
+    void initializeQueenMoves();
 
     /**
      * Initialize the moves a king can make.
      */
-    static void initializeKingMoves();
+    void initializeKingMoves();
 
-    // List of moves for each piece
-    static moveList2d_t s_whitePawnMoves;
-    static moveList2d_t s_blackPawnMoves;
-    static moveList2d_t s_knightMoves;
-    static moveList2d_t s_bishopMovesNE;
-    static moveList2d_t s_bishopMovesNW;
-    static moveList2d_t s_bishopMovesSE;
-    static moveList2d_t s_bishopMovesSW;
-    static moveList2d_t s_rookMovesN;
-    static moveList2d_t s_rookMovesS;
-    static moveList2d_t s_rookMovesE;
-    static moveList2d_t s_rookMovesW;
-    static moveList2d_t s_queenMovesN;
-    static moveList2d_t s_queenMovesS;
-    static moveList2d_t s_queenMovesE;
-    static moveList2d_t s_queenMovesW;
-    static moveList2d_t s_queenMovesNE;
-    static moveList2d_t s_queenMovesNW;
-    static moveList2d_t s_queenMovesSE;
-    static moveList2d_t s_queenMovesSW;
-    static moveList2d_t s_kingMoves;
-
-    // Number of moves for each piece
-    static numMoves_t s_numWhitePawnMoves;
-    static numMoves_t s_numBlackPawnMoves;
-    static numMoves_t s_numKnightMoves;
-    static numMoves_t s_numBishopMovesNE;
-    static numMoves_t s_numBishopMovesNW;
-    static numMoves_t s_numBishopMovesSE;
-    static numMoves_t s_numBishopMovesSW;
-    static numMoves_t s_numRookMovesN;
-    static numMoves_t s_numRookMovesS;
-    static numMoves_t s_numRookMovesE;
-    static numMoves_t s_numRookMovesW;
-    static numMoves_t s_numQueenMovesN;
-    static numMoves_t s_numQueenMovesS;
-    static numMoves_t s_numQueenMovesE;
-    static numMoves_t s_numQueenMovesW;
-    static numMoves_t s_numQueenMovesNE;
-    static numMoves_t s_numQueenMovesNW;
-    static numMoves_t s_numQueenMovesSE;
-    static numMoves_t s_numQueenMovesSW;
-    static numMoves_t s_numKingMoves;
+    std::vector<MoveList> m_whitePawnMoves;
+    std::vector<MoveList> m_blackPawnMoves;
+    std::vector<MoveList> m_knightMoves;
+    std::vector<MoveList> m_bishopMovesNE;
+    std::vector<MoveList> m_bishopMovesNW;
+    std::vector<MoveList> m_bishopMovesSE;
+    std::vector<MoveList> m_bishopMovesSW;
+    std::vector<MoveList> m_rookMovesN;
+    std::vector<MoveList> m_rookMovesS;
+    std::vector<MoveList> m_rookMovesE;
+    std::vector<MoveList> m_rookMovesW;
+    std::vector<MoveList> m_queenMovesN;
+    std::vector<MoveList> m_queenMovesS;
+    std::vector<MoveList> m_queenMovesE;
+    std::vector<MoveList> m_queenMovesW;
+    std::vector<MoveList> m_queenMovesNE;
+    std::vector<MoveList> m_queenMovesNW;
+    std::vector<MoveList> m_queenMovesSE;
+    std::vector<MoveList> m_queenMovesSW;
+    std::vector<MoveList> m_kingMoves;
 };
 
 }

@@ -13,6 +13,7 @@ namespace Game {
 //=============================================================================
 ChessGamePtr ChessGame::Create(
     const Util::SocketPtr &spClientSocket,
+    const Movement::MoveSetPtr &spMoveSet,
     const Message &msg
 )
 {
@@ -29,7 +30,7 @@ ChessGamePtr ChessGame::Create(
     value_type difficulty = std::stoi(arr[1]);
 
     ChessGamePtr spGame = std::make_shared<ChessGame>(
-        spClientSocket, engineColor, difficulty
+        spClientSocket, spMoveSet, engineColor, difficulty
     );
 
     return spGame;
@@ -39,15 +40,17 @@ ChessGamePtr ChessGame::Create(
 //=============================================================================
 ChessGame::ChessGame(
     const Util::SocketPtr &spClientSocket,
+    const Movement::MoveSetPtr &spMoveSet,
     const color_type &engineColor,
     const value_type &difficulty
 ) :
     m_gameId(spClientSocket->GetSocketId()),
     m_wpClientSocket(spClientSocket),
+    m_wpMoveSet(spMoveSet),
     m_maxDepth(2 * difficulty + 1),
     m_checkMaxDepth(true),
     m_spBoard(std::make_shared<Game::BitBoard>()),
-    m_moveSelector(m_spBoard, engineColor)
+    m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
     LOGC("Initialized game %d: Engine color = %d, max depth = %d",
         m_gameId, engineColor, m_maxDepth);
@@ -85,13 +88,13 @@ bool ChessGame::IsValid() const
 //=============================================================================
 bool ChessGame::MakeMove(Movement::Move &move) const
 {
-    Movement::ValidMoveSet vms(m_spBoard);
-    Movement::validMoveList_t list = vms.GetMyValidMoves();
+    Movement::ValidMoveSet vms(m_wpMoveSet, m_spBoard);
+    Movement::MoveList list = vms.GetMyValidMoves();
 
     // Check all valid moves - if this move is valid, make it
-    for (value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    for (auto it = list.begin(); it != list.end(); ++it)
     {
-        if (move == list[i])
+        if (move == *it)
         {
             LOGD(m_gameId, "Made valid move: %s", move);
             m_spBoard->MakeMove(move);
@@ -215,8 +218,8 @@ std::string ChessGame::makeMoveAndStalemateMsg(Movement::Move &move) const
 //=============================================================================
 bool ChessGame::anyValidMoves() const
 {
-    Movement::ValidMoveSet vms(m_spBoard);
-    return (vms.GetNumMyValidMoves() > 0);
+    Movement::ValidMoveSet vms(m_wpMoveSet, m_spBoard);
+    return !vms.GetMyValidMoves().empty();
 }
 
 //=============================================================================

@@ -6,15 +6,7 @@
 
 #include <Game/BoardTypes.h>
 
-#define MAX_NUM_MOVES       8
-#define MAX_NUM_MOVES_TOT   512 // TODO determine best size
-
 namespace Movement {
-
-class Move;
-typedef std::array<Move, MAX_NUM_MOVES> moveList_t;
-typedef std::array<moveList_t, Game::BOARD_SIZE> moveList2d_t;
-typedef std::array<Move, MAX_NUM_MOVES_TOT> validMoveList_t;
 
 /**
  * Class to store data about a move.

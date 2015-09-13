@@ -13,9 +13,11 @@ namespace
 
 //=============================================================================
 MoveSelector::MoveSelector(
+    const Movement::MoveSetPtr &spMoveSet,
     const Game::BitBoardPtr &spBoard,
     const Game::color_type &engineColor
 ) :
+    m_wpMoveSet(spMoveSet),
     m_wpBoard(spBoard),
     m_engineColor(engineColor),
     m_evaluator(engineColor)
@@ -27,15 +29,15 @@ Movement::Move MoveSelector::GetBestMove(const Game::value_type &maxDepth) const
 {
     Game::BitBoardPtr spBoard = m_wpBoard.lock();
 
-    Movement::ValidMoveSet vms(spBoard);
-    Movement::validMoveList_t moves = vms.GetMyValidMoves();
+    Movement::ValidMoveSet vms(m_wpMoveSet, spBoard);
+    Movement::MoveList moves = vms.GetMyValidMoves();
 
     Game::value_type bestValue = s_negInfinity;
     Movement::Move bestMove;
 
-    for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    for (auto it = moves.begin(); it != moves.end(); ++it)
     {
-        Game::BitBoardPtr spResult = result(spBoard, moves[i]);
+        Game::BitBoardPtr spResult = result(spBoard, *it);
 
         Game::value_type oldVal = bestValue;
         Game::value_type min = minValue(spResult, maxDepth, s_negInfinity, s_posInfinity);
@@ -43,7 +45,7 @@ Movement::Move MoveSelector::GetBestMove(const Game::value_type &maxDepth) const
 
         if (bestValue > oldVal)
         {
-            bestMove = moves[i];
+            bestMove = *it;
         }
     }
 
@@ -58,7 +60,7 @@ Game::value_type MoveSelector::maxValue(
     Game::value_type beta
 ) const
 {
-    Movement::ValidMoveSet vms(spBoard);
+    Movement::ValidMoveSet vms(m_wpMoveSet, spBoard);
     Game::value_type score = m_evaluator.Score(spBoard, vms);
 
     if (reachedEndState(depth, score))
@@ -66,12 +68,12 @@ Game::value_type MoveSelector::maxValue(
         return score;
     }
 
-    Movement::validMoveList_t moves = vms.GetMyValidMoves();
+    Movement::MoveList moves = vms.GetMyValidMoves();
     Game::value_type v = s_negInfinity;
 
-    for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    for (auto it = moves.begin(); it != moves.end(); ++it)
     {
-        Game::BitBoardPtr spResult = result(spBoard, moves[i]);
+        Game::BitBoardPtr spResult = result(spBoard, *it);
         v = std::max(v, minValue(spResult, depth-1, alpha, beta));
 
         if (score >= beta)
@@ -93,7 +95,7 @@ Game::value_type MoveSelector::minValue(
     Game::value_type beta
 ) const
 {
-    Movement::ValidMoveSet vms(spBoard);
+    Movement::ValidMoveSet vms(m_wpMoveSet, spBoard);
     Game::value_type score = m_evaluator.Score(spBoard, vms);
 
     if (reachedEndState(depth, score))
@@ -101,12 +103,12 @@ Game::value_type MoveSelector::minValue(
         return score;
     }
 
-    Movement::validMoveList_t moves = vms.GetMyValidMoves();
+    Movement::MoveList moves = vms.GetMyValidMoves();
     Game::value_type v = s_posInfinity;
 
-    for (Game::value_type i = 0; i < vms.GetNumMyValidMoves(); ++i)
+    for (auto it = moves.begin(); it != moves.end(); ++it)
     {
-        Game::BitBoardPtr spResult = result(spBoard, moves[i]);
+        Game::BitBoardPtr spResult = result(spBoard, *it);
         v = std::min(v, maxValue(spResult, depth-1, alpha, beta));
 
         if (score <= alpha)
