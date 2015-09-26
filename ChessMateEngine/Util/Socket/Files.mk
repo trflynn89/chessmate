@@ -3,5 +3,5 @@ SRC_$(d) := \
     $(d)/AsyncStructs.cpp \
     $(d)/SocketManager.cpp \
     $(d)/Socket.cpp \
-    $(d)/WinSocketManager.cpp \
-    $(d)/WinSocket.cpp
+    $(d)/NixSocketManager.cpp \
+    $(d)/NixSocket.cpp

@@ -33,15 +33,17 @@ void SocketManagerImpl::AsyncIoThread()
 
     while (m_aKeepRunning.load())
     {
-        int maxFd = -1;
+        bool anyMasksSet = false;
         {
             std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
-            maxFd = setReadAndWriteMasks(&readFd, &writeFd);
+            anyMasksSet = setReadAndWriteMasks(&readFd, &writeFd);
         }
 
-        if (maxFd != -1)
+        if (anyMasksSet)
         {
-            if (::select(maxFd + 1, &readFd, &writeFd, NULL, &tv) > 0)
+            // First argument of ::select() is ignored in Windows
+            // https://msdn.microsoft.com/en-us/library/windows/desktop/ms740141(v=vs.85).aspx
+            if (::select(0, &readFd, &writeFd, NULL, &tv) > 0)
             {
                 std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
                 handleSocketIO(&readFd, &writeFd);
@@ -51,9 +53,9 @@ void SocketManagerImpl::AsyncIoThread()
 }
 
 //=============================================================================
-int SocketManagerImpl::setReadAndWriteMasks(fd_set *readFd, fd_set *writeFd)
+bool SocketManagerImpl::setReadAndWriteMasks(fd_set *readFd, fd_set *writeFd)
 {
-    int maxFd = -1;
+    bool anyMasksSet = false;
 
     FD_ZERO(readFd);
     FD_ZERO(writeFd);
@@ -67,8 +69,7 @@ int SocketManagerImpl::setReadAndWriteMasks(fd_set *readFd, fd_set *writeFd)
             FD_SET(spSocket->GetHandle(), readFd);
             FD_SET(spSocket->GetHandle(), writeFd);
 
-            maxFd = std::max(spSocket->GetHandle(), maxFd);
-
+            anyMasksSet = true;
             ++it;
         }
         else
@@ -84,7 +85,7 @@ int SocketManagerImpl::setReadAndWriteMasks(fd_set *readFd, fd_set *writeFd)
         }
     }
 
-    return maxFd;
+    return anyMasksSet;
 }
 
 //=============================================================================
@@ -98,7 +99,7 @@ void SocketManagerImpl::handleSocketIO(fd_set *readFd, fd_set *writeFd)
 
         if (spSocket->IsValid())
         {
-            int handle = spSocket->GetHandle();
+            size_t handle = spSocket->GetHandle();
 
             // Handle socket accepts and reads
             if (FD_ISSET(handle, readFd))

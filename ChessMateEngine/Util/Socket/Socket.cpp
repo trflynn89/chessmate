@@ -41,7 +41,7 @@ bool Socket::IsAsync() const
 }
 
 //=============================================================================
-int Socket::GetHandle() const
+size_t Socket::GetHandle() const
 {
     return m_socketHandle;
 }
@@ -178,16 +178,16 @@ void Socket::ServiceSendRequests(AsyncRequest::RequestQueue &completedSends)
         if (request.IsValid())
         {
             const std::string &msg = request.GetRequest();
-            unsigned int bytesSent = Send(msg, wouldBlock);
+            size_t bytesSent = Send(msg, wouldBlock);
 
             if (bytesSent == msg.length())
             {
-                LOGD(m_socketId, "Sent %u bytes", bytesSent);
+                LOGD(m_socketId, "Sent %zu bytes", bytesSent);
                 completedSends.Push(request);
             }
             else if (wouldBlock)
             {
-                LOGI(m_socketId, "Send would block - sent %u of %u bytes, "
+                LOGI(m_socketId, "Send would block - sent %zu of %zu bytes, "
                     "will finish later", bytesSent, msg.length());
 
                 SendAsync(msg.substr(bytesSent, std::string::npos));

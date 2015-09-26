@@ -113,7 +113,7 @@ private:
     /**
      * A RNG for uniform integers.
      */
-    static UniformIntegerDevice<unsigned int, std::mt19937> s_randomDevice;
+    static UniformIntegerDevice<size_t, std::mt19937> s_randomDevice;
 };
 
 //=============================================================================

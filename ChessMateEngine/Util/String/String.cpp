@@ -14,7 +14,7 @@ const std::string String::s_alphaNum =
 
 const unsigned int String::s_asciiSize = 256;
 
-UniformIntegerDevice<unsigned int, std::mt19937> String::s_randomDevice(0, String::s_alphaNum.size() - 1);
+UniformIntegerDevice<size_t, std::mt19937> String::s_randomDevice(0, String::s_alphaNum.size() - 1);
 
 //=============================================================================
 std::vector<std::string> String::Split(const std::string &input, char delim)

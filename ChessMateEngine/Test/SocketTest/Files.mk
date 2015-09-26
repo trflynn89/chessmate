@@ -5,17 +5,7 @@ SRC_DIRS_$(d) := \
     Util/String
 
 # Define libraries to link
-LDLIBS_$(d) :=
-
-ifeq ($(IS_WINDOWS),1)
-
-LDLIBS_$(d) += -lws2_32
-
-else
-
-LDLIBS_$(d) += -lpthread
-
-endif
+LDLIBS_$(d) := -lpthread
 
 # Define source files
 $(eval $(call WILDCARD_SOURCES))

@@ -1,3 +1,5 @@
+#define NOMINMAX
+
 #include <WinSock.h>
 
 #include "WinSocket.h"
@@ -169,25 +171,36 @@ SocketPtr SocketImpl::Accept() const
 }
 
 //=============================================================================
-unsigned int SocketImpl::Send(const std::string &msg) const
+size_t SocketImpl::Send(const std::string &msg) const
 {
     bool ignore;
     return Send(msg, ignore);
 }
 
 //=============================================================================
-unsigned int SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
+size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
     std::string toSend = msg;
 
-    bool keepSending = (toSend.length() > 0);
-    unsigned int bytesSent = 0;
+    bool keepSending = !toSend.empty();
+    size_t bytesSent = 0;
 
     wouldBlock = false;
 
     while (keepSending)
     {
-        int currSent = ::send(m_socketHandle, toSend.c_str(), toSend.size(), 0);
+        int toSendSize = static_cast<int>(toSend.size());
+
+        // Window's ::send() takes string size as an integer, but std::string's
+        // length is size_t - send at most MAX_INT bytes at a time
+        static unsigned int intMax = std::numeric_limits<int>::max();
+
+        if (toSend.size() > intMax)
+        {
+            toSendSize = std::numeric_limits<int>::max();
+        }
+
+        int currSent = ::send(m_socketHandle, toSend.c_str(), toSendSize, 0);
 
         if (currSent > 0)
         {

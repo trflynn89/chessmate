@@ -92,7 +92,7 @@ public:
     /**
      * @return Return this socket's handle.
      */
-    int GetHandle() const;
+    size_t GetHandle() const;
 
     /**
      * @return Return the client IP this socket is connected to.
@@ -180,7 +180,7 @@ public:
      * @param string The data to send.
      * @return The number of bytes sent.
      */
-    virtual unsigned int Send(const std::string &) const = 0;
+    virtual size_t Send(const std::string &) const = 0;
 
     /**
      * Write data on the socket.
@@ -189,7 +189,7 @@ public:
      * @param bool & Reference to a bool, set to true if the operation would block.
      * @return The number of bytes sent.
      */
-    virtual unsigned int Send(const std::string &, bool &) const = 0;
+    virtual size_t Send(const std::string &, bool &) const = 0;
 
     /**
      * Request data to be written on the socket asynchronously. If this is not
@@ -243,7 +243,7 @@ public:
 
 protected:
     // File descriptor for this socket.
-    int m_socketHandle;
+    size_t m_socketHandle;
 
     // Client IP and port this socket is connected to.
     int m_clientIp;

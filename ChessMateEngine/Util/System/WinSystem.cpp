@@ -7,10 +7,10 @@
 namespace Util {
 
 //=============================================================================
-void SystemImpl::PrintBacktrace(int num)
+void SystemImpl::PrintBacktrace()
 {
-    void *trace[num];
-    const USHORT traceSize = CaptureStackBackTrace(0, num, trace, NULL);
+    void *trace[10];
+    const USHORT traceSize = CaptureStackBackTrace(0, 10, trace, NULL);
 
     for (USHORT i = 0; i < traceSize; ++i)
     {

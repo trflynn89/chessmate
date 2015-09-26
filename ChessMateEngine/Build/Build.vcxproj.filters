@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{eb46d670-6a72-45a6-8350-f296f1739f25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{d5f68729-67f2-4e23-8f1b-78ec7d2e3cc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Movement">
+      <UniqueIdentifier>{e3f83fff-9611-4372-9c94-1715a44d4ed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{3440f5ef-79b9-465f-a4b1-2534f6bbeb7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\Socket">
+      <UniqueIdentifier>{7a3fa13d-d48a-4b9a-91d2-836eea28baf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\Concurrency">
+      <UniqueIdentifier>{b248a0a3-17fb-43b8-bdd4-10a19b2140af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\Logging">
+      <UniqueIdentifier>{e1b101d1-4bc3-43cd-bf68-175a6e6fbda0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\Random">
+      <UniqueIdentifier>{c70e5d90-574e-4922-add1-22e2656b9c7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\String">
+      <UniqueIdentifier>{61bdf2b8-5a43-4f13-befc-9cf347f6cdd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\System">
+      <UniqueIdentifier>{c7bd89a3-2cf4-4db3-9e9b-e7d75eed1b16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h">
+      <Filter>Util\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Logging\Log.h">
+      <Filter>Util\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Logging\Logger.h">
+      <Filter>Util\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\System\System.h">
+      <Filter>Util\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\System\WinSystem.h">
+      <Filter>Util\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\String\String.h">
+      <Filter>Util\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Random\RandomDevice.h">
+      <Filter>Util\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\AsyncStructs.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\Socket.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\SocketImpl.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\SocketManager.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\SocketManagerImpl.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\WinSocket.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Socket\WinSocketManager.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Movement\Move.h">
+      <Filter>Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Movement\MoveSet.h">
+      <Filter>Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Movement\ValidMoveSet.h">
+      <Filter>Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Game\BitBoard.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Game\BoardTypes.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Game\ChessGame.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Game\GameManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Game\Message.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Engine\Evaluator.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Engine\MoveSelector.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Utilities.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Util\Logging\Logger.cpp">
+      <Filter>Util\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\System\System.cpp">
+      <Filter>Util\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\System\WinSystem.cpp">
+      <Filter>Util\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\String\String.cpp">
+      <Filter>Util\String</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Socket\AsyncStructs.cpp">
+      <Filter>Util\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Socket\Socket.cpp">
+      <Filter>Util\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Socket\SocketManager.cpp">
+      <Filter>Util\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Socket\WinSocket.cpp">
+      <Filter>Util\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Socket\WinSocketManager.cpp">
+      <Filter>Util\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Movement\Move.cpp">
+      <Filter>Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Movement\MoveSet.cpp">
+      <Filter>Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Movement\ValidMoveSet.cpp">
+      <Filter>Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Game\BitBoard.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Game\ChessGame.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Game\GameManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Game\Message.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Engine\Evaluator.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Engine\MoveSelector.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ChessMateEngine.cpp" />
+  </ItemGroup>
+</Project>

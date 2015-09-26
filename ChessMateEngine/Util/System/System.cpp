@@ -9,9 +9,9 @@
 namespace Util {
 
 //=============================================================================
-void System::PrintBacktrace(int num)
+void System::PrintBacktrace()
 {
-    SystemImpl::PrintBacktrace(num);
+    SystemImpl::PrintBacktrace();
 }
 
 }

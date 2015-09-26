@@ -38,8 +38,8 @@ public:
     bool Connect(const std::string &, int);
     SocketPtr Accept() const;
 
-    unsigned int Send(const std::string &) const;
-    unsigned int Send(const std::string &, bool &) const;
+    size_t Send(const std::string &) const;
+    size_t Send(const std::string &, bool &) const;
 
     std::string Recv() const;
     std::string Recv(bool &) const;

@@ -15,10 +15,8 @@ class System
 public:
     /**
      * Print the backtrace to stderr.
-     *
-     * @param int Number of points to print.
      */
-    static void PrintBacktrace(int);
+    static void PrintBacktrace();
 };
 
 }

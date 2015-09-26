@@ -11,7 +11,7 @@ namespace Util {
 class SystemImpl
 {
 public:
-    static void PrintBacktrace(int);
+    static void PrintBacktrace();
 };
 
 }

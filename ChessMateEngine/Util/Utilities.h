@@ -4,7 +4,7 @@
 #include <memory>
 
 // Determine operating system
-#if defined(__MINGW32__)
+#if defined(_WIN32)
     #define BUILD_WINDOWS
 #elif defined(__linux__)
     #define BUILD_LINUX

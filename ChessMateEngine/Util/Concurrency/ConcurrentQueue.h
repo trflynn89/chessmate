@@ -54,7 +54,7 @@ public:
     /**
      * @return The number of items in the queue.
      */
-    ConcurrentQueue<T>::size_type Size();
+    size_type Size();
 
 private:
     std::queue<T> m_queue;

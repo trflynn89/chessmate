@@ -46,9 +46,9 @@ Logger::Logger() :
 
     m_flushingLog(false),
 
-    m_maxDebugIndex(m_maxIndex * 0.5),
-    m_maxInfoIndex(m_maxIndex * 0.8),
-    m_maxWarningIndex(m_maxIndex * 0.95),
+    m_maxDebugIndex(static_cast<const unsigned int>(m_maxIndex * 0.5)),
+    m_maxInfoIndex(static_cast<const unsigned int>(m_maxIndex * 0.8)),
+    m_maxWarningIndex(static_cast<const unsigned int>(m_maxIndex * 0.95)),
     m_maxErrorIndex(m_maxIndex),
 
     m_debugIndex(0),
@@ -198,9 +198,12 @@ std::string Logger::getSystemTime()
     auto sys = std::chrono::system_clock::now();
     time_t now = std::chrono::system_clock::to_time_t(sys);
 
+    struct tm timeVal;
+    localtime_s(&timeVal, &now);
+
     char timeStr[32];
     size_t len = strftime(timeStr, sizeof(timeStr),
-        "%m-%d-%Y %H:%M:%S", localtime(&now));
+        "%m-%d-%Y %H:%M:%S", &timeVal);
 
     if (len != 0)
     {

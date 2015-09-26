@@ -23,7 +23,7 @@ protected:
     void AsyncIoThread();
 
 private:
-    int setReadAndWriteMasks(fd_set *, fd_set *);
+    bool setReadAndWriteMasks(fd_set *, fd_set *);
     void handleSocketIO(fd_set *, fd_set *);
     SocketPtr acceptNewClient(const SocketPtr &);
 };

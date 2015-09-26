@@ -84,7 +84,7 @@ void HandleSignal(int sig)
 
         if (fatalSignal)
         {
-            Util::System::PrintBacktrace(10);
+            Util::System::PrintBacktrace();
             exitCode = sig;
         }
 

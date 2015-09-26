@@ -39,7 +39,7 @@ namespace Util {
  */
 struct Log
 {
-    unsigned int m_index = UINT_MAX;
+    unsigned long long int m_index = UINT_MAX;
     LogLevel m_level = NUM_LEVELS;
     double m_time = -1.0;
     int m_gameId = -1;
