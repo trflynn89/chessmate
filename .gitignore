@@ -74,6 +74,7 @@ hs_err_pid*
 *.iobj
 *.idb
 *.pch
+*.ipch
 *.pdb
 *.ipdb
 *.pgc
