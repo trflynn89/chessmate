@@ -164,6 +164,5 @@
     <ClCompile Include="..\Engine\MoveSelector.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\ChessMateEngine.cpp" />
   </ItemGroup>
 </Project>

@@ -1,13 +1,15 @@
 #include <string>
 #include <vector>
 
+#include <gtest/gtest.h>
+
 #include <Util/Logging/Logger.h>
 #include <Util/String/String.h>
 
 //=============================================================================
-bool SplitTest()
+TEST(StringTest, SplitTest)
 {
-    int numSectors = 10;
+    static const int numSectors = 10;
     std::vector<std::string> inputSplit(numSectors);
 
     std::string input;
@@ -22,31 +24,16 @@ bool SplitTest()
     }
 
     std::vector<std::string> outputSplit = Util::String::Split(input, delim);
-
-    if (inputSplit.size() != outputSplit.size())
-    {
-        LOGC("Split produced unexpected size %d, expected %d",
-            outputSplit.size(), inputSplit.size());
-
-        return false;
-    }
+    ASSERT_EQ(inputSplit.size(), outputSplit.size());
 
     for (int i = 0; i < numSectors; ++i)
     {
-        if (inputSplit[i] != outputSplit[i])
-        {
-            LOGC("Index %d differs in output %s, expected %s",
-                i, outputSplit[i], inputSplit[i]);
-
-            return false;
-        }
+        ASSERT_EQ(inputSplit[i], outputSplit[i]);
     }
-
-    return true;
 }
 
 //=============================================================================
-bool ReplaceAllTest()
+TEST(StringTest, ReplaceAllTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
     std::string search("Be Replaced");
@@ -54,11 +41,11 @@ bool ReplaceAllTest()
     std::string result("To new value! To new value!");
 
     Util::String::ReplaceAll(source, search, replace);
-    return (source == result);
+    ASSERT_EQ(source, result);
 }
 
 //=============================================================================
-bool ReplaceAllWithEmptyTest()
+TEST(StringTest, ReplaceAllWithEmptyTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
     std::string search;
@@ -66,40 +53,42 @@ bool ReplaceAllWithEmptyTest()
     std::string result("To Be Replaced! To Be Replaced!");
 
     Util::String::ReplaceAll(source, search, replace);
-    return (source == result);
+    ASSERT_EQ(source, result);
 }
 
 //=============================================================================
-bool RemoveAllTest()
+TEST(StringTest, RemoveAllTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
     std::string search("Be Rep");
     std::string result("To laced! To laced!");
 
     Util::String::RemoveAll(source, search);
-    return (source == result);
+    ASSERT_EQ(source, result);
 }
 
 //=============================================================================
-bool RemoveAllWithEmptyTest()
+TEST(StringTest, RemoveAllWithEmptyTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
     std::string search;
     std::string result("To Be Replaced! To Be Replaced!");
 
     Util::String::RemoveAll(source, search);
-    return (source == result);
+    ASSERT_EQ(source, result);
 }
 
 //=============================================================================
-bool GenerateRandomStringTest(unsigned int length)
+TEST(StringTest, GenerateRandomStringTest)
 {
+    static const int length = (1 << 20);
+
     std::string random = Util::String::GenerateRandomString(length);
-    return (length == random.length());
+    ASSERT_EQ(length, random.length());
 }
 
 //=============================================================================
-bool EntropyTest()
+TEST(StringTest, EntropyTest)
 {
     std::string str1 = Util::String::GenerateRandomString(1 << 10);
     std::string str2("A quick brown fox jumped over the lazy dog");
@@ -114,109 +103,20 @@ bool EntropyTest()
     LOGC("E1=%f, E2=%f, E3=%f, E4=%f", ent1, ent2, ent3, ent4);
 
     // Expect entropy to decrease for less random strings
-    return ((ent1 > ent2) && (ent2 > ent3) && (ent3 > ent4));
+    ASSERT_GT(ent1, ent2);
+    ASSERT_GT(ent2, ent3);
+    ASSERT_GT(ent3, ent4);
 }
 
 //=============================================================================
-bool FormatTest()
+TEST(StringTest, FormatTest)
 {
-    int numErrors = 0;
-
-    auto test = [&numErrors](const std::string &expected, const std::string &actual)
-    {
-        if (expected != actual)
-        {
-            LOGC("Expected \"%s\", but got \"%s\"", expected, actual);
-            ++numErrors;
-        }
-    };
-
-    test("", Util::String::Format(""));
-    test("%", Util::String::Format("%"));
-    test("%%", Util::String::Format("%%"));
-    test("%d", Util::String::Format("%d"));
-    test("This is a test", Util::String::Format("This is a test"));
-    test("there are no formatters", Util::String::Format("there are no formatters", 1, 2, 3, 4));
-    test("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
-    test("test 1 true 2.100000 false 1.230000e+002 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
-
-    return (numErrors == 0);
-}
-
-//=============================================================================
-int main()
-{
-    int numErrors = 0;
-
-    if (SplitTest())
-    {
-        LOGC("Split test passed");
-    }
-    else
-    {
-        LOGC("Split test failed");
-        ++numErrors;
-    }
-
-    if (ReplaceAllTest() && ReplaceAllWithEmptyTest())
-    {
-        LOGC("ReplaceAll test passed");
-    }
-    else
-    {
-        LOGC("ReplaceAll test failed");
-        ++numErrors;
-    }
-
-    if (RemoveAllTest() && RemoveAllWithEmptyTest())
-    {
-        LOGC("RemoveAll test passed");
-    }
-    else
-    {
-        LOGC("RemoveAll test failed");
-        ++numErrors;
-    }
-
-    if (GenerateRandomStringTest(128))
-    {
-        LOGC("Small random string test passed");
-    }
-    else
-    {
-        LOGC("Small random string test failed");
-        ++numErrors;
-    }
-
-    if (GenerateRandomStringTest(1 << 20))
-    {
-        LOGC("Large random string test passed");
-    }
-    else
-    {
-        LOGC("Large random string test failed");
-        ++numErrors;
-    }
-
-    if (EntropyTest())
-    {
-        LOGC("Entropy test passed");
-    }
-    else
-    {
-        LOGC("Entropy test failed");
-        ++numErrors;
-    }
-
-    if (FormatTest())
-    {
-        LOGC("Format test passed");
-    }
-    else
-    {
-        LOGC("Format test failed");
-        ++numErrors;
-    }
-
-    return numErrors;
+    ASSERT_EQ("", Util::String::Format(""));
+    ASSERT_EQ("%", Util::String::Format("%"));
+    ASSERT_EQ("%%", Util::String::Format("%%"));
+    ASSERT_EQ("%d", Util::String::Format("%d"));
+    ASSERT_EQ("This is a test", Util::String::Format("This is a test"));
+    ASSERT_EQ("there are no formatters", Util::String::Format("there are no formatters", 1, 2, 3, 4));
+    ASSERT_EQ("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
+    ASSERT_EQ("test 1 true 2.100000 false 1.230000e+02 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
 }

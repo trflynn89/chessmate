@@ -18,37 +18,49 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Build\Build.vcxproj">
+      <Project>{413156b2-e6d8-4934-b8e0-319fd15d20c4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GoogleTest\GoogleTest.vcxproj">
+      <Project>{668d1b05-6491-4155-994f-355e81d8d4f4}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{413156B2-E6D8-4934-B8E0-319FD15D20C4}</ProjectGuid>
-    <RootNamespace>Build</RootNamespace>
+    <ProjectGuid>{02A8B770-D61A-4A2C-9EE5-3A13A38403BF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>StringTest</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -69,128 +81,93 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Build\debug-x86\$(ProjectName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\debug-x86\$(ProjectName)\obj\</IntDir>
-    <TargetName>$(ProjectName)</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\debug-x86\$(TargetName)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\debug-x86\$(TargetName)\obj\</IntDir>
+    <IncludePath>$(SolutionDir)Test\GoogleTest\include;$(SolutionDir)Test\GoogleTest;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Build\debug-x64\$(ProjectName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\debug-x64\$(ProjectName)\obj\</IntDir>
-    <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\debug-x64\$(TargetName)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\debug-x64\$(TargetName)\obj\</IntDir>
+    <IncludePath>$(SolutionDir)Test\GoogleTest\include;$(SolutionDir)Test\GoogleTest;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build\release-x86\$(ProjectName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\release-x86\$(ProjectName)\obj\</IntDir>
-    <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\release-x86\$(TargetName)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\release-x86\$(TargetName)\obj\</IntDir>
+    <IncludePath>$(SolutionDir)Test\GoogleTest\include;$(SolutionDir)Test\GoogleTest;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Build\release-x64\$(ProjectName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\release-x64\$(ProjectName)\obj\</IntDir>
-    <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\release-x64\$(TargetName)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\release-x64\$(TargetName)\obj\</IntDir>
+    <IncludePath>$(SolutionDir)Test\GoogleTest\include;$(SolutionDir)Test\GoogleTest;$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Engine\Evaluator.h" />
-    <ClInclude Include="..\Engine\MoveSelector.h" />
-    <ClInclude Include="..\Game\BitBoard.h" />
-    <ClInclude Include="..\Game\BoardTypes.h" />
-    <ClInclude Include="..\Game\ChessGame.h" />
-    <ClInclude Include="..\Game\GameManager.h" />
-    <ClInclude Include="..\Game\Message.h" />
-    <ClInclude Include="..\Movement\Move.h" />
-    <ClInclude Include="..\Movement\MoveSet.h" />
-    <ClInclude Include="..\Movement\ValidMoveSet.h" />
-    <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h" />
-    <ClInclude Include="..\Util\Logging\Log.h" />
-    <ClInclude Include="..\Util\Logging\Logger.h" />
-    <ClInclude Include="..\Util\Random\RandomDevice.h" />
-    <ClInclude Include="..\Util\Socket\AsyncStructs.h" />
-    <ClInclude Include="..\Util\Socket\Socket.h" />
-    <ClInclude Include="..\Util\Socket\SocketImpl.h" />
-    <ClInclude Include="..\Util\Socket\SocketManager.h" />
-    <ClInclude Include="..\Util\Socket\SocketManagerImpl.h" />
-    <ClInclude Include="..\Util\Socket\WinSocket.h" />
-    <ClInclude Include="..\Util\Socket\WinSocketManager.h" />
-    <ClInclude Include="..\Util\String\String.h" />
-    <ClInclude Include="..\Util\System\System.h" />
-    <ClInclude Include="..\Util\System\WinSystem.h" />
-    <ClInclude Include="..\Util\Utilities.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Engine\Evaluator.cpp" />
-    <ClCompile Include="..\Engine\MoveSelector.cpp" />
-    <ClCompile Include="..\Game\BitBoard.cpp" />
-    <ClCompile Include="..\Game\ChessGame.cpp" />
-    <ClCompile Include="..\Game\GameManager.cpp" />
-    <ClCompile Include="..\Game\Message.cpp" />
-    <ClCompile Include="..\Movement\Move.cpp" />
-    <ClCompile Include="..\Movement\MoveSet.cpp" />
-    <ClCompile Include="..\Movement\ValidMoveSet.cpp" />
-    <ClCompile Include="..\Util\Logging\Logger.cpp" />
-    <ClCompile Include="..\Util\Socket\AsyncStructs.cpp" />
-    <ClCompile Include="..\Util\Socket\Socket.cpp" />
-    <ClCompile Include="..\Util\Socket\SocketManager.cpp" />
-    <ClCompile Include="..\Util\Socket\WinSocket.cpp" />
-    <ClCompile Include="..\Util\Socket\WinSocketManager.cpp" />
-    <ClCompile Include="..\Util\String\String.cpp" />
-    <ClCompile Include="..\Util\System\System.cpp" />
-    <ClCompile Include="..\Util\System\WinSystem.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
