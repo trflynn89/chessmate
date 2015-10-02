@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChessMateEngine", "ChessMat
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConcurrencyTest", "Test\ConcurrencyTest\ConcurrencyTest.vcxproj", "{B3074C9A-216F-49C3-8A17-86C7ABAB0370}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageTest", "Test\MessageTest\MessageTest.vcxproj", "{C193F595-D1F0-4A93-90B3-50A60543E1EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{B3074C9A-216F-49C3-8A17-86C7ABAB0370}.Release|x64.Build.0 = Release|x64
 		{B3074C9A-216F-49C3-8A17-86C7ABAB0370}.Release|x86.ActiveCfg = Release|Win32
 		{B3074C9A-216F-49C3-8A17-86C7ABAB0370}.Release|x86.Build.0 = Release|Win32
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Debug|x64.ActiveCfg = Debug|x64
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Debug|x64.Build.0 = Debug|x64
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Debug|x86.ActiveCfg = Debug|Win32
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Debug|x86.Build.0 = Debug|Win32
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Release|x64.ActiveCfg = Release|x64
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Release|x64.Build.0 = Release|x64
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Release|x86.ActiveCfg = Release|Win32
+		{C193F595-D1F0-4A93-90B3-50A60543E1EF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
