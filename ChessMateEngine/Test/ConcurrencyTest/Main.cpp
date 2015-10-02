@@ -3,35 +3,136 @@
 #include <future>
 #include <vector>
 
+#include <gtest/gtest.h>
+
 #include <Util/Concurrency/ConcurrentQueue.h>
 #include <Util/Logging/Logger.h>
 
-//=============================================================================
-typedef int Object;
-typedef Util::ConcurrentQueue<Object> ObjectQueue;
-
-//=============================================================================
-bool RunEmptyQueueUponCreationTest()
+namespace
 {
-    ObjectQueue objectQueue;
-    ObjectQueue::size_type size = objectQueue.Size();
+    typedef int Object;
+    typedef Util::ConcurrentQueue<Object> ObjectQueue;
 
-    if (size != 0)
+    //=========================================================================
+    void DoQueuePush(
+        ObjectQueue &objectQueue,
+        const Object &object,
+        ObjectQueue::size_type expectedSize
+    )
     {
-        LOGC("Empty queue has non-zero size %llu", size);
-        return false;
-    }
-    else if (!objectQueue.IsEmpty())
-    {
-        LOGC("Empty queue reports as non-empty");
-        return false;
+        objectQueue.Push(object);
+
+        ASSERT_EQ(objectQueue.Size(), expectedSize);
+        ASSERT_FALSE(objectQueue.IsEmpty());
     }
 
-    return true;
+    //=========================================================================
+    void DoQueuePop(
+        ObjectQueue &objectQueue,
+        const Object &expectedObject,
+        ObjectQueue::size_type expectedSize
+    )
+    {
+        Object object;
+
+        ASSERT_TRUE(objectQueue.Pop(object, std::chrono::milliseconds(0)));
+        ASSERT_EQ(objectQueue.Size(), expectedSize);
+        ASSERT_EQ(object, expectedObject);
+    }
+
+    //=========================================================================
+    unsigned int WriterThread(ObjectQueue &objectQueue)
+    {
+        unsigned int numWrites = 100;
+
+        for (unsigned int i = 0; i < numWrites; ++i)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+            Object object(i);
+            objectQueue.Push(object);
+        }
+
+        return numWrites;
+    }
+
+    //=========================================================================
+    unsigned int ReaderThread(
+        ObjectQueue &objectQueue,
+        std::atomic_bool &finishedWrites
+    )
+    {
+        unsigned int numReads = 0;
+
+        while (!finishedWrites.load() || !objectQueue.IsEmpty())
+        {
+            Object object;
+
+            if (objectQueue.Pop(object, std::chrono::seconds(1)))
+            {
+                ++numReads;
+            }
+        }
+
+        return numReads;
+    }
+
+    //=========================================================================
+    void RunMultiThreadedTest(unsigned int numWriters, unsigned int numReaders)
+    {
+        ObjectQueue objectQueue;
+
+        std::vector<std::future<unsigned int>> writerFutures;
+        std::vector<std::future<unsigned int>> readerFutures;
+
+        std::atomic_bool finishedWrites(false);
+
+        // Create numWriters writer threads
+        for (unsigned int i = 0; i < numWriters; ++i)
+        {
+            auto func = std::bind(&WriterThread, std::ref(objectQueue));
+            writerFutures.push_back(std::async(std::launch::async, func));
+        }
+
+        // Create numReaders reader threads
+        for (unsigned int i = 0; i < numReaders; ++i)
+        {
+            auto func = std::bind(&ReaderThread, std::ref(objectQueue), std::ref(finishedWrites));
+            readerFutures.push_back(std::async(std::launch::async, func));
+        }
+
+        unsigned int numWrites = 0;
+        unsigned int numReads = 0;
+
+        for (auto &future : writerFutures)
+        {
+            ASSERT_TRUE(future.valid());
+            numWrites += future.get();
+        }
+
+        finishedWrites.store(true);
+
+        for (auto &future : readerFutures)
+        {
+            ASSERT_TRUE(future.valid());
+            numReads += future.get();
+        }
+
+        ASSERT_EQ(numWrites, numReads);
+    }
 }
 
 //=============================================================================
-bool RunPopFromEmptyQueueTest()
+TEST(ConcurrencyTest, EmptyQueueUponCreationTest)
+{
+    ObjectQueue objectQueue;
+
+    ASSERT_TRUE(objectQueue.IsEmpty());
+    ASSERT_EQ(objectQueue.Size(), 0);
+}
+
+//=============================================================================
+TEST(ConcurrencyTest, PopFromEmptyQueueTest)
 {
     ObjectQueue objectQueue;
 
@@ -39,80 +140,18 @@ bool RunPopFromEmptyQueueTest()
     Object obj2(1);
 
     // Make sure pop is initially invalid
-    if (objectQueue.Pop(obj1, std::chrono::milliseconds(0)))
-    {
-        LOGC("Incorrectly popped a valid object from an empty queue");
-        return false;
-    }
+    ASSERT_FALSE(objectQueue.Pop(obj1, std::chrono::milliseconds(0)));
 
     // Push an item onto the queue and immediately pop it
     objectQueue.Push(obj2);
-
-    if (!objectQueue.Pop(obj1, std::chrono::milliseconds(0)))
-    {
-        LOGC("Incorrectly did not pop an object from a non-empty queue");
-        return false;
-    }
+    ASSERT_TRUE(objectQueue.Pop(obj1, std::chrono::milliseconds(0)));
 
     // Make sure popping an item from the no-longer non-empty queue is invalid
-    objectQueue.Pop(obj1, std::chrono::milliseconds(0));
-
-    if (objectQueue.Pop(obj1, std::chrono::milliseconds(0)))
-    {
-        LOGC("Incorrectly popped a valid object from an empty queue");
-        return false;
-    }
-
-    return true;
+    ASSERT_FALSE(objectQueue.Pop(obj1, std::chrono::milliseconds(0)));
 }
 
 //=============================================================================
-bool DoQueuePush(ObjectQueue &objectQueue, const Object &object, ObjectQueue::size_type expectedSize)
-{
-    objectQueue.Push(object);
-    ObjectQueue::size_type size = objectQueue.Size();
-
-    if (size != expectedSize)
-    {
-        LOGC("Queue with %llu items has incorrect size %llu", expectedSize, size);
-        return false;
-    }
-    else if (objectQueue.IsEmpty())
-    {
-        LOGC("Non-empty queue reports as empty");
-        return false;
-    }
-
-    return true;
-}
-
-//=============================================================================
-bool DoQueuePop(ObjectQueue &objectQueue, const Object &expectedObject, ObjectQueue::size_type expectedSize)
-{
-    Object object;
-    ObjectQueue::size_type size = 0;
-
-    if (!objectQueue.Pop(object, std::chrono::milliseconds(0)))
-    {
-        LOGC("Incorrectly did not pop an object from a non-empty queue");
-        return false;
-    }
-    else if ((size = objectQueue.Size()) != expectedSize)
-    {
-        LOGC("Queue with %llu items has incorrect size %llu", expectedSize, size);
-        return false;
-    }
-    else if (object != expectedObject)
-    {
-        LOGC("Item popped from queue was not expected object");
-        return false;
-    }
-
-    return true;
-}
-
-//=============================================================================
-bool RunSingleThreadedTest()
+TEST(ConcurrencyTest, SingleThreadedTest)
 {
     ObjectQueue objectQueue;
     ObjectQueue::size_type size = 0;
@@ -121,224 +160,21 @@ bool RunSingleThreadedTest()
     Object obj2(2);
     Object obj3(3);
 
-    if (!DoQueuePush(objectQueue, obj1, ++size))
-    {
-        LOGC("First test push failed");
-        return false;
-    }
-
-    if (!DoQueuePush(objectQueue, obj1, ++size))
-    {
-        LOGC("Second test push failed");
-        return false;
-    }
-
-    if (!DoQueuePop(objectQueue, obj1, --size))
-    {
-        LOGC("First test pop failed");
-        return false;
-    }
-
-    if (!DoQueuePush(objectQueue, obj2, ++size))
-    {
-        LOGC("Third test push failed");
-        return false;
-    }
-
-    if (!DoQueuePush(objectQueue, obj3, ++size))
-    {
-        LOGC("Fourth test push failed");
-        return false;
-    }
-
-    if (!DoQueuePop(objectQueue, obj1, --size))
-    {
-        LOGC("Second test pop failed");
-        return false;
-    }
-
-    if (!DoQueuePop(objectQueue, obj2, --size))
-    {
-        LOGC("Third test pop failed");
-        return false;
-    }
-
-    if (!DoQueuePop(objectQueue, obj3, --size))
-    {
-        LOGC("Fourth test pop failed");
-        return false;
-    }
-
-    return true;
+    DoQueuePush(objectQueue, obj1, ++size);
+    DoQueuePush(objectQueue, obj1, ++size);
+    DoQueuePop(objectQueue, obj1, --size);
+    DoQueuePush(objectQueue, obj2, ++size);
+    DoQueuePush(objectQueue, obj3, ++size);
+    DoQueuePop(objectQueue, obj1, --size);
+    DoQueuePop(objectQueue, obj2, --size);
+    DoQueuePop(objectQueue, obj3, --size);
 }
 
 //=============================================================================
-unsigned int WriterThread(ObjectQueue &objectQueue)
+TEST(ConcurrencyTest, MultiThreadedTest)
 {
-    unsigned int numWrites = 100;
-
-    for (unsigned int i = 0; i < numWrites; ++i)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-        Object object(i);
-        objectQueue.Push(object);
-    }
-
-    return numWrites;
-}
-
-//=============================================================================
-unsigned int ReaderThread(ObjectQueue &objectQueue, std::atomic_bool &finishedWrites)
-{
-    unsigned int numReads = 0;
-
-    while (!finishedWrites.load() || !objectQueue.IsEmpty())
-    {
-        Object object;
-
-        if (objectQueue.Pop(object, std::chrono::seconds(1)))
-        {
-            ++numReads;
-        }
-    }
-
-    return numReads;
-}
-
-//=============================================================================
-bool RunMultiThreadedTest(unsigned int numWriters, unsigned int numReaders)
-{
-    ObjectQueue objectQueue;
-
-    std::vector<std::future<unsigned int>> writerFutures;
-    std::vector<std::future<unsigned int>> readerFutures;
-
-    std::atomic_bool finishedWrites(false);
-
-    for (unsigned int i = 0; i < numWriters; ++i)
-    {
-        auto func = std::bind(&WriterThread, std::ref(objectQueue));
-        writerFutures.push_back(std::async(std::launch::async, func));
-    }
-
-    for (unsigned int i = 0; i < numReaders; ++i)
-    {
-        auto func = std::bind(&ReaderThread, std::ref(objectQueue), std::ref(finishedWrites));
-        readerFutures.push_back(std::async(std::launch::async, func));
-    }
-
-    unsigned int numWrites = 0;
-    unsigned int numReads = 0;
-
-    for (auto &future : writerFutures)
-    {
-        if (future.valid())
-        {
-            numWrites += future.get();
-        }
-        else
-        {
-            LOGC("Invalid writer future found");
-            return false;
-        }
-    }
-
-    finishedWrites.store(true);
-
-    for (auto &future : readerFutures)
-    {
-        if (future.valid())
-        {
-            numReads += future.get();
-        }
-        else
-        {
-            LOGC("Invalid reader future found");
-            return false;
-        }
-    }
-
-    LOGC("Finished %u writer / %u reader test with %u writes / %u reads",
-        numWriters, numReaders, numWrites, numReads);
-
-    return (numWrites == numReads);
-}
-
-//=============================================================================
-int main()
-{
-    int numErrors = 0;
-
-    if (RunEmptyQueueUponCreationTest())
-    {
-        LOGC("Empty queue upon creation test passed");
-    }
-    else
-    {
-        LOGC("Empty queue upon creation test failed");
-        ++numErrors;
-    }
-
-    if (RunPopFromEmptyQueueTest())
-    {
-        LOGC("Pop from empty queue test passed");
-    }
-    else
-    {
-        LOGC("Pop from empty queue test failed");
-        ++numErrors;
-    }
-
-    if (RunSingleThreadedTest())
-    {
-        LOGC("Single threaded test passed");
-    }
-    else
-    {
-        LOGC("Single threaded test failed");
-        ++numErrors;
-    }
-
-    if (RunMultiThreadedTest(1, 1))
-    {
-        LOGC("Single writer, single reader test passed");
-    }
-    else
-    {
-        LOGC("Single writer, single reader test failed");
-        ++numErrors;
-    }
-
-    if (RunMultiThreadedTest(1, 100))
-    {
-        LOGC("Single writer, multi reader test passed");
-    }
-    else
-    {
-        LOGC("Single writer, multi reader test failed");
-        ++numErrors;
-    }
-
-    if (RunMultiThreadedTest(100, 1))
-    {
-        LOGC("Multi writer, single reader test passed");
-    }
-    else
-    {
-        LOGC("Multi writer, single reader test failed");
-        ++numErrors;
-    }
-
-    if (RunMultiThreadedTest(100, 100))
-    {
-        LOGC("Multi writer, multi reader test passed");
-    }
-    else
-    {
-        LOGC("Multi writer, multi reader test failed");
-        ++numErrors;
-    }
-
-    return numErrors;
+    RunMultiThreadedTest(1, 1);
+    RunMultiThreadedTest(1, 100);
+    RunMultiThreadedTest(100, 1);
+    RunMultiThreadedTest(100, 100);
 }

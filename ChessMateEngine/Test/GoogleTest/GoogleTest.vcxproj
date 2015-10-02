@@ -75,22 +75,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)\include;$(ProjectDir);$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Build\release-x64\$(TargetName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\release-x64\$(TargetName)\obj\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build\release-x86\$(TargetName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\release-x86\$(TargetName)\obj\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
     <IncludePath>$(ProjectDir)\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Build\debug-x86\$(TargetName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\debug-x86\$(TargetName)\obj\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
     <IncludePath>$(ProjectDir)\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Build\debug-x64\$(TargetName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\debug-x64\$(TargetName)\obj\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
     <IncludePath>$(ProjectDir)\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
