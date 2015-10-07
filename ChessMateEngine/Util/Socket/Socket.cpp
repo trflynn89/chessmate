@@ -12,7 +12,7 @@ std::atomic_int Socket::s_aNumSockets(0);
 
 //=============================================================================
 Socket::Socket() :
-    m_socketHandle(-1),
+    m_socketHandle(0),
     m_clientIp(-1),
     m_clientPort(-1),
     m_isAsync(false),

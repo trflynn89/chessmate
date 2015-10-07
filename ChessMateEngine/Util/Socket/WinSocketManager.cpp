@@ -8,21 +8,30 @@
 namespace Util {
 
 //=============================================================================
+std::atomic_int SocketManagerImpl::s_socketManagerCount(0);
+
+//=============================================================================
 SocketManagerImpl::SocketManagerImpl() : SocketManager()
 {
-    WORD version = MAKEWORD(2, 2);
-    WSADATA wsadata;
-
-    if (WSAStartup(version, &wsadata) != 0)
+    if (s_socketManagerCount.fetch_add(1) == 0)
     {
-        WSACleanup();
+        WORD version = MAKEWORD(2, 2);
+        WSADATA wsadata;
+
+        if (WSAStartup(version, &wsadata) != 0)
+        {
+            WSACleanup();
+        }
     }
 }
 
 //=============================================================================
 SocketManagerImpl::~SocketManagerImpl()
 {
-    WSACleanup();
+    if (s_socketManagerCount.fetch_sub(1) == 1)
+    {
+        WSACleanup();
+    }
 }
 
 //=============================================================================

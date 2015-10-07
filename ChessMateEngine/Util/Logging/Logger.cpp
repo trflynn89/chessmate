@@ -97,6 +97,13 @@ void Logger::AddLog(LogLevel level, int gameId, const char *func,
     {
         spLogger->addLog(level, gameId, func, line, message);
     }
+    else
+    {
+        std::string console = Util::String::Format("%d %d %s:%d %s",
+            level, gameId, func, line, message);
+
+        ConsoleLog(console);
+    }
 }
 
 //=============================================================================

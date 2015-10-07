@@ -78,7 +78,7 @@ SocketPtr SocketManager::CreateTcpSocket()
 }
 
 //=============================================================================
-SocketPtr SocketManager::CreateAsyncTcpSocket()
+SocketWPtr SocketManager::CreateAsyncTcpSocket()
 {
     SocketPtr spSocket = CreateTcpSocket();
 
@@ -112,7 +112,7 @@ SocketPtr SocketManager::CreateUdpSocket()
 }
 
 //=============================================================================
-SocketPtr SocketManager::CreateAsyncUdpSocket()
+SocketWPtr SocketManager::CreateAsyncUdpSocket()
 {
     SocketPtr spSocket = CreateUdpSocket();
 

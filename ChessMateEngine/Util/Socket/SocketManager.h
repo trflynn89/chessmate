@@ -72,11 +72,12 @@ public:
     SocketPtr CreateTcpSocket();
 
     /**
-     * Create and initialize an asynchronous TCP socket.
+     * Create and initialize an asynchronous TCP socket. The socket manager
+     * will own this socket.
      *
-     * @return Shared pointer to the socket.
+     * @return Weak pointer to the socket.
      */
-    SocketPtr CreateAsyncTcpSocket();
+    SocketWPtr CreateAsyncTcpSocket();
 
     /**
      * Create and initialize a synchronous UDP socket.
@@ -86,11 +87,12 @@ public:
     SocketPtr CreateUdpSocket();
 
     /**
-     * Create and initialize an asynchronous UDP socket.
+     * Create and initialize an asynchronous UDP socket. The socket manager
+     * will own this socket.
      *
-     * @return Shared pointer to the socket.
+     * @return Weak pointer to the socket.
      */
-    SocketPtr CreateAsyncUdpSocket();
+    SocketWPtr CreateAsyncUdpSocket();
 
     /**
      * Wait for an asynchronous connect to complete.

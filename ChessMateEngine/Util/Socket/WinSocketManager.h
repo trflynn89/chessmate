@@ -1,9 +1,11 @@
 #pragma once
 
-#include "SocketManager.h"
+#include <atomic>
 
 #include <Winsock2.h>
 #include <Windows.h>
+
+#include "SocketManager.h"
 
 namespace Util {
 
@@ -26,6 +28,8 @@ private:
     bool setReadAndWriteMasks(fd_set *, fd_set *);
     void handleSocketIO(fd_set *, fd_set *);
     SocketPtr acceptNewClient(const SocketPtr &);
+
+    static std::atomic_int s_socketManagerCount;
 };
 
 }

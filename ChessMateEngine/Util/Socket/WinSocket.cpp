@@ -31,7 +31,7 @@ void SocketImpl::Close()
     if (IsValid())
     {
         ::closesocket(m_socketHandle);
-        m_socketHandle = -1;
+        m_socketHandle = 0;
     }
 }
 

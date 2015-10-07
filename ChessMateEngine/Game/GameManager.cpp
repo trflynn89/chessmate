@@ -130,7 +130,8 @@ bool GameManager::createAcceptSocket(int acceptPort)
 
     if (spSocketManager)
     {
-        spSocket = spSocketManager->CreateAsyncTcpSocket();
+        Util::SocketWPtr wpSocket = spSocketManager->CreateAsyncTcpSocket();
+        spSocket = wpSocket.lock();
     }
 
     if (spSocket)
