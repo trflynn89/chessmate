@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include <gtest/gtest.h>
 
@@ -14,29 +15,92 @@
 //=============================================================================
 class SocketTest : public ::testing::Test
 {
-protected:
+public:
     SocketTest() :
         m_spServerSocketManager(std::make_shared<Util::SocketManagerImpl>()),
         m_spClientSocketManager(std::make_shared<Util::SocketManagerImpl>()),
-        m_wpClientSocket(m_spClientSocketManager->CreateAsyncTcpSocket())
+        m_message(Util::String::GenerateRandomString(128 << 10)),
+        m_host("localhost"),
+        m_port(12390)
     {
     }
 
     /**
-     * Start the socket managers, create an accept socket (to mimic the server
-     * side), and connect the send socket (to mimic the client side).
+     * Thread to run server functions do handle accepting a client socket and
+     * receiving data from it.
+     */
+    void ServerThread(bool doAsync)
+    {
+        Util::SocketPtr spAcceptSocket = CreateSocket(m_spServerSocketManager, doAsync);
+        ASSERT_TRUE(spAcceptSocket && spAcceptSocket->IsValid());
+        ASSERT_EQ(spAcceptSocket->IsAsync(), doAsync);
+
+        ASSERT_TRUE(spAcceptSocket->BindForReuse(Util::Socket::InAddrAny(), m_port));
+        ASSERT_TRUE(spAcceptSocket->Listen());
+
+        if (doAsync)
+        {
+            Util::AsyncRequest request;
+            std::chrono::seconds waitTime(120);
+
+            ASSERT_TRUE(m_spServerSocketManager->WaitForCompletedReceive(request, waitTime));
+            ASSERT_EQ(m_message, request.GetRequest());
+        }
+        else
+        {
+            Util::SocketPtr spRecvSocket = spAcceptSocket->Accept();
+            ASSERT_EQ(spRecvSocket->Recv(), m_message);
+        }
+    }
+
+    /**
+     * Thread to run client functions to connect to the server socket and send
+     * data to it.
+     */
+    void ClientThread(bool doAsync)
+    {
+        Util::SocketPtr spSendSocket = CreateSocket(m_spClientSocketManager, doAsync);
+        ASSERT_TRUE(spSendSocket && spSendSocket->IsValid());
+        ASSERT_EQ(spSendSocket->IsAsync(), doAsync);
+
+        if (doAsync)
+        {
+            Util::Socket::ConnectedState state = spSendSocket->ConnectAsync(m_host, m_port);
+            ASSERT_NE(state, Util::Socket::NOT_CONNECTED);
+
+            if (state == Util::Socket::CONNECTING)
+            {
+                Util::AsyncConnect connect;
+                std::chrono::seconds waitTime(1);
+                ASSERT_TRUE(m_spClientSocketManager->WaitForCompletedConnect(connect, waitTime));
+            }
+
+            Util::AsyncRequest request;
+            std::chrono::seconds waitTime(120);
+
+            ASSERT_TRUE(spSendSocket->SendAsync(m_message));
+            ASSERT_TRUE(m_spClientSocketManager->WaitForCompletedSend(request, waitTime));
+            ASSERT_EQ(m_message, request.GetRequest());
+        }
+        else
+        {
+            ASSERT_TRUE(spSendSocket->Connect(m_host, m_port));
+            ASSERT_EQ(spSendSocket->Send(m_message), m_message.length());
+        }
+    }
+
+protected:
+    /**
+     * Start the socket managers.
      */
     void SetUp()
     {
         m_spServerSocketManager->StartSocketManager();
         m_spClientSocketManager->StartSocketManager();
-
-        createAcceptSocket(12390);
-        connectSendSocket("localhost", 12390);
     }
 
     /**
-     * Stop the socket managers and flush the logger.
+     * Stop the socket managers.
      */
     void TearDown()
     {
@@ -45,94 +109,77 @@ protected:
     }
 
     /**
-     * Send a message with the given length across the previously connected
-     * socket. Ensure the message received is the same as the message sent.
+     * Create either a synchronous or an asynchronous socket.
      */
-    void RunSendRecvTest(unsigned int messageLength)
+    Util::SocketPtr CreateSocket(const Util::SocketManagerPtr &spSocketManager, bool doAsync)
     {
-        Util::SocketPtr spSocket = m_wpClientSocket.lock();
-        ASSERT_TRUE(spSocket && spSocket->IsValid());
+        Util::SocketPtr spSocket;
 
-        LOGC("Generating message of length %u", messageLength);
-        const std::string message = Util::String::GenerateRandomString(messageLength);
-
-        LOGC("Client sending message of length %u", message.length());
-        auto startTime = std::chrono::high_resolution_clock::now();
-
-        ASSERT_TRUE(spSocket->SendAsync(message));
-
-        Util::AsyncRequest request;
-        std::chrono::seconds waitTime(120);
-        ASSERT_TRUE(m_spServerSocketManager->WaitForCompletedReceive(request, waitTime));
-         
-        auto endTime = std::chrono::high_resolution_clock::now();
-
-        std::string received = request.GetRequest();
-        double bytesReceived = static_cast<double>(received.length());
-
-        typedef std::chrono::duration<double> dms;
-        auto recvTime = std::chrono::duration_cast<dms>(endTime - startTime);
-        double throughput = bytesReceived / 1024.0 / recvTime.count();
-
-        LOGC("Server received message of length %u, average throughput of %f KBps",
-            bytesReceived, throughput);
-
-        ASSERT_EQ(message, received);
-    }
-
-private:
-    /**
-     * Create an asynchronous TCP socket to be used as the socket manager's
-     * accept socket.
-     */
-    void createAcceptSocket(int acceptPort)
-    {
-        Util::SocketWPtr wpSocket = m_spServerSocketManager->CreateAsyncTcpSocket();
-        Util::SocketPtr spSocket = wpSocket.lock();
-
-        if (spSocket)
+        if (doAsync)
         {
-            ASSERT_TRUE(spSocket->BindForReuse(Util::Socket::InAddrAny(), acceptPort));
-            ASSERT_TRUE(spSocket->Listen());
+            Util::SocketWPtr wpSocket = spSocketManager->CreateAsyncTcpSocket();
+            spSocket = wpSocket.lock();
+        }
+        else
+        {
+            spSocket = spSocketManager->CreateTcpSocket();
         }
 
-        ASSERT_TRUE(spSocket && spSocket->IsListening());
-    }
-
-    /**
-     * Aynchnously connect the TCP socket to be used for sending messages.
-     */
-    void connectSendSocket(std::string host, int port)
-    {
-        Util::SocketPtr spSocket = m_wpClientSocket.lock();
-        ASSERT_TRUE(spSocket && spSocket->IsValid());
-
-        Util::Socket::ConnectedState state = spSocket->ConnectAsync(host, port);
-        ASSERT_NE(state, Util::Socket::NOT_CONNECTED);
-
-        if (state == Util::Socket::CONNECTING)
-        {
-            Util::AsyncConnect connect;
-            std::chrono::seconds waitTime(1);
-
-            ASSERT_TRUE(m_spClientSocketManager->WaitForCompletedConnect(connect, waitTime));
-            ASSERT_TRUE(spSocket->IsConnected());
-        }
+        return spSocket;
     }
 
     Util::SocketManagerPtr m_spServerSocketManager;
     Util::SocketManagerPtr m_spClientSocketManager;
-    Util::SocketWPtr m_wpClientSocket;
+
+    std::string m_message;
+    std::string m_host;
+    int m_port;
 };
 
-//=============================================================================
-TEST_F(SocketTest, SmallSendRecvTest)
+/**
+ * Test a synchronous server with a synchronous client.
+ */
+TEST_F(SocketTest, SyncServer_SyncClient_Test)
 {
-    RunSendRecvTest(128);
+    auto server = std::async(std::launch::async, &SocketTest::ServerThread, this, false);
+    auto client = std::async(std::launch::async, &SocketTest::ClientThread, this, false);
+
+    ASSERT_TRUE(server.valid() && client.valid());
+    client.get(); server.get();
 }
 
-//=============================================================================
-TEST_F(SocketTest, LargeSendRecvTest)
+/**
+ * Test an asynchronous server with a synchronous client.
+ */
+TEST_F(SocketTest, AsyncServer_SyncClient_Test)
 {
-    RunSendRecvTest(128 << 10);
+    auto server = std::async(std::launch::async, &SocketTest::ServerThread, this, true);
+    auto client = std::async(std::launch::async, &SocketTest::ClientThread, this, false);
+
+    ASSERT_TRUE(server.valid() && client.valid());
+    client.get(); server.get();
+}
+
+/**
+ * Test a synchronous server with an asynchronous client.
+ */
+TEST_F(SocketTest, SyncServer_AsyncClient_Test)
+{
+    auto server = std::async(std::launch::async, &SocketTest::ServerThread, this, false);
+    auto client = std::async(std::launch::async, &SocketTest::ClientThread, this, true);
+
+    ASSERT_TRUE(server.valid() && client.valid());
+    client.get(); server.get();
+}
+
+/**
+ * Test an asynchronous server with an asynchronous client.
+ */
+TEST_F(SocketTest, AsyncServer_AsyncClient_Test)
+{
+    auto server = std::async(std::launch::async, &SocketTest::ServerThread, this, true);
+    auto client = std::async(std::launch::async, &SocketTest::ClientThread, this, true);
+
+    ASSERT_TRUE(server.valid() && client.valid());
+    client.get(); server.get();
 }

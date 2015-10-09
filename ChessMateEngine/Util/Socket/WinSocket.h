@@ -42,7 +42,7 @@ public:
     size_t Send(const std::string &, bool &) const;
 
     std::string Recv() const;
-    std::string Recv(bool &) const;
+    std::string Recv(bool &, bool &) const;
 };
 
 }

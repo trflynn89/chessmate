@@ -118,11 +118,9 @@ Socket::ConnectedState Socket::ConnectAsync(std::string hostname, int port)
 //=============================================================================
 bool Socket::SendAsync(const std::string &msg)
 {
-    static const std::string eom(1, s_socketEoM);
-
     if (IsAsync())
     {
-        AsyncRequest request(m_socketId, msg + eom);
+        AsyncRequest request(m_socketId, msg);
         m_pendingSends.Push(request);
 
         return true;
@@ -205,10 +203,11 @@ void Socket::ServiceSendRequests(AsyncRequest::RequestQueue &completedSends)
 void Socket::ServiceRecvRequests(AsyncRequest::RequestQueue &completedReceives)
 {
     bool wouldBlock = false;
+    bool isComplete = false;
 
     while (IsValid() && !wouldBlock)
     {
-        std::string received = Recv(wouldBlock);
+        std::string received = Recv(wouldBlock, isComplete);
 
         if (received.length() > 0)
         {
@@ -217,12 +216,13 @@ void Socket::ServiceRecvRequests(AsyncRequest::RequestQueue &completedReceives)
 
             m_receiveBuffer += received;
 
-            for (std::string &message : splitReceiveBuffer())
+            if (isComplete)
             {
-                LOGD(m_socketId, "Completed message, %u bytes", message.length());
+                LOGD(m_socketId, "Completed message, %u bytes", m_receiveBuffer.length());
 
-                AsyncRequest request(m_socketId, message);
+                AsyncRequest request(m_socketId, m_receiveBuffer);
                 completedReceives.Push(request);
+                m_receiveBuffer.clear();
             }
         }
         else if (wouldBlock)
@@ -236,26 +236,6 @@ void Socket::ServiceRecvRequests(AsyncRequest::RequestQueue &completedReceives)
             Close();
         }
     }
-}
-
-//=============================================================================
-std::vector<std::string> Socket::splitReceiveBuffer()
-{
-    std::vector<std::string> messages = String::Split(m_receiveBuffer, s_socketEoM);
-
-    // Check if the buffer ends with a complete message
-    // If not, keep the last part in the buffer
-    if (m_receiveBuffer.rfind(s_socketEoM) != (m_receiveBuffer.length() - 1))
-    {
-        m_receiveBuffer = messages.back();
-        messages.pop_back();
-    }
-    else
-    {
-        m_receiveBuffer.clear();
-    }
-
-    return messages;
 }
 
 }

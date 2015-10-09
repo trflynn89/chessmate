@@ -173,14 +173,15 @@ SocketPtr SocketImpl::Accept() const
 //=============================================================================
 size_t SocketImpl::Send(const std::string &msg) const
 {
-    bool ignore;
-    return Send(msg, ignore);
+    bool wouldBlock = false;
+    return Send(msg, wouldBlock);
 }
 
 //=============================================================================
 size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
-    std::string toSend = msg;
+    static const std::string eom(1, Socket::s_socketEoM);
+    std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
     size_t bytesSent = 0;
@@ -204,9 +205,16 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 
         if (currSent > 0)
         {
-            toSend = toSend.substr(currSent, std::string::npos);
-            bytesSent += currSent;
+            if (toSend[currSent - 1] == Socket::s_socketEoM)
+            {
+                bytesSent += currSent - 1;
+            }
+            else
+            {
+                bytesSent += currSent;
+            }
 
+            toSend = toSend.substr(currSent, std::string::npos);
             keepSending = (toSend.length() > 0);
         }
         else
@@ -227,17 +235,18 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 //=============================================================================
 std::string SocketImpl::Recv() const
 {
-    bool ignore;
-    return Recv(ignore);
+    bool wouldBlock = false, isComplete = false;
+    return Recv(wouldBlock, isComplete);
 }
 
 //=============================================================================
-std::string SocketImpl::Recv(bool &wouldBlock) const
+std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 {
-    std::string ret;
-
     wouldBlock = false;
+    isComplete = false;
+
     bool keepReading = true;
+    std::string ret;
 
     while (keepReading)
     {
@@ -248,6 +257,13 @@ std::string SocketImpl::Recv(bool &wouldBlock) const
 
         if (bytesRead > 0)
         {
+            if (buff[bytesRead - 1] == Socket::s_socketEoM)
+            {
+                keepReading = false;
+                isComplete = true;
+                --bytesRead;
+            }
+
             ret.append(buff, bytesRead);
         }
         else

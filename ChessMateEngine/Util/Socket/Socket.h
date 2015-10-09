@@ -178,6 +178,7 @@ public:
      * Write data on the socket.
      *
      * @param string The data to send.
+     *
      * @return The number of bytes sent.
      */
     virtual size_t Send(const std::string &) const = 0;
@@ -187,6 +188,7 @@ public:
      *
      * @param string The data to send.
      * @param bool & Reference to a bool, set to true if the operation would block.
+     *
      * @return The number of bytes sent.
      */
     virtual size_t Send(const std::string &, bool &) const = 0;
@@ -196,6 +198,7 @@ public:
      * an ansynchronous socket, nothing will occur.
      *
      * @param string The data to send.
+     *
      * @return True if the request was made.
      */
     bool SendAsync(const std::string &);
@@ -211,9 +214,11 @@ public:
      * Read data on this socket until '\n' is received.
      *
      * @param bool & Reference to a bool, set to true if the operation would block.
+     * @param bool & Reference to a bool, set to true if the EoM char was received.
+     *
      * @return The data received.
      */
-    virtual std::string Recv(bool &) const = 0;
+    virtual std::string Recv(bool &, bool &) const = 0;
 
     /**
      * Iterate thru all pending asynchronous connects. Check if the socket is
@@ -259,8 +264,6 @@ protected:
     std::atomic<Socket::ConnectedState> m_aConnectedState;
 
 private:
-    std::vector<std::string> splitReceiveBuffer();
-
     static std::atomic_int s_aNumSockets;
     int m_socketId;
 
