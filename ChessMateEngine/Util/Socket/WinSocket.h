@@ -18,15 +18,12 @@ DEFINE_CLASS_PTRS(SocketImpl);
 class SocketImpl : public Socket
 {
 public:
-    SocketImpl();
+    SocketImpl(int);
     ~SocketImpl();
 
     static int InAddrAny();
 
     void Close();
-
-    bool InitTcpSocket();
-    bool InitUdpSocket();
 
     bool IsErrorFree();
 
@@ -41,8 +38,14 @@ public:
     size_t Send(const std::string &) const;
     size_t Send(const std::string &, bool &) const;
 
+    size_t SendTo(const std::string &, const std::string &, int) const;
+    size_t SendTo(const std::string &, const std::string &, int, bool &) const;
+
     std::string Recv() const;
     std::string Recv(bool &, bool &) const;
+
+    std::string RecvFrom() const;
+    std::string RecvFrom(bool &, bool &) const;
 };
 
 }

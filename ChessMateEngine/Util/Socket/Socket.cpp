@@ -11,7 +11,8 @@ const char Socket::s_socketEoM = 0x04;
 std::atomic_int Socket::s_aNumSockets(0);
 
 //=============================================================================
-Socket::Socket() :
+Socket::Socket(int socketType) :
+    m_socketType(socketType),
     m_socketHandle(0),
     m_clientIp(-1),
     m_clientPort(-1),
@@ -87,7 +88,7 @@ Socket::ConnectedState Socket::ConnectAsync(std::string hostname, int port)
 {
     Socket::ConnectedState state = NOT_CONNECTED;
 
-    if (IsAsync())
+    if ((m_socketType == Socket::SOCKET_TCP) && IsAsync())
     {
         if (Connect(hostname, port))
         {
@@ -118,9 +119,27 @@ Socket::ConnectedState Socket::ConnectAsync(std::string hostname, int port)
 //=============================================================================
 bool Socket::SendAsync(const std::string &msg)
 {
-    if (IsAsync())
+    if ((m_socketType == Socket::SOCKET_TCP) && IsAsync())
     {
         AsyncRequest request(m_socketId, msg);
+        m_pendingSends.Push(request);
+
+        return true;
+    }
+
+    return false;
+}
+
+//=============================================================================
+bool Socket::SendToAsync(
+    const std::string &msg,
+    const std::string &hostname,
+    int port
+)
+{
+    if ((m_socketType == Socket::SOCKET_UDP) && IsAsync())
+    {
+        AsyncRequest request(m_socketId, msg, hostname, port);
         m_pendingSends.Push(request);
 
         return true;
@@ -176,7 +195,19 @@ void Socket::ServiceSendRequests(AsyncRequest::RequestQueue &completedSends)
         if (request.IsValid())
         {
             const std::string &msg = request.GetRequest();
-            size_t bytesSent = Send(msg, wouldBlock);
+            size_t bytesSent = 0;
+
+            if (m_socketType == Socket::SOCKET_TCP)
+            {
+                bytesSent = Send(msg, wouldBlock);
+            }
+            else
+            {
+                const std::string &hostname = request.GetHostname();
+                int port = request.GetPort();
+
+                bytesSent = SendTo(msg, hostname, port, wouldBlock);
+            }
 
             if (bytesSent == msg.length())
             {
@@ -207,7 +238,16 @@ void Socket::ServiceRecvRequests(AsyncRequest::RequestQueue &completedReceives)
 
     while (IsValid() && !wouldBlock)
     {
-        std::string received = Recv(wouldBlock, isComplete);
+        std::string received;
+
+        if (m_socketType == Socket::SOCKET_TCP)
+        {
+            received = Recv(wouldBlock, isComplete);
+        }
+        else
+        {
+            received = RecvFrom(wouldBlock, isComplete);
+        }
 
         if (received.length() > 0)
         {

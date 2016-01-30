@@ -6,11 +6,45 @@
 
 #include <Util/Logging/Logger.h>
 
+namespace
+{
+    static const int s_packetLen = 4096;
+
+    struct sockaddr_in HostToSockAddr(const std::string &hostname, int port)
+    {
+        struct hostent *ipaddr = gethostbyname(hostname.c_str());
+        struct sockaddr_in addr;
+
+        if (ipaddr != NULL)
+        {
+            memset(&addr, 0, sizeof(addr));
+            addr.sin_family = AF_INET;
+            memcpy((char *)&addr.sin_addr, ipaddr->h_addr, ipaddr->h_length);
+            addr.sin_port = htons(port);
+        }
+
+        return addr;
+    }
+}
+
 namespace Util {
 
 //=============================================================================
-SocketImpl::SocketImpl() : Socket()
+SocketImpl::SocketImpl(int socketType) : Socket(socketType)
 {
+    switch (socketType)
+    {
+    case Socket::SOCKET_TCP:
+        m_socketHandle = ::socket(AF_INET, SOCK_STREAM, 0);
+        break;
+
+    case Socket::SOCKET_UDP:
+        m_socketHandle = ::socket(AF_INET, SOCK_DGRAM, 0);
+        break;
+
+    default:
+        break;
+    }
 }
 
 //=============================================================================
@@ -33,20 +67,6 @@ void SocketImpl::Close()
         ::closesocket(m_socketHandle);
         m_socketHandle = 0;
     }
-}
-
-//=============================================================================
-bool SocketImpl::InitTcpSocket()
-{
-    m_socketHandle = ::socket(AF_INET, SOCK_STREAM, 0);
-    return IsValid();
-}
-
-//=============================================================================
-bool SocketImpl::InitUdpSocket()
-{
-    m_socketHandle = ::socket(AF_INET, SOCK_DGRAM, 0);
-    return IsValid();
 }
 
 //=============================================================================
@@ -101,33 +121,23 @@ bool SocketImpl::BindForReuse(int addr, int port) const
 //=============================================================================
 bool SocketImpl::Listen()
 {
-    m_isListening = (::listen(m_socketHandle, 100) == 0);
+    m_isListening = ((m_socketType == Socket::SOCKET_TCP) && (::listen(m_socketHandle, 100) == 0));
     return m_isListening;
 }
 
 //=============================================================================
 bool SocketImpl::Connect(const std::string &hostname, int port)
 {
-    if (m_aConnectedState.load() != Socket::NOT_CONNECTED)
+    if (m_socketType != Socket::SOCKET_TCP)
+    {
+        return false;
+    }
+    else if (m_aConnectedState.load() != Socket::NOT_CONNECTED)
     {
         return false;
     }
 
-    // Convert hostname to IP
-    struct hostent *serverIP = gethostbyname(hostname.c_str());
-
-    if (serverIP == NULL)
-    {
-        return false;
-    }
-
-    // Construct the server address structure
-    struct sockaddr_in server;
-
-    memset(&server, 0, sizeof(server));
-    server.sin_family = AF_INET;
-    memcpy((char *)&server.sin_addr, serverIP->h_addr, serverIP->h_length);
-    server.sin_port = htons(port);
+    struct sockaddr_in server = HostToSockAddr(hostname, port);
 
     if (::connect(m_socketHandle, (struct sockaddr *)&server, sizeof(server)) != 0)
     {
@@ -148,7 +158,12 @@ bool SocketImpl::Connect(const std::string &hostname, int port)
 //=============================================================================
 SocketPtr SocketImpl::Accept() const
 {
-    SocketImplPtr ret = std::make_shared<SocketImpl>();
+    SocketImplPtr ret = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
+
+    if (m_socketType != Socket::SOCKET_TCP)
+    {
+        return ret;
+    }
 
     struct sockaddr_in client;
     int clientLen = sizeof(client);
@@ -180,6 +195,11 @@ size_t SocketImpl::Send(const std::string &msg) const
 //=============================================================================
 size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
+    if (m_socketType != Socket::SOCKET_TCP)
+    {
+        return 0;
+    }
+
     static const std::string eom(1, Socket::s_socketEoM);
     std::string toSend = msg + eom;
 
@@ -233,6 +253,75 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 }
 
 //=============================================================================
+size_t SocketImpl::SendTo(
+    const std::string &msg,
+    const std::string &hostname,
+    int port
+) const
+{
+    bool wouldBlock = false;
+    return SendTo(msg, hostname, port, wouldBlock);
+}
+
+//=============================================================================
+size_t SocketImpl::SendTo(
+    const std::string &msg,
+    const std::string &hostname,
+    int port,
+    bool &wouldBlock
+) const
+{
+    if (m_socketType != Socket::SOCKET_UDP)
+    {
+        return 0;
+    }
+
+    static const std::string eom(1, Socket::s_socketEoM);
+    std::string toSend = msg + eom;
+
+    bool keepSending = !toSend.empty();
+    size_t bytesSent = 0;
+
+    wouldBlock = false;
+
+    struct sockaddr_in server = HostToSockAddr(hostname, port);
+
+    while (keepSending)
+    {
+        int toSendSize = std::min(s_packetLen, static_cast<int>(toSend.size()));
+        int currSent = ::sendto(m_socketHandle, toSend.c_str(), toSendSize, 0,
+            (struct sockaddr *)&server, sizeof(server));
+
+        if (currSent > 0)
+        {
+            if (toSend[currSent - 1] == Socket::s_socketEoM)
+            {
+                bytesSent += currSent - 1;
+            }
+            else
+            {
+                bytesSent += currSent;
+            }
+
+            toSend = toSend.substr(currSent, std::string::npos);
+            keepSending = (toSend.length() > 0);
+        }
+        else
+        {
+            int error = WSAGetLastError();
+            keepSending = false;
+
+            if ((currSent == -1) && (error == WSAEWOULDBLOCK))
+            {
+                wouldBlock = true;
+            }
+        }
+    }
+
+    return bytesSent;
+}
+
+//=============================================================================
 std::string SocketImpl::Recv() const
 {
     bool wouldBlock = false, isComplete = false;
@@ -242,6 +331,11 @@ std::string SocketImpl::Recv() const
 //=============================================================================
 std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 {
+    if (m_socketType != Socket::SOCKET_TCP)
+    {
+        return 0;
+    }
+
     wouldBlock = false;
     isComplete = false;
 
@@ -250,10 +344,67 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 
     while (keepReading)
     {
-        static const int buffLen = 4096;
-        char *buff = (char *)calloc(1, buffLen * sizeof(char));
+        char *buff = (char *)calloc(1, s_packetLen * sizeof(char));
+        int bytesRead = ::recv(m_socketHandle, buff, s_packetLen, 0);
 
-        int bytesRead = ::recv(m_socketHandle, buff, buffLen, 0);
+        if (bytesRead > 0)
+        {
+            if (buff[bytesRead - 1] == Socket::s_socketEoM)
+            {
+                keepReading = false;
+                isComplete = true;
+                --bytesRead;
+            }
+
+            ret.append(buff, bytesRead);
+        }
+        else
+        {
+            int error = WSAGetLastError();
+            keepReading = false;
+
+            if ((bytesRead == -1) && (error == WSAEWOULDBLOCK))
+            {
+                wouldBlock = true;
+            }
+        }
+
+        free(buff);
+    }
+
+    return ret;
+}
+
+//=============================================================================
+std::string SocketImpl::RecvFrom() const
+{
+    bool wouldBlock = false, isComplete = false;
+    return RecvFrom(wouldBlock, isComplete);
+}
+
+//=============================================================================
+std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
+{
+    if (m_socketType != Socket::SOCKET_UDP)
+    {
+        return 0;
+    }
+
+    wouldBlock = false;
+    isComplete = false;
+
+    bool keepReading = true;
+    std::string ret;
+
+    struct sockaddr_in client;
+    int clientLen = sizeof(client);
+
+    struct sockaddr *sockAddr = reinterpret_cast<sockaddr *>(&client);
+
+    while (keepReading)
+    {
+        char *buff = (char *)calloc(1, s_packetLen * sizeof(char));
+        int bytesRead = ::recvfrom(m_socketHandle, buff, s_packetLen, 0, sockAddr, &clientLen);
 
         if (bytesRead > 0)
         {

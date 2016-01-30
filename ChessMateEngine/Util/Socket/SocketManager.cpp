@@ -67,9 +67,9 @@ void SocketManager::ClearClientCallbacks()
 //=============================================================================
 SocketPtr SocketManager::CreateTcpSocket()
 {
-    SocketPtr spSocket = std::make_shared<SocketImpl>();
+    SocketPtr spSocket = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
 
-    if (!spSocket->InitTcpSocket())
+    if (!spSocket->IsValid())
     {
         spSocket.reset();
     }
@@ -101,9 +101,9 @@ SocketWPtr SocketManager::CreateAsyncTcpSocket()
 //=============================================================================
 SocketPtr SocketManager::CreateUdpSocket()
 {
-    SocketPtr spSocket = std::make_shared<SocketImpl>();
+    SocketPtr spSocket = std::make_shared<SocketImpl>(Socket::SOCKET_UDP);
 
-    if (!spSocket->InitUdpSocket())
+    if (!spSocket->IsValid())
     {
         spSocket.reset();
     }

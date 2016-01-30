@@ -70,15 +70,32 @@ public:
     /**
      * Constructor to set the ID of the owning socket and the request message.
      */
-    AsyncRequest(int, std::string);
+    AsyncRequest(int, const std::string &);
+
+    /**
+     * Constructor to set the ID of the owning socket and the request message.
+     */
+    AsyncRequest(int, const std::string &, const std::string &, int);
 
     /**
      * @return The request message - the message to be sent or received.
      */
     std::string GetRequest() const;
 
+    /**
+     * @return The request hostname (for UDP sockets).
+     */
+    std::string GetHostname() const;
+
+    /**
+     * @return The request port (for UDP sockets).
+     */
+    int GetPort() const;
+
 private:
     std::string m_request;
+    std::string m_hostname;
+    int m_port;
 };
 
 /**

@@ -23,6 +23,15 @@ class Socket
 {
 public:
     /**
+     * Types of supported sockets.
+     */
+    enum SocketType
+    {
+        SOCKET_TCP,
+        SOCKET_UDP
+    };
+
+    /**
      * Enumerated connection state values.
      */
     enum ConnectedState
@@ -40,7 +49,7 @@ public:
     /**
      * Default constructor to initialize all values.
      */
-    Socket();
+    Socket(int);
 
     /**
      * INADDR_ANY may be different depending on the OS. This function will
@@ -56,16 +65,6 @@ public:
      * @return True if this is a valid socket, false otherwise.
      */
     bool IsValid() const;
-
-    /**
-     * Create a TCP socket.
-     */
-    virtual bool InitTcpSocket() = 0;
-
-    /**
-     * Create a UDP socket.
-     */
-    virtual bool InitUdpSocket() = 0;
 
     /**
      * Check if there is any errors on the socket.
@@ -194,6 +193,25 @@ public:
     virtual size_t Send(const std::string &, bool &) const = 0;
 
     /**
+     * Write data on the socket.
+     *
+     * @param string The data to send.
+     *
+     * @return The number of bytes sent.
+     */
+    virtual size_t SendTo(const std::string &, const std::string &, int) const = 0;
+
+    /**
+     * Write data on the socket.
+     *
+     * @param string The data to send.
+     * @param bool & Reference to a bool, set to true if the operation would block.
+     *
+     * @return The number of bytes sent.
+     */
+    virtual size_t SendTo(const std::string &, const std::string &, int, bool &) const = 0;
+
+    /**
      * Request data to be written on the socket asynchronously. If this is not
      * an ansynchronous socket, nothing will occur.
      *
@@ -202,6 +220,16 @@ public:
      * @return True if the request was made.
      */
     bool SendAsync(const std::string &);
+
+    /**
+     * Request data to be written on the socket asynchronously. If this is not
+     * an ansynchronous socket, nothing will occur.
+     *
+     * @param string The data to send.
+     *
+     * @return True if the request was made.
+     */
+    bool SendToAsync(const std::string &, const std::string &, int);
 
     /**
      * Read data on this socket until '\n' is received.
@@ -219,6 +247,23 @@ public:
      * @return The data received.
      */
     virtual std::string Recv(bool &, bool &) const = 0;
+
+    /**
+     * Read data on this socket until '\n' is received.
+     *
+     * @return The data received.
+     */
+    virtual std::string RecvFrom() const = 0;
+
+    /**
+     * Read data on this socket until '\n' is received.
+     *
+     * @param bool & Reference to a bool, set to true if the operation would block.
+     * @param bool & Reference to a bool, set to true if the EoM char was received.
+     *
+     * @return The data received.
+     */
+    virtual std::string RecvFrom(bool &, bool &) const = 0;
 
     /**
      * Iterate thru all pending asynchronous connects. Check if the socket is
@@ -247,6 +292,9 @@ public:
     void ServiceRecvRequests(AsyncRequest::RequestQueue &);
 
 protected:
+    // Socket type
+    int m_socketType;
+
     // File descriptor for this socket.
     size_t m_socketHandle;
 
