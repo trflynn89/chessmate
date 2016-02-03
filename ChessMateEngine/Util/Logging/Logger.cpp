@@ -204,9 +204,13 @@ std::string Logger::getSystemTime()
 {
     auto sys = std::chrono::system_clock::now();
     time_t now = std::chrono::system_clock::to_time_t(sys);
-
     struct tm timeVal;
+
+#if defined(BUILD_WINDOWS)
     localtime_s(&timeVal, &now);
+#elif defined(BUILD_LINUX)
+    localtime_r(&now, &timeVal);
+#endif
 
     char timeStr[32];
     size_t len = strftime(timeStr, sizeof(timeStr),

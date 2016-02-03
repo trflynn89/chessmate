@@ -66,6 +66,9 @@ public:
      */
     bool IsValid() const;
 
+    bool IsTcp() const;
+    bool IsUdp() const;
+
     /**
      * Check if there is any errors on the socket.
      */

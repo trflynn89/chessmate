@@ -42,6 +42,18 @@ bool Socket::IsAsync() const
 }
 
 //=============================================================================
+bool Socket::IsTcp() const
+{
+    return (m_socketType == Socket::SOCKET_TCP);
+}
+
+//=============================================================================
+bool Socket::IsUdp() const
+{
+    return (m_socketType == Socket::SOCKET_UDP);
+}
+
+//=============================================================================
 size_t Socket::GetHandle() const
 {
     return m_socketHandle;
@@ -249,7 +261,7 @@ void Socket::ServiceRecvRequests(AsyncRequest::RequestQueue &completedReceives)
             received = RecvFrom(wouldBlock, isComplete);
         }
 
-        if (received.length() > 0)
+        if ((received.length() > 0) || isComplete)
         {
             LOGD(m_socketId, "Received %u bytes, %u in buffer",
                 received.length(), m_receiveBuffer.length());

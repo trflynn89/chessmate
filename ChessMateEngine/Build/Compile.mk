@@ -28,6 +28,12 @@ $$(strip $(1))/%.o: $(d)/%.c $$(MAKEFILES_$(d))
 	@echo "[Compile $$<]"
 	$(COMP_CC)
 
+# CC files
+$$(strip $(1))/%.o: $(d)/%.cc $$(MAKEFILES_$(d))
+	@mkdir -p $$(@D)
+	@echo "[Compile $$<]"
+	$(COMP_CXX)
+
 # C++ files
 $$(strip $(1))/%.o: $(d)/%.cpp $$(MAKEFILES_$(d))
 	@mkdir -p $$(@D)

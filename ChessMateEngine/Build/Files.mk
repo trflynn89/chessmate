@@ -12,7 +12,7 @@ OBJS :=
 # Set a source directory's source files to all C/C++ files
 define WILDCARD_SOURCES
 
-SRC_$(d) := $(wildcard $(d)/*.c) $(wildcard $(d)/*.cpp)
+SRC_$(d) := $(wildcard $(d)/*.c) $(wildcard $(d)/*.cc) $(wildcard $(d)/*.cpp)
 
 endef
 

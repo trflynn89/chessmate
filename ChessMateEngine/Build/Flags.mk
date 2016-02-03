@@ -9,6 +9,11 @@ CF_ALL := -MMD -MP
 CF_ALL += -Wall -Wextra
 CF_ALL += -I$(SOURCE_ROOT) $(SYSTEM_FLAGS)
 
+ifneq ($(findstring $(target),$(TEST_TARGETS)),)
+    CF_ALL += -isystem $(SOURCE_ROOT)/Test/GoogleTest/include
+    CF_ALL += -I$(SOURCE_ROOT)/Test/GoogleTest
+endif
+
 # Optimize release builds and add GDB symbols to debug builds
 ifeq ($(release), 1)
 	CF_ALL += -O2

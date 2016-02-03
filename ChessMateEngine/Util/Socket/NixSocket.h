@@ -2,7 +2,12 @@
 
 #include <string>
 
+#include <Util/Utilities.h>
+#include <Util/Socket/Socket.h>
+
 namespace Util {
+
+DEFINE_CLASS_PTRS(SocketImpl);
 
 /**
  * Linux implementation of the Socket interface.
@@ -10,58 +15,37 @@ namespace Util {
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 12, 2012
  */
-class SocketImpl
+class SocketImpl : public Socket
 {
 public:
-    SocketImpl();
+    SocketImpl(int);
     ~SocketImpl();
 
     static int InAddrAny();
 
     void Close();
-    bool IsValid() const;
 
-    bool InitTcpSocket();
-    bool InitUdpSocket();
+    bool IsErrorFree();
 
-    void SetAsync();
-    bool IsAsync() const;
-
-    int GetHandle() const;
-    void SetHandle(int);
-
-    int GetClientIp() const;
-    void SetClientIp(int);
-
-    int GetClientPort() const;
-    void SetClientPort(int);
+    bool SetAsync();
 
     bool Bind(int, int) const;
     bool BindForReuse(int, int) const;
     bool Listen();
-    bool IsListening() const;
-    bool Connect(std::string, int) const;
-    SocketImpl *Accept() const;
+    bool Connect(const std::string &, int);
+    SocketPtr Accept() const;
 
-    unsigned int Send(std::string) const;
-    unsigned int Send(std::string, bool &) const;
+    size_t Send(const std::string &) const;
+    size_t Send(const std::string &, bool &) const;
+
+    size_t SendTo(const std::string &, const std::string &, int) const;
+    size_t SendTo(const std::string &, const std::string &, int, bool &) const;
 
     std::string Recv() const;
-    std::string Recv(bool &) const;
+    std::string Recv(bool &, bool &) const;
 
-private:
-    // File descriptor for this socket.
-    int m_socketHandle;
-
-    // Client IP and port this socket is connected to.
-    int m_clientIp;
-    int m_clientPort;
-
-    // Whether this socket should allow asynchronous operations
-    bool m_isAsync;
-
-    // Whether this socket is a listening socket
-    bool m_isListening;
+    std::string RecvFrom() const;
+    std::string RecvFrom(bool &, bool &) const;
 };
 
 }

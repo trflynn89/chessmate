@@ -2,7 +2,8 @@
 SRC_DIRS_$(d) := \
     Util/Logging \
     Util/Socket \
-    Util/String
+    Util/String \
+    Test/GoogleTest
 
 # Define libraries to link
 LDLIBS_$(d) := -lpthread

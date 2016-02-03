@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+#include <Util/Concurrency/ConcurrentQueue.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/AsyncStructs.h>
 #include <Util/Socket/SocketManager.h>
@@ -19,7 +20,7 @@ public:
     SocketTest() :
         m_spServerSocketManager(std::make_shared<Util::SocketManagerImpl>()),
         m_spClientSocketManager(std::make_shared<Util::SocketManagerImpl>()),
-        m_message(Util::String::GenerateRandomString(128 << 10)),
+        m_message(Util::String::GenerateRandomString(64 << 10)),
         m_host("localhost"),
         m_port(12390)
     {
@@ -74,6 +75,8 @@ protected:
     Util::SocketManagerPtr m_spServerSocketManager;
     Util::SocketManagerPtr m_spClientSocketManager;
 
+    Util::ConcurrentQueue<int> m_eventQueue;
+
     std::string m_message;
     std::string m_host;
     int m_port;
@@ -99,6 +102,7 @@ public:
 
         ASSERT_TRUE(spAcceptSocket->BindForReuse(Util::Socket::InAddrAny(), m_port));
         ASSERT_TRUE(spAcceptSocket->Listen());
+        m_eventQueue.Push(1);
 
         if (doAsync)
         {
@@ -124,6 +128,10 @@ public:
         Util::SocketPtr spSendSocket = CreateSocket(m_spClientSocketManager, doAsync, true);
         ASSERT_TRUE(spSendSocket && spSendSocket->IsValid());
         ASSERT_EQ(spSendSocket->IsAsync(), doAsync);
+
+        int item = 0;
+        std::chrono::seconds waitTime(120);
+        m_eventQueue.Pop(item, waitTime);
 
         if (doAsync)
         {
@@ -171,6 +179,7 @@ public:
         ASSERT_EQ(spRecvSocket->IsAsync(), doAsync);
 
         ASSERT_TRUE(spRecvSocket->BindForReuse(Util::Socket::InAddrAny(), m_port));
+        m_eventQueue.Push(1);
 
         if (doAsync)
         {
@@ -195,6 +204,10 @@ public:
         Util::SocketPtr spSendSocket = CreateSocket(m_spClientSocketManager, doAsync, false);
         ASSERT_TRUE(spSendSocket && spSendSocket->IsValid());
         ASSERT_EQ(spSendSocket->IsAsync(), doAsync);
+
+        int item = 0;
+        std::chrono::seconds waitTime(120);
+        m_eventQueue.Pop(item, waitTime);
 
         if (doAsync)
         {
