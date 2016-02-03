@@ -54,7 +54,7 @@ RandomDevice<T, E>::RandomDevice() : m_engine()
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     time_t seed = std::chrono::system_clock::to_time_t(now);
 
-    m_engine.seed(seed);
+    m_engine.seed(static_cast<typename E::result_type>(seed));
 }
 
 template <typename T, typename E>
