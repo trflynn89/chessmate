@@ -3,7 +3,7 @@
 namespace Util {
 
 /**
- * Linux declaration of the SocketImpl interface.
+ * Linux declaration of the SystemImpl interface.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version November 11, 2013
@@ -11,7 +11,7 @@ namespace Util {
 class SystemImpl
 {
 public:
-    static void PrintBacktrace(int);
+    static void PrintBacktrace();
 };
 
 }

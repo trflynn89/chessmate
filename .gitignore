@@ -34,6 +34,10 @@
 *.lib
 
 # Executables
+ChessMateEngine/Build/release-x64/bin/*
+ChessMateEngine/Build/release-x86/bin/*
+ChessMateEngine/Build/debug-x64/bin/*
+ChessMateEngine/Build/debug-x86/bin/*
 *.exe
 *.out
 *.app

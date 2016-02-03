@@ -6,10 +6,10 @@
 namespace Util {
 
 //=============================================================================
-void SystemImpl::PrintBacktrace(int num)
+void SystemImpl::PrintBacktrace()
 {
-    void *trace[num];
-    int traceSize = backtrace(trace, num);
+    void *trace[10];
+    int traceSize = backtrace(trace, 10);
     backtrace_symbols_fd(trace, traceSize, STDERR_FILENO);
 }
 
