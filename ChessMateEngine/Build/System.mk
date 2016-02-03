@@ -18,4 +18,4 @@ ifneq ($(arch), $(filter $(supported_archs), $(arch)))
 endif
 
 # Determine number of cores
-NUM_CORES := 1
+NUM_CORES := $(shell grep -c ^processor /proc/cpuinfo)
