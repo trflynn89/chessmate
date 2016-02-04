@@ -1,6 +1,7 @@
 #include "WinSystem.h"
 
 #include <Windows.h>
+#include <chrono>
 
 #include <Util/Logging/Logger.h>
 
@@ -16,6 +17,27 @@ void SystemImpl::PrintBacktrace()
     {
         LOGC("[%3u] %x", i, trace[i]);
     }
+}
+
+//=============================================================================
+std::string SystemImpl::LocalTime(const std::string &fmt)
+{
+    auto sys = std::chrono::system_clock::now();
+    time_t now = std::chrono::system_clock::to_time_t(sys);
+
+    struct tm timeVal;
+
+    if (localtime_s(&timeVal, &now) == 0)
+    {
+        char timeStr[32];
+
+        if (strftime(timeStr, sizeof(timeStr), fmt.c_str(), &timeVal) != 0)
+        {
+            return std::string(timeStr);
+        }
+    }
+
+    return std::string();
 }
 
 }

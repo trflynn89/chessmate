@@ -22,7 +22,7 @@ namespace Util {
  *     float randomFloat = device();
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version February 14, 2015
+ * @version February 3, 2016
  */
 template <typename T, typename E = std::default_random_engine>
 class RandomDevice
@@ -51,7 +51,7 @@ protected:
 template <typename T, typename E>
 RandomDevice<T, E>::RandomDevice() : m_engine()
 {
-    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    auto now = std::chrono::system_clock::now();
     time_t seed = std::chrono::system_clock::to_time_t(now);
 
     m_engine.seed(static_cast<typename E::result_type>(seed));

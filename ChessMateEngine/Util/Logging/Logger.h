@@ -83,7 +83,7 @@ DEFINE_CLASS_PTRS(Logger);
  * The LOGC macro is also provided for thread-safe console logging.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version December 19, 2012
+ * @version February 3, 2016
  */
 class Logger
 {
@@ -138,11 +138,6 @@ private:
      * @param string The message to log.
      */
     void addLog(LogLevel, int, const char *, unsigned int, const std::string &);
-
-    /**
-     * @return The current system type as a string.
-     */
-    static std::string getSystemTime();
 
     static LoggerWPtr s_wpInstance;
     static std::mutex s_consoleMutex;

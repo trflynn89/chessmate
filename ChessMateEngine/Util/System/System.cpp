@@ -14,4 +14,10 @@ void System::PrintBacktrace()
     SystemImpl::PrintBacktrace();
 }
 
+//=============================================================================
+std::string System::LocalTime()
+{
+    return SystemImpl::LocalTime("%m-%d-%Y %H:%M:%S");
+}
+
 }

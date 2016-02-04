@@ -8,6 +8,7 @@
 #include "Logger.h"
 
 #include <Util/String/String.h>
+#include <Util/System/System.h>
 
 namespace Util {
 
@@ -81,7 +82,7 @@ LoggerPtr Logger::GetInstance()
 //=============================================================================
 void Logger::ConsoleLog(const std::string &message)
 {
-    std::string timeStr = getSystemTime();
+    std::string timeStr = Util::System::LocalTime();
 
     std::lock_guard<std::mutex> lock(s_consoleMutex);
     std::cout << timeStr << ": " << message << std::endl;
@@ -179,7 +180,7 @@ void Logger::Flush()
     std::sort(logCopy.begin(), logCopy.end(), compare);
 
     std::string randStr = String::String::GenerateRandomString(10);
-    std::string timeStr = getSystemTime();
+    std::string timeStr = Util::System::LocalTime();
 
     String::String::ReplaceAll(timeStr, ":", "-");
     String::String::ReplaceAll(timeStr, " ", "_");
@@ -197,31 +198,6 @@ void Logger::Flush()
     }
 
     file << std::flush;
-}
-
-//=============================================================================
-std::string Logger::getSystemTime()
-{
-    auto sys = std::chrono::system_clock::now();
-    time_t now = std::chrono::system_clock::to_time_t(sys);
-    struct tm timeVal;
-
-#if defined(BUILD_WINDOWS)
-    localtime_s(&timeVal, &now);
-#elif defined(BUILD_LINUX)
-    localtime_r(&now, &timeVal);
-#endif
-
-    char timeStr[32];
-    size_t len = strftime(timeStr, sizeof(timeStr),
-        "%m-%d-%Y %H:%M:%S", &timeVal);
-
-    if (len != 0)
-    {
-        return std::string(timeStr);
-    }
-
-    return std::string();
 }
 
 }
