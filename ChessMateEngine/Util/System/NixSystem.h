@@ -15,7 +15,7 @@ class SystemImpl
 public:
     static void PrintBacktrace();
     static std::string LocalTime(const std::string &);
-    static std::string GetLastError();
+    static std::string GetLastError(int *code);
 };
 
 }

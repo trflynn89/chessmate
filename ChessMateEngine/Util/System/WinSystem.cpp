@@ -40,4 +40,34 @@ std::string SystemImpl::LocalTime(const std::string &fmt)
     return std::string();
 }
 
+//=============================================================================
+std::string SystemImpl::GetLastError(int *code)
+{
+    int error = WSAGetLastError();
+    LPTSTR str = NULL;
+    std::string ret;
+
+    FormatMessage(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&str, 0, NULL
+    );
+
+    if (str == NULL)
+    {
+         ret = std::to_string(error);
+    }
+    else
+    {
+        ret = "(" + std::to_string(error) + ") " + str;
+        LocalFree(str);
+    }
+
+    if (code != NULL)
+    {
+        *code = error;
+    }
+
+    return ret;
+}
+
 }

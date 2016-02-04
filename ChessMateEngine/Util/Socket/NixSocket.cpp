@@ -18,7 +18,7 @@ namespace
     static const size_t s_packetLen = 4096;
 
     struct sockaddr_in HostToSockAddr(
-        int socketId,
+        size_t socketId,
         const std::string &hostname,
         int port
     )
@@ -255,11 +255,7 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
             if (currSent == -1)
             {
                 LOGW(m_socketHandle, "Error sending: %s", System::GetLastError());
-
-                if (errno == EWOULDBLOCK)
-                {
-                    wouldBlock = true;
-                }
+                wouldBlock = (errno == EWOULDBLOCK);
             }
         }
     }
@@ -322,11 +318,7 @@ size_t SocketImpl::SendTo(
             if (currSent == -1)
             {
                 LOGW(m_socketHandle, "Error sending: %s", System::GetLastError());
-
-                if (errno == EWOULDBLOCK)
-                {
-                    wouldBlock = true;
-                }
+                wouldBlock = (errno == EWOULDBLOCK);
             }
         }
     }
@@ -373,11 +365,7 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
             if (bytesRead == -1)
             {
                 LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError());
-
-                if (errno == EWOULDBLOCK)
-                {
-                    wouldBlock = true;
-                }
+                wouldBlock = (errno == EWOULDBLOCK);
             }
         }
 
@@ -432,11 +420,7 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
             if (bytesRead == -1)
             {
                 LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError());
-
-                if (errno == EWOULDBLOCK)
-                {
-                    wouldBlock = true;
-                }
+                wouldBlock = (errno == EWOULDBLOCK);
             }
         }
 

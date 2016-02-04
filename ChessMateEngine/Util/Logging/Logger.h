@@ -115,12 +115,12 @@ public:
      * Add a log to the static logger instance.
      *
      * @param LogLevel The level (debug, info, etc.) of this log.
-     * @param int The ID of the game storing this entry.
+     * @param ssize_t The ID of the game storing this entry.
      * @param const char * Name of the function storing this log.
      * @param unsigned int The line number this log point occurs.
      * @param string The message to log.
      */
-    static void AddLog(LogLevel, int, const char *, unsigned int, const std::string &);
+    static void AddLog(LogLevel, ssize_t, const char *, unsigned int, const std::string &);
 
     /**
      * Flush the log to a file who's name is randomly generated.
@@ -132,12 +132,12 @@ private:
      * Add a log to this logger instance.
      *
      * @param LogLevel The level (debug, info, etc.) of this log.
-     * @param int The ID of the game storing this entry.
+     * @param ssize_t The ID of the game storing this entry.
      * @param const char * Name of the function storing this log.
      * @param unsigned int The line number this log point occurs.
      * @param string The message to log.
      */
-    void addLog(LogLevel, int, const char *, unsigned int, const std::string &);
+    void addLog(LogLevel, ssize_t, const char *, unsigned int, const std::string &);
 
     static LoggerWPtr s_wpInstance;
     static std::mutex s_consoleMutex;

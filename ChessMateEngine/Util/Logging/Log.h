@@ -42,7 +42,7 @@ struct Log
     unsigned long long int m_index = UINT_MAX;
     LogLevel m_level = NUM_LEVELS;
     double m_time = -1.0;
-    int m_gameId = -1;
+    ssize_t m_gameId = -1;
     char m_function[100];
     unsigned int m_line = -1;
     char m_message[MAX_MESSAGE_SIZE + 1];

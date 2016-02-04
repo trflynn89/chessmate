@@ -89,7 +89,7 @@ void Logger::ConsoleLog(const std::string &message)
 }
 
 //=============================================================================
-void Logger::AddLog(LogLevel level, int gameId, const char *func,
+void Logger::AddLog(LogLevel level, ssize_t gameId, const char *func,
     unsigned int line, const std::string &message)
 {
     LoggerPtr spLogger = GetInstance();
@@ -108,7 +108,7 @@ void Logger::AddLog(LogLevel level, int gameId, const char *func,
 }
 
 //=============================================================================
-void Logger::addLog(LogLevel level, int gameId, const char *func,
+void Logger::addLog(LogLevel level, ssize_t gameId, const char *func,
     unsigned int line, const std::string &message)
 {
     // Disallow logging while the log is being flushed

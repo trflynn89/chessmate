@@ -37,9 +37,16 @@ std::string SystemImpl::LocalTime(const std::string &fmt)
 }
 
 //=============================================================================
-std::string SystemImpl::GetLastError()
+std::string SystemImpl::GetLastError(int *code)
 {
-    return "(" + std::to_string(errno) + ") " + strerror(errno);
+    int error = errno;
+
+    if (code != NULL)
+    {
+        *code = error;
+    }
+
+    return "(" + std::to_string(error) + ") " + strerror(error);
 }
 
 }

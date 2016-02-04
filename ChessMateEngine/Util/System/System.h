@@ -28,7 +28,7 @@ public:
     /**
      * @return The last system error as a string.
      */
-    static std::string GetLastError();
+    static std::string GetLastError(int *code = NULL);
 };
 
 }

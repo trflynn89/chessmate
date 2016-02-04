@@ -21,9 +21,9 @@ std::string System::LocalTime()
 }
 
 //=============================================================================
-std::string System::GetLastError()
+std::string System::GetLastError(int *code)
 {
-    return SystemImpl::GetLastError();
+    return SystemImpl::GetLastError(code);
 }
 
 }

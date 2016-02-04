@@ -5,17 +5,28 @@
 #include "WinSocket.h"
 
 #include <Util/Logging/Logger.h>
+#include <Util/System/System.h>
+
+namespace Util {
 
 namespace
 {
-    static const int s_packetLen = 4096;
+    static const size_t s_packetLen = 4096;
 
-    struct sockaddr_in HostToSockAddr(const std::string &hostname, int port)
+    struct sockaddr_in HostToSockAddr(
+        size_t socketId,
+        const std::string &hostname,
+        int port
+    )
     {
         struct hostent *ipaddr = gethostbyname(hostname.c_str());
         struct sockaddr_in addr;
 
-        if (ipaddr != NULL)
+        if (ipaddr == NULL)
+        {
+            LOGW(socketId, "Error resolving %s: %s", hostname, System::GetLastError());
+        }
+        else
         {
             memset(&addr, 0, sizeof(addr));
             addr.sin_family = AF_INET;
@@ -26,8 +37,6 @@ namespace
         return addr;
     }
 }
-
-namespace Util {
 
 //=============================================================================
 SocketImpl::SocketImpl(int socketType) : Socket(socketType)
@@ -75,9 +84,12 @@ bool SocketImpl::IsErrorFree()
     int opt = 0;
     int len = sizeof(opt);
 
-    int ret = ::getsockopt(m_socketHandle, SOL_SOCKET, SO_ERROR, (char *)&opt, &len);
+    if (::getsockopt(m_socketHandle, SOL_SOCKET, SO_ERROR, (char *)&opt, &len) == SOCKET_ERROR)
+    {
+        LOGW(m_socketHandle, "Error getting error flag: %s", System::GetLastError());
+    }
 
-    return ((ret == 0) && (opt == 0));
+    return (opt == 0);
 }
 
 //=============================================================================
@@ -85,11 +97,13 @@ bool SocketImpl::SetAsync()
 {
     unsigned long nonZero = 1;
 
-    if (ioctlsocket(m_socketHandle, FIONBIO, &nonZero) == 0)
+    if (::ioctlsocket(m_socketHandle, FIONBIO, &nonZero) == SOCKET_ERROR)
     {
-        m_isAsync = true;
+        LOGW(m_socketHandle, "Error setting async flag: %s", System::GetLastError());
+        return false;
     }
 
+    m_isAsync = true;
     return m_isAsync;
 }
 
@@ -104,44 +118,52 @@ bool SocketImpl::Bind(int addr, int port) const
     servAddr.sin_port = htons(port);
 
     struct sockaddr *sockAddr = reinterpret_cast<sockaddr *>(&servAddr);
-    int ret = ::bind(m_socketHandle, sockAddr, sizeof(servAddr));
 
-    return (ret != -1);
+    if (::bind(m_socketHandle, sockAddr, sizeof(servAddr)) == SOCKET_ERROR)
+    {
+        LOGW(m_socketHandle, "Error binding to %d: %s", port, System::GetLastError());
+        return false;
+    }
+
+    return true;
 }
 
 //=============================================================================
 bool SocketImpl::BindForReuse(int addr, int port) const
 {
     const char opt = 1;
-    int ret = ::setsockopt(m_socketHandle, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-    return ((ret != -1) && Bind(addr, port));
+    if (::setsockopt(m_socketHandle, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == SOCKET_ERROR)
+    {
+        LOGW(m_socketHandle, "Error setting reuse flag: %s", System::GetLastError());
+        return false;
+    }
+
+    return Bind(addr, port);
 }
 
 //=============================================================================
 bool SocketImpl::Listen()
 {
-    m_isListening = ((m_socketType == Socket::SOCKET_TCP) && (::listen(m_socketHandle, 100) == 0));
+    if (::listen(m_socketHandle, 100) == SOCKET_ERROR)
+    {
+        LOGW(m_socketHandle, "Error listening: %s", System::GetLastError());
+        return false;
+    }
+
+    m_isListening = true;
     return m_isListening;
 }
 
 //=============================================================================
 bool SocketImpl::Connect(const std::string &hostname, int port)
 {
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return false;
-    }
-    else if (m_aConnectedState.load() != Socket::NOT_CONNECTED)
-    {
-        return false;
-    }
+    struct sockaddr_in server = HostToSockAddr(m_socketHandle, hostname, port);
 
-    struct sockaddr_in server = HostToSockAddr(hostname, port);
-
-    if (::connect(m_socketHandle, (struct sockaddr *)&server, sizeof(server)) != 0)
+    if (::connect(m_socketHandle, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
     {
-        int error = WSAGetLastError();
+        int error = 0;
+        LOGW(m_socketHandle, "Error connecting: %d", System::GetLastError(&error));
 
         if ((error == WSAEWOULDBLOCK) || (error == WSAEINPROGRESS))
         {
@@ -160,11 +182,6 @@ SocketPtr SocketImpl::Accept() const
 {
     SocketImplPtr ret = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
 
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return ret;
-    }
-
     struct sockaddr_in client;
     int clientLen = sizeof(client);
 
@@ -172,6 +189,7 @@ SocketPtr SocketImpl::Accept() const
 
     if (skt == INVALID_SOCKET)
     {
+        LOGW(m_socketHandle, "Error accepting: %s", System::GetLastError());
         ret.reset();
     }
     else
@@ -182,7 +200,7 @@ SocketPtr SocketImpl::Accept() const
         ret->m_aConnectedState.store(Socket::CONNECTED);
     }
 
-    return ret;
+    return std::dynamic_pointer_cast<Socket>(ret);
 }
 
 //=============================================================================
@@ -195,17 +213,11 @@ size_t SocketImpl::Send(const std::string &msg) const
 //=============================================================================
 size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return 0;
-    }
-
     static const std::string eom(1, Socket::s_socketEoM);
     std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
     size_t bytesSent = 0;
-
     wouldBlock = false;
 
     while (keepSending)
@@ -239,12 +251,14 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
         }
         else
         {
-            int error = WSAGetLastError();
             keepSending = false;
 
-            if ((currSent == -1) && (error == WSAEWOULDBLOCK))
+            if (currSent == -1)
             {
-                wouldBlock = true;
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error sending: %d", System::GetLastError(&error));
+                wouldBlock = (error == WSAEWOULDBLOCK);
             }
         }
     }
@@ -271,24 +285,18 @@ size_t SocketImpl::SendTo(
     bool &wouldBlock
 ) const
 {
-    if (m_socketType != Socket::SOCKET_UDP)
-    {
-        return 0;
-    }
-
     static const std::string eom(1, Socket::s_socketEoM);
     std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
     size_t bytesSent = 0;
-
     wouldBlock = false;
 
-    struct sockaddr_in server = HostToSockAddr(hostname, port);
+    struct sockaddr_in server = HostToSockAddr(m_socketHandle, hostname, port);
 
     while (keepSending)
     {
-        int toSendSize = std::min(s_packetLen, static_cast<int>(toSend.size()));
+        int toSendSize = static_cast<int>(std::min(s_packetLen, toSend.size()));
         int currSent = ::sendto(m_socketHandle, toSend.c_str(), toSendSize, 0,
             (struct sockaddr *)&server, sizeof(server));
 
@@ -308,12 +316,14 @@ size_t SocketImpl::SendTo(
         }
         else
         {
-            int error = WSAGetLastError();
             keepSending = false;
 
-            if ((currSent == -1) && (error == WSAEWOULDBLOCK))
+            if (currSent == -1)
             {
-                wouldBlock = true;
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error sending: %d", System::GetLastError(&error));
+                wouldBlock = (error == WSAEWOULDBLOCK);
             }
         }
     }
@@ -331,16 +341,11 @@ std::string SocketImpl::Recv() const
 //=============================================================================
 std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 {
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return 0;
-    }
-
-    wouldBlock = false;
-    isComplete = false;
+    std::string ret;
 
     bool keepReading = true;
-    std::string ret;
+    wouldBlock = false;
+    isComplete = false;
 
     while (keepReading)
     {
@@ -360,12 +365,14 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
         }
         else
         {
-            int error = WSAGetLastError();
             keepReading = false;
 
-            if ((bytesRead == -1) && (error == WSAEWOULDBLOCK))
+            if (bytesRead == -1)
             {
-                wouldBlock = true;
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error receiving: %d", System::GetLastError(&error));
+                wouldBlock = (error == WSAEWOULDBLOCK);
             }
         }
 
@@ -385,16 +392,11 @@ std::string SocketImpl::RecvFrom() const
 //=============================================================================
 std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
 {
-    if (m_socketType != Socket::SOCKET_UDP)
-    {
-        return 0;
-    }
-
-    wouldBlock = false;
-    isComplete = false;
+    std::string ret;
 
     bool keepReading = true;
-    std::string ret;
+    wouldBlock = false;
+    isComplete = false;
 
     struct sockaddr_in client;
     int clientLen = sizeof(client);
@@ -404,7 +406,8 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
     while (keepReading)
     {
         char *buff = (char *)calloc(1, s_packetLen * sizeof(char));
-        int bytesRead = ::recvfrom(m_socketHandle, buff, s_packetLen, 0, sockAddr, &clientLen);
+        int bytesRead = ::recvfrom(m_socketHandle, buff, s_packetLen,
+            0, sockAddr, &clientLen);
 
         if (bytesRead > 0)
         {
@@ -419,12 +422,14 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
         }
         else
         {
-            int error = WSAGetLastError();
             keepReading = false;
 
-            if ((bytesRead == -1) && (error == WSAEWOULDBLOCK))
+            if (bytesRead == -1)
             {
-                wouldBlock = true;
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error receiving: %d", System::GetLastError(&error));
+                wouldBlock = (error == WSAEWOULDBLOCK);
             }
         }
 

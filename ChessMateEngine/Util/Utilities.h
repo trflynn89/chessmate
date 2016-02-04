@@ -16,6 +16,9 @@
 #if defined(BUILD_WINDOWS)
     #define I64(n) (n##ll)
     #define U64(n) (n##ull)
+
+    #include <BaseTsd.h>
+    typedef SSIZE_T ssize_t;
 #elif defined(BUILD_LINUX)
     #define I64(n) __INT64_C(n)
     #define U64(n) __UINT64_C(n)
