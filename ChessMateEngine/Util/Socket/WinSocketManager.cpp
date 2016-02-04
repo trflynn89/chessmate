@@ -117,12 +117,12 @@ void SocketManagerImpl::handleSocketIO(fd_set *readFd, fd_set *writeFd)
                 {
                     SocketPtr spNewClient = acceptNewClient(spSocket);
 
-                    if (spNewClient->IsValid())
+                    if (spNewClient && spNewClient->IsValid())
                     {
                         newClients.push_back(spNewClient);
                     }
                 }
-                else
+                else if (spSocket->IsConnected() || spSocket->IsUdp())
                 {
                     spSocket->ServiceRecvRequests(m_completedReceives);
                 }
@@ -135,7 +135,7 @@ void SocketManagerImpl::handleSocketIO(fd_set *readFd, fd_set *writeFd)
                 {
                     spSocket->ServiceConnectRequests(m_completedConnects);
                 }
-                else
+                else if (spSocket->IsConnected() || spSocket->IsUdp())
                 {
                     spSocket->ServiceSendRequests(m_completedSends);
                 }
@@ -180,7 +180,11 @@ SocketPtr SocketManagerImpl::acceptNewClient(const SocketPtr &spSocket)
     else
     {
         LOGW(-1, "Could not make new client socket asynchronous, closing");
-        spNewClientSocket->Close();
+
+        if (spNewClientSocket)
+        {
+            spNewClientSocket->Close();
+        }
     }
 
     return spNewClientSocket;
