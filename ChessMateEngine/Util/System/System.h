@@ -26,6 +26,11 @@ public:
     static std::string LocalTime();
 
     /**
+     * Get the last system error as a string, and optionally store the numeric
+     * error code.
+     *
+     * @param int* Pointer to store the numeric error code, or NULL.
+     *
      * @return The last system error as a string.
      */
     static std::string GetLastError(int *code = NULL);

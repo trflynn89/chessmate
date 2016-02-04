@@ -173,9 +173,10 @@ bool SocketImpl::Connect(const std::string &hostname, int port)
 
     if (::connect(m_socketHandle, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
-        LOGW(m_socketHandle, "Error connecting: %s", System::GetLastError());
+        int error = 0;
+        LOGW(m_socketHandle, "Error connecting: %s", System::GetLastError(&error));
 
-        if ((errno == EINTR) || (errno == EINPROGRESS))
+        if ((error == EINTR) || (error == EINPROGRESS))
         {
             m_aConnectedState.store(Socket::CONNECTING);
         }
@@ -254,8 +255,10 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 
             if (currSent == -1)
             {
-                LOGW(m_socketHandle, "Error sending: %s", System::GetLastError());
-                wouldBlock = (errno == EWOULDBLOCK);
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error sending: %s", System::GetLastError(&error));
+                wouldBlock = (error == EWOULDBLOCK);
             }
         }
     }
@@ -317,8 +320,10 @@ size_t SocketImpl::SendTo(
 
             if (currSent == -1)
             {
-                LOGW(m_socketHandle, "Error sending: %s", System::GetLastError());
-                wouldBlock = (errno == EWOULDBLOCK);
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error sending: %s", System::GetLastError(&error));
+                wouldBlock = (error == EWOULDBLOCK);
             }
         }
     }
@@ -364,8 +369,10 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 
             if (bytesRead == -1)
             {
-                LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError());
-                wouldBlock = (errno == EWOULDBLOCK);
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError(&error));
+                wouldBlock = (error == EWOULDBLOCK);
             }
         }
 
@@ -419,8 +426,10 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
 
             if (bytesRead == -1)
             {
-                LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError());
-                wouldBlock = (errno == EWOULDBLOCK);
+                int error = 0;
+
+                LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError(&error));
+                wouldBlock = (error == EWOULDBLOCK);
             }
         }
 
