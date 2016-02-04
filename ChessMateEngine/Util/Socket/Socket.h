@@ -87,11 +87,6 @@ public:
     virtual bool SetAsync() = 0;
 
     /**
-     * @return True if this is an asynchronous socking, false otherwise.
-     */
-    bool IsAsync() const;
-
-    /**
      * @return Return this socket's handle.
      */
     size_t GetHandle() const;
@@ -131,6 +126,11 @@ public:
      * Allow socket to listen for incoming connections.
      */
     virtual bool Listen() = 0;
+
+    /**
+     * @return True if this is an asynchronous socking, false otherwise.
+     */
+    bool IsAsync() const;
 
     /**
      * Return true if this socket is a listener socket.

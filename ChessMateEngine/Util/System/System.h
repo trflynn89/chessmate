@@ -24,6 +24,11 @@ public:
      * @return The local time formatted as a string.
      */
     static std::string LocalTime();
+
+    /**
+     * @return The last system error as a string.
+     */
+    static std::string GetLastError();
 };
 
 }

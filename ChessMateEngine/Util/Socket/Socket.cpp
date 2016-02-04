@@ -36,12 +36,6 @@ bool Socket::IsValid() const
 }
 
 //=============================================================================
-bool Socket::IsAsync() const
-{
-    return m_isAsync;
-}
-
-//=============================================================================
 bool Socket::IsTcp() const
 {
     return (m_socketType == Socket::SOCKET_TCP);
@@ -75,6 +69,12 @@ int Socket::GetClientPort() const
 int Socket::GetSocketId() const
 {
     return m_socketId;
+}
+
+//=============================================================================
+bool Socket::IsAsync() const
+{
+    return m_isAsync;
 }
 
 //=============================================================================

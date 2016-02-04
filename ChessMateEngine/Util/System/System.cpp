@@ -20,4 +20,10 @@ std::string System::LocalTime()
     return SystemImpl::LocalTime("%m-%d-%Y %H:%M:%S");
 }
 
+//=============================================================================
+std::string System::GetLastError()
+{
+    return SystemImpl::GetLastError();
+}
+
 }

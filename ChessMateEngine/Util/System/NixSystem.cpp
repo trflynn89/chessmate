@@ -1,6 +1,7 @@
 #include "NixSystem.h"
 
 #include <chrono>
+#include <cstring>
 #include <execinfo.h>
 #include <unistd.h>
 
@@ -33,6 +34,12 @@ std::string SystemImpl::LocalTime(const std::string &fmt)
     }
 
     return std::string();
+}
+
+//=============================================================================
+std::string SystemImpl::GetLastError()
+{
+    return "(" + std::to_string(errno) + ") " + strerror(errno);
 }
 
 }

@@ -1,9 +1,7 @@
 // TODO: log file location, fix evaluator, instrument, faster bit board
 // TODO: add ID to async requests
-// TODO: get last error skt api
 // TODO: max pending IO requests
 // TODO: use shared_ptr more liberally
-// TODO: MoveSet should be owned by the game manager
 
 #include <atomic>
 #include <chrono>

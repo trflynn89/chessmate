@@ -9,17 +9,28 @@
 #include <unistd.h>
 
 #include <Util/Logging/Logger.h>
+#include <Util/System/System.h>
+
+namespace Util {
 
 namespace
 {
     static const size_t s_packetLen = 4096;
 
-    struct sockaddr_in HostToSockAddr(const std::string &hostname, int port)
+    struct sockaddr_in HostToSockAddr(
+        int socketId,
+        const std::string &hostname,
+        int port
+    )
     {
         struct hostent *ipaddr = gethostbyname(hostname.c_str());
         struct sockaddr_in addr;
 
-        if (ipaddr != NULL)
+        if (ipaddr == NULL)
+        {
+            LOGW(socketId, "Error resolving %s: %s", hostname, System::GetLastError());
+        }
+        else
         {
             memset(&addr, 0, sizeof(addr));
             addr.sin_family = AF_INET;
@@ -30,8 +41,6 @@ namespace
         return addr;
     }
 }
-
-namespace Util {
 
 //=============================================================================
 SocketImpl::SocketImpl(int socketType) : Socket(socketType)
@@ -47,6 +56,7 @@ SocketImpl::SocketImpl(int socketType) : Socket(socketType)
         break;
 
     default:
+        LOGW(-1, "Unrecognized socket type: %d", socketType);
         break;
     }
 }
@@ -76,12 +86,15 @@ void SocketImpl::Close()
 //=============================================================================
 bool SocketImpl::IsErrorFree()
 {
-    int opt = 0;
+    int opt = -1;
     socklen_t len = sizeof(opt);
 
-    int ret = ::getsockopt(m_socketHandle, SOL_SOCKET, SO_ERROR, &opt, &len);
+    if (::getsockopt(m_socketHandle, SOL_SOCKET, SO_ERROR, &opt, &len) == -1)
+    {
+        LOGW(m_socketHandle, "Error getting error flag: %s", System::GetLastError());
+    }
 
-    return ((ret == 0) && (opt == 0));
+    return (opt == 0);
 }
 
 //=============================================================================
@@ -89,16 +102,18 @@ bool SocketImpl::SetAsync()
 {
     int flags = fcntl(m_socketHandle, F_GETFL, 0);
 
-    if (flags >= 0)
+    if (flags == -1)
     {
-        flags |= O_NONBLOCK;
-
-        if (fcntl(m_socketHandle, F_SETFL, flags) == 0)
-        {
-            m_isAsync = true;
-        }
+        LOGW(m_socketHandle, "Error getting socket flags: %s", System::GetLastError());
+        return false;
+    }
+    else if (fcntl(m_socketHandle, F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        LOGW(m_socketHandle, "Error setting async flag: %s", System::GetLastError());
+        return false;
     }
 
+    m_isAsync = true;
     return m_isAsync;
 }
 
@@ -113,9 +128,14 @@ bool SocketImpl::Bind(int addr, int port) const
     servAddr.sin_port = htons(port);
 
     struct sockaddr *sockAddr = reinterpret_cast<sockaddr *>(&servAddr);
-    int ret = ::bind(m_socketHandle, sockAddr, sizeof(servAddr));
 
-    return (ret != -1);
+    if (::bind(m_socketHandle, sockAddr, sizeof(servAddr)) == -1)
+    {
+        LOGW(m_socketHandle, "Error binding to %d: %s", port, System::GetLastError());
+        return false;
+    }
+
+    return true;
 }
 
 //=============================================================================
@@ -124,34 +144,37 @@ bool SocketImpl::BindForReuse(int addr, int port) const
     const int opt = 1;
     socklen_t len = sizeof(opt);
 
-    int ret = ::setsockopt(m_socketHandle, SOL_SOCKET, SO_REUSEADDR, &opt, len);
+    if (::setsockopt(m_socketHandle, SOL_SOCKET, SO_REUSEADDR, &opt, len) == -1)
+    {
+        LOGW(m_socketHandle, "Error setting reuse flag: %s", System::GetLastError());
+        return false;
+    }
 
-    return ((ret != -1) && Bind(addr, port));
+    return Bind(addr, port);
 }
 
 //=============================================================================
 bool SocketImpl::Listen()
 {
-    m_isListening = ((m_socketType == Socket::SOCKET_TCP) && (::listen(m_socketHandle, 100) == 0));
+    if (::listen(m_socketHandle, 100) == -1)
+    {
+        LOGW(m_socketHandle, "Error listening: %s", System::GetLastError());
+        return false;
+    }
+
+    m_isListening = true;
     return m_isListening;
 }
 
 //=============================================================================
 bool SocketImpl::Connect(const std::string &hostname, int port)
 {
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return false;
-    }
-    else if (m_aConnectedState.load() != Socket::NOT_CONNECTED)
-    {
-        return false;
-    }
+    struct sockaddr_in server = HostToSockAddr(m_socketHandle, hostname, port);
 
-    struct sockaddr_in server = HostToSockAddr(hostname, port);
-
-    if (::connect(m_socketHandle, (struct sockaddr *)&server, sizeof(server)) != 0)
+    if (::connect(m_socketHandle, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
+        LOGW(m_socketHandle, "Error connecting: %s", System::GetLastError());
+
         if ((errno == EINTR) || (errno == EINPROGRESS))
         {
             m_aConnectedState.store(Socket::CONNECTING);
@@ -169,11 +192,6 @@ SocketPtr SocketImpl::Accept() const
 {
     SocketImplPtr ret = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
 
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return std::dynamic_pointer_cast<Socket>(ret);
-    }
-
     struct sockaddr_in client;
     socklen_t clientLen = sizeof(client);
 
@@ -181,6 +199,7 @@ SocketPtr SocketImpl::Accept() const
 
     if (skt == -1)
     {
+        LOGW(m_socketHandle, "Error accepting: %s", System::GetLastError());
         ret.reset();
     }
     else
@@ -204,16 +223,12 @@ size_t SocketImpl::Send(const std::string &msg) const
 //=============================================================================
 size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return 0;
-    }
-
     static const std::string eom(1, Socket::s_socketEoM);
     std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
     size_t bytesSent = 0;
+    wouldBlock = false;
 
     while (keepSending)
     {
@@ -237,9 +252,14 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
         {
             keepSending = false;
 
-            if ((currSent == -1) && (errno == EWOULDBLOCK))
+            if (currSent == -1)
             {
-                wouldBlock = true;
+                LOGW(m_socketHandle, "Error sending: %s", System::GetLastError());
+
+                if (errno == EWOULDBLOCK)
+                {
+                    wouldBlock = true;
+                }
             }
         }
     }
@@ -266,20 +286,14 @@ size_t SocketImpl::SendTo(
     bool &wouldBlock
 ) const
 {
-    if (m_socketType != Socket::SOCKET_UDP)
-    {
-        return 0;
-    }
-
     static const std::string eom(1, Socket::s_socketEoM);
     std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
     size_t bytesSent = 0;
-
     wouldBlock = false;
 
-    struct sockaddr_in server = HostToSockAddr(hostname, port);
+    struct sockaddr_in server = HostToSockAddr(m_socketHandle, hostname, port);
 
     while (keepSending)
     {
@@ -305,9 +319,14 @@ size_t SocketImpl::SendTo(
         {
             keepSending = false;
 
-            if ((currSent == -1) && (errno == EWOULDBLOCK))
+            if (currSent == -1)
             {
-                wouldBlock = true;
+                LOGW(m_socketHandle, "Error sending: %s", System::GetLastError());
+
+                if (errno == EWOULDBLOCK)
+                {
+                    wouldBlock = true;
+                }
             }
         }
     }
@@ -327,15 +346,9 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 {
     std::string ret;
 
+    bool keepReading = true;
     wouldBlock = false;
     isComplete = false;
-
-    if (m_socketType != Socket::SOCKET_TCP)
-    {
-        return ret;
-    }
-
-    bool keepReading = true;
 
     while (keepReading)
     {
@@ -357,9 +370,14 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
         {
             keepReading = false;
 
-            if ((bytesRead == -1) && (errno == EWOULDBLOCK))
+            if (bytesRead == -1)
             {
-                wouldBlock = true;
+                LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError());
+
+                if (errno == EWOULDBLOCK)
+                {
+                    wouldBlock = true;
+                }
             }
         }
 
@@ -381,15 +399,9 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
 {
     std::string ret;
 
+    bool keepReading = true;
     wouldBlock = false;
     isComplete = false;
-
-    if (m_socketType != Socket::SOCKET_UDP)
-    {
-        return ret;
-    }
-
-    bool keepReading = true;
 
     struct sockaddr_in client;
     socklen_t clientLen = sizeof(client);
@@ -417,9 +429,14 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
         {
             keepReading = false;
 
-            if ((bytesRead == -1) && (errno == EWOULDBLOCK))
+            if (bytesRead == -1)
             {
-                wouldBlock = true;
+                LOGW(m_socketHandle, "Error receiving: %s", System::GetLastError());
+
+                if (errno == EWOULDBLOCK)
+                {
+                    wouldBlock = true;
+                }
             }
         }
 
