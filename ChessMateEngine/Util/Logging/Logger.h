@@ -13,9 +13,9 @@
 #include <Util/String/String.h>
 
 //=============================================================================
-#define LOG(level, gameId, fmt)                                               \
+#define LOG(lvl, gameId, fmt)                                                 \
 (                                                                             \
-    Util::Logger::AddLog(level, gameId, __FUNCTION__, __LINE__, fmt)          \
+    Util::Logger::AddLog(lvl, gameId, __FILE__, __FUNCTION__, __LINE__, fmt)  \
 )
 
 //=============================================================================
@@ -116,11 +116,12 @@ public:
      *
      * @param LogLevel The level (debug, info, etc.) of this log.
      * @param ssize_t The ID of the game storing this entry.
+     * @param const char * Name of the file storing this log.
      * @param const char * Name of the function storing this log.
      * @param unsigned int The line number this log point occurs.
      * @param string The message to log.
      */
-    static void AddLog(LogLevel, ssize_t, const char *, unsigned int, const std::string &);
+    static void AddLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
     /**
      * Flush the log to a file who's name is randomly generated.
@@ -133,11 +134,12 @@ private:
      *
      * @param LogLevel The level (debug, info, etc.) of this log.
      * @param ssize_t The ID of the game storing this entry.
+     * @param const char * Name of the file storing this log.
      * @param const char * Name of the function storing this log.
      * @param unsigned int The line number this log point occurs.
      * @param string The message to log.
      */
-    void addLog(LogLevel, ssize_t, const char *, unsigned int, const std::string &);
+    void addLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
     static LoggerWPtr s_wpInstance;
     static std::mutex s_consoleMutex;

@@ -89,27 +89,27 @@ void Logger::ConsoleLog(const std::string &message)
 }
 
 //=============================================================================
-void Logger::AddLog(LogLevel level, ssize_t gameId, const char *func,
-    unsigned int line, const std::string &message)
+void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
+    const char *func, unsigned int line, const std::string &message)
 {
     LoggerPtr spLogger = GetInstance();
 
     if (spLogger)
     {
-        spLogger->addLog(level, gameId, func, line, message);
+        spLogger->addLog(level, gameId, file, func, line, message);
     }
     else
     {
-        std::string console = Util::String::Format("%d %d %s:%d %s",
-            level, gameId, func, line, message);
+        std::string console = Util::String::Format("%d %d %s:%s:%d %s",
+            level, gameId, file, func, line, message);
 
         ConsoleLog(console);
     }
 }
 
 //=============================================================================
-void Logger::addLog(LogLevel level, ssize_t gameId, const char *func,
-    unsigned int line, const std::string &message)
+void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
+    const char *func, unsigned int line, const std::string &message)
 {
     // Disallow logging while the log is being flushed
     // TODO come up with a better way to handle this case
@@ -153,6 +153,7 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *func,
     logToEdit->m_gameId = gameId;
     logToEdit->m_line = line;
 
+    snprintf(logToEdit->m_file, sizeof(logToEdit->m_file), file);
     snprintf(logToEdit->m_function, sizeof(logToEdit->m_function), func);
     snprintf(logToEdit->m_message, sizeof(logToEdit->m_message), message.c_str());
 }
