@@ -153,9 +153,9 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     logToEdit->m_gameId = gameId;
     logToEdit->m_line = line;
 
-    snprintf(logToEdit->m_file, sizeof(logToEdit->m_file), file);
-    snprintf(logToEdit->m_function, sizeof(logToEdit->m_function), func);
-    snprintf(logToEdit->m_message, sizeof(logToEdit->m_message), message.c_str());
+    snprintf(logToEdit->m_file, sizeof(logToEdit->m_file), "%s", file);
+    snprintf(logToEdit->m_function, sizeof(logToEdit->m_function), "%s", func);
+    snprintf(logToEdit->m_message, sizeof(logToEdit->m_message), "%s", message.c_str());
 }
 
 //=============================================================================
