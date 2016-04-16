@@ -50,7 +50,7 @@ TEST(MessageTest, ValidityTest)
 
     Game::Message m3(Game::Message::START_GAME, "0");
     ASSERT_FALSE(m3.IsValid());
-    
+
     Game::Message m4(Game::Message::START_GAME, "0 ");
     ASSERT_FALSE(m4.IsValid());
 
@@ -67,7 +67,7 @@ TEST(MessageTest, ValidityTest)
     // MAKE_MOVE
     Game::Message m8(Game::Message::MAKE_MOVE, "");
     ASSERT_FALSE(m8.IsValid());
-    
+
     Game::Message m9(Game::Message::MAKE_MOVE, "0");
     ASSERT_TRUE(m9.IsValid());
 
