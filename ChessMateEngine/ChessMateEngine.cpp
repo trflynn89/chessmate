@@ -48,7 +48,7 @@ void HandleSignal(int sig)
         cleanExit = true;
         break;
 
-#ifdef CHESSMATE_LINUX
+#ifdef BUILD_LINUX
     case SIGUSR1:
         LOGC("Flushing the logger");
         flushLog = true;
@@ -56,7 +56,7 @@ void HandleSignal(int sig)
 
     case SIGSYS:
     case SIGBUS:
-#endif // CHESSMATE_LINUX
+#endif // BUILD_LINUX
     case SIGILL:
     case SIGFPE:
     case SIGABRT:
@@ -95,12 +95,12 @@ void SetupSignalHandler()
 {
     signal(SIGINT, HandleSignal);
     signal(SIGTERM, HandleSignal);
-#ifdef CHESSMATE_LINUX
+#ifdef BUILD_LINUX
     // TODO USR1 and USR2 don't exist in Windows - how to flush buffer with signals?
     signal(SIGUSR1, HandleSignal);
     signal(SIGSYS, HandleSignal);
     signal(SIGBUS, HandleSignal);
-#endif // CHESSMATE_LINUX
+#endif // BUILD_LINUX
     signal(SIGILL, HandleSignal);
     signal(SIGFPE, HandleSignal);
     signal(SIGABRT, HandleSignal);
