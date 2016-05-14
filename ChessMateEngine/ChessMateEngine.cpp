@@ -19,39 +19,45 @@
 static int g_chessMatePort(12389);
 
 static std::atomic_bool g_aKeepRunning(true);
+static std::atomic_bool g_aFlushOnExit(false);
 static std::atomic_int g_aExitSignal(0);
 
 //=============================================================================
-void CleanExit(int sig)
+void CleanExit(int exitCode, bool flushLog)
 {
-    g_aExitSignal.store(sig);
+    bool expected = false;
+
+    g_aExitSignal.store(exitCode);
+    g_aFlushOnExit.compare_exchange_strong(expected, flushLog);
     g_aKeepRunning.store(false);
 }
 
 //=============================================================================
 void HandleSignal(int sig)
 {
+    LOGC_NO_LOCK("Received signal %d", sig);
     LOGI(-1, "Received signal %d", sig);
-    LOGC("Received signal %d", sig);
 
     Util::LoggerPtr spLogger = Util::Logger::GetInstance();
 
     bool fatalSignal = false;
     bool cleanExit = false;
-    bool flushLog = false;
 
     switch (sig)
     {
     case SIGINT:
     case SIGTERM:
-        LOGC("Non-fatal signal caught, exiting");
+        LOGC_NO_LOCK("Non-fatal exit signal caught");
         cleanExit = true;
         break;
 
 #ifdef BUILD_LINUX
     case SIGUSR1:
-        LOGC("Flushing the logger");
-        flushLog = true;
+        if (spLogger)
+        {
+            LOGC_NO_LOCK("Flushing the logger");
+            spLogger->Flush();
+        }
         break;
 
     case SIGSYS:
@@ -61,19 +67,13 @@ void HandleSignal(int sig)
     case SIGFPE:
     case SIGABRT:
     case SIGSEGV:
-        LOGC("Fatal signal caught, flushing the logger and exiting");
+        LOGC_NO_LOCK("Fatal exit signal caught");
         fatalSignal = true;
         cleanExit = true;
-        flushLog = true;
         break;
 
     default:
         break;
-    }
-
-    if (flushLog && spLogger)
-    {
-        spLogger->Flush();
     }
 
     if (cleanExit)
@@ -86,7 +86,7 @@ void HandleSignal(int sig)
             exitCode = sig;
         }
 
-        CleanExit(exitCode);
+        CleanExit(exitCode, fatalSignal);
     }
 }
 
@@ -142,7 +142,7 @@ Game::GameManagerPtr InitGameManager(const Util::SocketManagerPtr &spSocketManag
     if (!spGameManager->StartGameManager(g_chessMatePort))
     {
         spGameManager.reset();
-        CleanExit(1);
+        CleanExit(1, false);
     }
 
     return spGameManager;
@@ -160,15 +160,13 @@ void StopGameManager(Game::GameManagerPtr &spGameManager)
 //=============================================================================
 int main(int argc, char **argv)
 {
-    bool flushLogOnExit = false;
-
     for (int i = 1; i < argc; ++i)
     {
         std::string arg(argv[i]);
 
         if (arg == "-f")
         {
-            flushLogOnExit = true;
+            g_aFlushOnExit.store(true);
         }
     }
 
@@ -187,7 +185,7 @@ int main(int argc, char **argv)
     StopGameManager(spGameManager);
     StopSocketManager(spSocketManager);
 
-    if (flushLogOnExit)
+    if (g_aFlushOnExit.load())
     {
         LOGC("Flushing the logger");
         spLogger->Flush();

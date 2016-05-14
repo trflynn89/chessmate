@@ -64,7 +64,6 @@ Logger::Logger() :
 //=============================================================================
 Logger::~Logger()
 {
-    // TODO implement flush on desctruction option
 }
 
 //=============================================================================
@@ -80,11 +79,16 @@ LoggerPtr Logger::GetInstance()
 }
 
 //=============================================================================
-void Logger::ConsoleLog(const std::string &message)
+void Logger::ConsoleLog(bool acquireLock, const std::string &message)
 {
+    std::unique_lock<std::mutex> lock(s_consoleMutex, std::defer_lock);
     std::string timeStr = Util::System::LocalTime();
 
-    std::lock_guard<std::mutex> lock(s_consoleMutex);
+    if (acquireLock)
+    {
+        lock.lock();
+    }
+
     std::cout << timeStr << ": " << message << std::endl;
 }
 
@@ -103,7 +107,7 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
         std::string console = Util::String::Format("%d %d %s:%s:%d %s",
             level, gameId, file, func, line, message);
 
-        ConsoleLog(console);
+        ConsoleLog(true, console);
     }
 }
 

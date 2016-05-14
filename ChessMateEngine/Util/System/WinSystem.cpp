@@ -15,7 +15,7 @@ void SystemImpl::PrintBacktrace()
 
     for (USHORT i = 0; i < traceSize; ++i)
     {
-        LOGC("[%3u] %x", i, trace[i]);
+        LOGC_NO_LOCK("[%3u] %x", i, trace[i]);
     }
 }
 

@@ -45,7 +45,13 @@
 //=============================================================================
 #define LOGC(fmt, ...)                                                        \
 (                                                                             \
-    Util::Logger::ConsoleLog(Util::String::Format(fmt, ##__VA_ARGS__))        \
+    Util::Logger::ConsoleLog(true, Util::String::Format(fmt, ##__VA_ARGS__))  \
+)
+
+//=============================================================================
+#define LOGC_NO_LOCK(fmt, ...)                                                \
+(                                                                             \
+    Util::Logger::ConsoleLog(false, Util::String::Format(fmt, ##__VA_ARGS__)) \
 )
 
 // Max log size (MB) to store in memory. Default 256MB.
@@ -80,7 +86,9 @@ DEFINE_CLASS_PTRS(Logger);
  *   LOGD(game ID, message, message arguments)
  *   For example, LOGD(1, "This is message number %d", 10)
  *
- * The LOGC macro is also provided for thread-safe console logging.
+ * The LOGC macro is also provided for thread-safe console logging. LOGC_NO_LOCK
+ * is also provided for console logging without acquiring the console lock while
+ * inside, e.g., a signal handler.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version February 3, 2016
@@ -107,9 +115,10 @@ public:
     /**
      * Log to the console in a thread-safe manner.
      *
+     * @param bool Whether to acquire lock before logging.
      * @param string The message to log.
      */
-    static void ConsoleLog(const std::string &);
+    static void ConsoleLog(bool, const std::string &);
 
     /**
      * Add a log to the static logger instance.
