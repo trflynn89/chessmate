@@ -36,7 +36,6 @@ void CleanExit(int exitCode, bool flushLog)
 void HandleSignal(int sig)
 {
     LOGC_NO_LOCK("Received signal %d", sig);
-    LOGI(-1, "Received signal %d", sig);
 
     Util::LoggerPtr spLogger = Util::Logger::GetInstance();
 
@@ -55,8 +54,8 @@ void HandleSignal(int sig)
     case SIGUSR1:
         if (spLogger)
         {
-            LOGC_NO_LOCK("Flushing the logger");
-            spLogger->Flush();
+            LOGC_NO_LOCK("Requesting logger flush");
+            spLogger->FlushLater();
         }
         break;
 

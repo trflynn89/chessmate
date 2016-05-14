@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <stdarg.h>
@@ -93,7 +94,7 @@ DEFINE_CLASS_PTRS(Logger);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version February 3, 2016
  */
-class Logger
+class Logger : public std::enable_shared_from_this<Logger>
 {
 public:
     Logger();
@@ -133,6 +134,11 @@ public:
     static void AddLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
     /**
+     * Flush the log at a later time.
+     */
+    void FlushLater();
+
+    /**
      * Flush the log to a file who's name is randomly generated.
      */
     void Flush();
@@ -158,7 +164,9 @@ private:
     std::vector<Log> m_logBuffer;
     std::atomic_ullong m_logIndex;
 
+    std::vector<std::future<void>> m_futures;
     std::atomic_bool m_flushingLog;
+    std::atomic_bool m_flushLog;
 
     const unsigned int m_maxDebugIndex;
     const unsigned int m_maxInfoIndex;

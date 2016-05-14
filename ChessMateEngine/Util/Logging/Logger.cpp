@@ -46,6 +46,7 @@ Logger::Logger() :
     m_logIndex(0),
 
     m_flushingLog(false),
+    m_flushLog(false),
 
     m_maxDebugIndex(static_cast<const unsigned int>(m_maxIndex * 0.5)),
     m_maxInfoIndex(static_cast<const unsigned int>(m_maxIndex * 0.8)),
@@ -64,6 +65,13 @@ Logger::Logger() :
 //=============================================================================
 Logger::~Logger()
 {
+    for (auto &future : m_futures)
+    {
+        if (future.valid())
+        {
+            future.get();
+        }
+    }
 }
 
 //=============================================================================
@@ -115,9 +123,22 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
 void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     const char *func, unsigned int line, const std::string &message)
 {
-    // Disallow logging while the log is being flushed
+    bool expected = true;
+
+    // Disallow logging while the log is being flushed or requested to flush
     // TODO come up with a better way to handle this case
-    if (m_flushingLog.load())
+    if (m_flushLog.compare_exchange_strong(expected, false))
+    {
+        const LoggerPtr &spThis = shared_from_this();
+        auto function = &Logger::Flush;
+
+        m_futures.push_back(
+            std::async(std::launch::async, function, spThis)
+        );
+
+        return;
+    }
+    else if (m_flushingLog.load())
     {
         return;
     }
@@ -160,6 +181,13 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     snprintf(logToEdit->m_file, sizeof(logToEdit->m_file), "%s", file);
     snprintf(logToEdit->m_function, sizeof(logToEdit->m_function), "%s", func);
     snprintf(logToEdit->m_message, sizeof(logToEdit->m_message), "%s", message.c_str());
+}
+
+//=============================================================================
+void Logger::FlushLater()
+{
+    bool expected = false;
+    m_flushLog.compare_exchange_strong(expected, true);
 }
 
 //=============================================================================
