@@ -1,5 +1,6 @@
 #include "NixSystem.h"
 
+#include <atomic>
 #include <chrono>
 #include <cstring>
 #include <execinfo.h>

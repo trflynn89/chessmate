@@ -1,6 +1,8 @@
 #include "WinSystem.h"
 
 #include <Windows.h>
+
+#include <atomic>
 #include <chrono>
 #include <signal.h>
 
