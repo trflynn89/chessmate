@@ -10,7 +10,7 @@ namespace Util {
  * Static class to provide interface to system calls.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version February 3, 2016
+ * @version May 15, 2016
  */
 class System
 {
@@ -34,6 +34,29 @@ public:
      * @return The last system error as a string.
      */
     static std::string GetLastError(int *code = NULL);
+
+    /**
+     * Setup handlers for fatal and non-fatal exit codes, to allow the system
+     * to cleanly exit;
+     */
+    static void SetupSignalHandler();
+
+    /**
+     * Signal the main thread to exit with the given exit code.
+     *
+     * @param int Code to exit with.
+     */
+    static void CleanExit(int);
+
+    /**
+     * @return Whether the system is in a state in which it should keep running.
+     */
+    static bool KeepRunning();
+
+    /**
+     * @return The code the system should exit with.
+     */
+    static int ExitCode();
 };
 
 }

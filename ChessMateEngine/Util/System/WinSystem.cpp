@@ -2,10 +2,63 @@
 
 #include <Windows.h>
 #include <chrono>
+#include <signal.h>
 
 #include <Util/Logging/Logger.h>
 
 namespace Util {
+
+namespace
+{
+    static std::atomic_bool g_aKeepRunning(true);
+    static std::atomic_int g_aExitCode(0);
+
+    //=========================================================================
+    void handleSignal(int sig)
+    {
+        LOGC_NO_LOCK("Received signal %d", sig);
+        LOGI(-1, "Received signal %d", sig);
+
+        LoggerPtr spLogger = Logger::GetInstance();
+
+        bool fatalSignal = false;
+        bool cleanExit = false;
+
+        switch (sig)
+        {
+        case SIGINT:
+        case SIGTERM:
+            LOGC_NO_LOCK("Non-fatal exit signal caught");
+            cleanExit = true;
+            break;
+
+        case SIGILL:
+        case SIGFPE:
+        case SIGABRT:
+        case SIGSEGV:
+            LOGC_NO_LOCK("Fatal exit signal caught");
+            fatalSignal = true;
+            cleanExit = true;
+            break;
+
+        default:
+            break;
+        }
+
+        if (cleanExit)
+        {
+            int exitCode = 0;
+
+            if (fatalSignal)
+            {
+                SystemImpl::PrintBacktrace();
+                exitCode = sig;
+            }
+
+            SystemImpl::CleanExit(exitCode);
+        }
+    }
+}
 
 //=============================================================================
 void SystemImpl::PrintBacktrace()
@@ -41,7 +94,7 @@ std::string SystemImpl::LocalTime(const std::string &fmt)
 }
 
 //=============================================================================
-std::string SystemImpl::GetLastError(int *code)
+std::string SystemImpl::GetLastError(int *pCode)
 {
     int error = WSAGetLastError();
     LPTSTR str = NULL;
@@ -62,12 +115,42 @@ std::string SystemImpl::GetLastError(int *code)
         LocalFree(str);
     }
 
-    if (code != NULL)
+    if (pCode != NULL)
     {
-        *code = error;
+        *pCode = error;
     }
 
     return ret;
+}
+
+//=============================================================================
+void SystemImpl::SetupSignalHandler()
+{
+    signal(SIGINT, handleSignal);
+    signal(SIGTERM, handleSignal);
+    signal(SIGILL, handleSignal);
+    signal(SIGFPE, handleSignal);
+    signal(SIGABRT, handleSignal);
+    signal(SIGSEGV, handleSignal);
+}
+
+//=============================================================================
+void SystemImpl::CleanExit(int exitCode)
+{
+    g_aExitCode.store(exitCode);
+    g_aKeepRunning.store(false);
+}
+
+//=============================================================================
+bool SystemImpl::KeepRunning()
+{
+    return g_aKeepRunning.load();
+}
+
+//=============================================================================
+int SystemImpl::ExitCode()
+{
+    return g_aExitCode.load();
 }
 
 }

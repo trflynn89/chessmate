@@ -5,7 +5,6 @@
 
 #include <atomic>
 #include <chrono>
-#include <signal.h>
 #include <string>
 #include <thread>
 
@@ -18,81 +17,6 @@
 namespace
 {
     static int g_chessMatePort(12389);
-
-    static std::atomic_bool g_aKeepRunning(true);
-    static std::atomic_int g_aExitSignal(0);
-
-    //=========================================================================
-    void CleanExit(int exitCode)
-    {
-        g_aExitSignal.store(exitCode);
-        g_aKeepRunning.store(false);
-    }
-
-    //=========================================================================
-    void HandleSignal(int sig)
-    {
-        LOGC_NO_LOCK("Received signal %d", sig);
-        LOGI(-1, "Received signal %d", sig);
-
-        Util::LoggerPtr spLogger = Util::Logger::GetInstance();
-
-        bool fatalSignal = false;
-        bool cleanExit = false;
-
-        switch (sig)
-        {
-        case SIGINT:
-        case SIGTERM:
-            LOGC_NO_LOCK("Non-fatal exit signal caught");
-            cleanExit = true;
-            break;
-
-    #ifdef BUILD_LINUX
-        case SIGSYS:
-        case SIGBUS:
-    #endif // BUILD_LINUX
-        case SIGILL:
-        case SIGFPE:
-        case SIGABRT:
-        case SIGSEGV:
-            LOGC_NO_LOCK("Fatal exit signal caught");
-            fatalSignal = true;
-            cleanExit = true;
-            break;
-
-        default:
-            break;
-        }
-
-        if (cleanExit)
-        {
-            int exitCode = 0;
-
-            if (fatalSignal)
-            {
-                Util::System::PrintBacktrace();
-                exitCode = sig;
-            }
-
-            CleanExit(exitCode);
-        }
-    }
-
-    //=========================================================================
-    void SetupSignalHandler()
-    {
-        signal(SIGINT, HandleSignal);
-        signal(SIGTERM, HandleSignal);
-    #ifdef BUILD_LINUX
-        signal(SIGSYS, HandleSignal);
-        signal(SIGBUS, HandleSignal);
-    #endif // BUILD_LINUX
-        signal(SIGILL, HandleSignal);
-        signal(SIGFPE, HandleSignal);
-        signal(SIGABRT, HandleSignal);
-        signal(SIGSEGV, HandleSignal);
-    }
 
     //=========================================================================
     Util::LoggerPtr InitLogger()
@@ -140,7 +64,7 @@ namespace
         if (!spGameManager->StartGameManager(g_chessMatePort))
         {
             spGameManager.reset();
-            CleanExit(1);
+            Util::System::CleanExit(1);
         }
 
         return spGameManager;
@@ -160,13 +84,13 @@ namespace
 int main()
 {
     LOGC("Starting ChessMateEngine");
-    SetupSignalHandler();
+    Util::System::SetupSignalHandler();
 
     Util::LoggerPtr spLogger = InitLogger();
     Util::SocketManagerPtr spSocketManager = InitSocketManager();
     Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);
 
-    while (g_aKeepRunning.load())
+    while (Util::System::KeepRunning())
     {
         // TODO perform system monitoring, provide CLI
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -177,5 +101,5 @@ int main()
     StopLogger(spLogger);
 
     LOGC("Exiting ChessMateEngine");
-    return g_aExitSignal.load();
+    return Util::System::ExitCode();
 }

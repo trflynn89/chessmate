@@ -26,4 +26,28 @@ std::string System::GetLastError(int *code)
     return SystemImpl::GetLastError(code);
 }
 
+//=============================================================================
+void System::SetupSignalHandler()
+{
+    return SystemImpl::SetupSignalHandler();
+}
+
+//=============================================================================
+void System::CleanExit(int exitCode)
+{
+    return SystemImpl::CleanExit(exitCode);
+}
+
+//=============================================================================
+bool System::KeepRunning()
+{
+    return SystemImpl::KeepRunning();
+}
+
+//=============================================================================
+int System::ExitCode()
+{
+    return SystemImpl::ExitCode();
+}
+
 }

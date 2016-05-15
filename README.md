@@ -6,7 +6,7 @@ ChessMate is a chess engine written in C++ with a game-playing GUI written in Ja
 
 The engine uses a bitboard representation of the chess board and uses an iterative min-max algorithm with alpha/beta pruning to decide what move to make. Behind the scenes, an asynchronous socket system and a messaging system is used to communicate to clients.
 
-Builds and runs on Windows (Visual Studio 2015), CentOS (gcc 4.8.5), Ubuntu (5.3.1), and Antergos (gcc 5.3.0).
+Builds and runs on Windows (Visual Studio 2015), CentOS (gcc 4.8.5), Ubuntu (gcc 5.3.1), and Antergos (gcc 5.3.0).
 
 ## ChessMateGUI
 
