@@ -14,24 +14,7 @@ namespace Util {
 
 namespace
 {
-    template <typename T>
-    unsigned int increment(std::atomic<T> &value, const T &min, const T &max)
-    {
-        T currValue = 0, nextValue = 0;
-
-        auto getNextValue = [&min, &max](const T &val)
-        {
-            return ((val < max - 1) ? val + 1 : min);
-        };
-
-        do
-        {
-            currValue = value.load();
-            nextValue = getNextValue(currValue);
-        } while (!value.compare_exchange_weak(currValue, nextValue));
-
-        return currValue;
-    }
+    static const std::chrono::seconds s_queueWaitTime(1);
 }
 
 //=============================================================================
@@ -40,24 +23,8 @@ std::mutex Logger::s_consoleMutex;
 
 //=============================================================================
 Logger::Logger() :
-    m_maxIndex((MAX_LOG_SIZE * 1024 * 1024) / sizeof(Log)),
-
-    m_logBuffer(m_maxIndex),
-    m_logIndex(0),
-
-    m_flushingLog(false),
-    m_flushLog(false),
-
-    m_maxDebugIndex(static_cast<const unsigned int>(m_maxIndex * 0.5)),
-    m_maxInfoIndex(static_cast<const unsigned int>(m_maxIndex * 0.8)),
-    m_maxWarningIndex(static_cast<const unsigned int>(m_maxIndex * 0.95)),
-    m_maxErrorIndex(m_maxIndex),
-
-    m_debugIndex(0),
-    m_infoIndex(m_maxDebugIndex),
-    m_warningIndex(m_maxInfoIndex),
-    m_errorIndex(m_maxWarningIndex),
-
+    m_aLogIndex(0U),
+    m_aKeepRunning(false),
     m_startTime(std::chrono::high_resolution_clock::now())
 {
 }
@@ -65,11 +32,30 @@ Logger::Logger() :
 //=============================================================================
 Logger::~Logger()
 {
-    for (auto &future : m_futures)
+    StopLogger();
+}
+
+//=============================================================================
+void Logger::StartLogger()
+{
+    const LoggerPtr &spThis = shared_from_this();
+    auto function = &Logger::ioThread;
+
+    m_aKeepRunning.store(true);
+    m_future = std::async(std::launch::async, function, spThis);
+}
+
+//=============================================================================
+void Logger::StopLogger()
+{
+    LOGC("Stopping logger");
+    bool expected = true;
+
+    if (m_aKeepRunning.compare_exchange_strong(expected, false))
     {
-        if (future.valid())
+        if (m_future.valid())
         {
-            future.get();
+            m_future.get();
         }
     }
 }
@@ -123,95 +109,30 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
 void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     const char *func, unsigned int line, const std::string &message)
 {
-    bool expected = true;
-
-    // Disallow logging while the log is being flushed or requested to flush
-    // TODO come up with a better way to handle this case
-    if (m_flushLog.compare_exchange_strong(expected, false))
-    {
-        const LoggerPtr &spThis = shared_from_this();
-        auto function = &Logger::Flush;
-
-        m_futures.push_back(
-            std::async(std::launch::async, function, spThis)
-        );
-
-        return;
-    }
-    else if (m_flushingLog.load())
-    {
-        return;
-    }
-
     auto now = std::chrono::high_resolution_clock::now();
     auto logTime = std::chrono::duration_cast<std::chrono::duration<double>>(now - m_startTime);
 
-    unsigned int index = 0;
-
-    switch (level)
+    if ((level >= LOG_DEBUG) && (level < NUM_LEVELS))
     {
-    case LOG_DEBUG:
-        index = increment(m_debugIndex, 0U, m_maxDebugIndex);
-        break;
+        Log log;
 
-    case LOG_INFO:
-        index = increment(m_infoIndex, m_maxDebugIndex, m_maxInfoIndex);
-        break;
+        log.m_index = m_aLogIndex.fetch_add(1);
+        log.m_level = level;
+        log.m_time = logTime.count();
+        log.m_gameId = gameId;
+        log.m_line = line;
 
-    case LOG_WARN:
-        index = increment(m_warningIndex, m_maxInfoIndex, m_maxWarningIndex);
-        break;
+        snprintf(log.m_file, sizeof(log.m_file), "%s", file);
+        snprintf(log.m_function, sizeof(log.m_function), "%s", func);
+        snprintf(log.m_message, sizeof(log.m_message), "%s", message.c_str());
 
-    case LOG_ERROR:
-        index = increment(m_errorIndex, m_maxWarningIndex, m_maxErrorIndex);
-        break;
-
-    default:
-        return;
+        m_logQueue.Push(log);
     }
-
-    Log *logToEdit = &m_logBuffer[index];
-
-    logToEdit->m_index = m_logIndex.fetch_add(1);
-    logToEdit->m_level = level;
-    logToEdit->m_time = logTime.count();
-    logToEdit->m_gameId = gameId;
-    logToEdit->m_line = line;
-
-    snprintf(logToEdit->m_file, sizeof(logToEdit->m_file), "%s", file);
-    snprintf(logToEdit->m_function, sizeof(logToEdit->m_function), "%s", func);
-    snprintf(logToEdit->m_message, sizeof(logToEdit->m_message), "%s", message.c_str());
 }
 
 //=============================================================================
-void Logger::FlushLater()
+void Logger::ioThread()
 {
-    bool expected = false;
-    m_flushLog.compare_exchange_strong(expected, true);
-}
-
-//=============================================================================
-void Logger::Flush()
-{
-    bool expected = false;
-
-    // Only allow one thread to flush the log at a time
-    if (!m_flushingLog.compare_exchange_strong(expected, true))
-    {
-        return;
-    }
-
-    // Move the contents of the log buffer to another vector
-    std::vector<Log> logCopy;
-    m_logBuffer.swap(logCopy);
-
-    // Any thread can now try to add or flush logs
-    m_flushingLog.store(false);
-
-    // Sort based on log index
-    auto compare = [](Log a, Log b) { return (a.m_index < b.m_index); };
-    std::sort(logCopy.begin(), logCopy.end(), compare);
-
     std::string randStr = String::String::GenerateRandomString(10);
     std::string timeStr = Util::System::LocalTime();
 
@@ -223,14 +144,15 @@ void Logger::Flush()
     std::ofstream file;
     file.open(fileName.c_str(), std::ios::out);
 
-    unsigned int ptr = 0;
-
-    while ((logCopy[ptr].m_level < NUM_LEVELS) && (ptr < m_maxErrorIndex))
+    while (m_aKeepRunning.load())
     {
-        file << logCopy[ptr++];
-    }
+        Log log;
 
-    file << std::flush;
+        if (m_logQueue.Pop(log, s_queueWaitTime))
+        {
+            file << log << std::flush;
+        }
+    }
 }
 
 }

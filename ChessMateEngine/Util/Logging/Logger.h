@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <Util/Utilities.h>
+#include <Util/Concurrency/ConcurrentQueue.h>
 #include <Util/Logging/Log.h>
 #include <Util/String/String.h>
 
@@ -55,31 +56,16 @@
     Util::Logger::ConsoleLog(false, Util::String::Format(fmt, ##__VA_ARGS__)) \
 )
 
-// Max log size (MB) to store in memory. Default 256MB.
-#ifndef MAX_LOG_SIZE
-    #define MAX_LOG_SIZE 256
-#endif
-
 namespace Util {
 
 DEFINE_CLASS_PTRS(Logger);
 
 /**
- * Provides in-memory, thread safe instrumentation, with the ability to be
- * flushed to a randomly generated file. There are 4 levels of instrumentation:
+ * Provides thread safe instrumentation. There are 4 levels of instrumentation:
  * 1. Debug = Really common points.
  * 2. Info = Less common, event based point (e.g. client connection, game over)
  * 3. Warning = Something went wrong, but the system is OK.
  * 4. Error = Something went wrong, and the sytem is not OK.
- *
- * The amount of memory allocated to the instrumentation buffer is configurable
- * via the macro MAX_LOG_SIZE, in megabytes. Default is 256 MB. The buffer is
- * split into 4 sections, for each instrumentation level. Debug points hold 50%
- * of the buffer, info points hold 30%, warning points hold 15%, and error
- * points hold 5%.
- *
- * The amount of memory allocated per instrumentation point is configurable via
- * the macro MAX_MESSAGE_SIZE, in bytes. Default is 256 bytes.
  *
  * The following macros should be used to add points to the log: LOGD, LOGI,
  * LOGW, LOGE. Usage is as follows:
@@ -92,7 +78,7 @@ DEFINE_CLASS_PTRS(Logger);
  * inside, e.g., a signal handler.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version February 3, 2016
+ * @version May 15, 2016
  */
 class Logger : public std::enable_shared_from_this<Logger>
 {
@@ -100,6 +86,16 @@ public:
     Logger();
 
     ~Logger();
+
+    /**
+     * Start the logger. Create a thread to perform all IO operations.
+     */
+    void StartLogger();
+
+    /**
+     * Stop the logger. Signal for the IO thread to stop.
+     */
+    void StopLogger();
 
     /**
      * Set the logger instance so that the LOG* macros function.
@@ -133,16 +129,6 @@ public:
      */
     static void AddLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
-    /**
-     * Flush the log at a later time.
-     */
-    void FlushLater();
-
-    /**
-     * Flush the log to a file who's name is randomly generated.
-     */
-    void Flush();
-
 private:
     /**
      * Add a log to this logger instance.
@@ -156,27 +142,20 @@ private:
      */
     void addLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
+    /**
+     * Thread to perform all IO operations. Wait for a log item to be available
+     * and write it to disk.
+     */
+    void ioThread();
+
     static LoggerWPtr s_wpInstance;
     static std::mutex s_consoleMutex;
 
-    const unsigned int m_maxIndex;
+    Util::ConcurrentQueue<Log> m_logQueue;
+    std::future<void> m_future;
 
-    std::vector<Log> m_logBuffer;
-    std::atomic_ullong m_logIndex;
-
-    std::vector<std::future<void>> m_futures;
-    std::atomic_bool m_flushingLog;
-    std::atomic_bool m_flushLog;
-
-    const unsigned int m_maxDebugIndex;
-    const unsigned int m_maxInfoIndex;
-    const unsigned int m_maxWarningIndex;
-    const unsigned int m_maxErrorIndex;
-
-    std::atomic<unsigned int> m_debugIndex;
-    std::atomic<unsigned int> m_infoIndex;
-    std::atomic<unsigned int> m_warningIndex;
-    std::atomic<unsigned int> m_errorIndex;
+    std::atomic_ullong m_aLogIndex;
+    std::atomic_bool m_aKeepRunning;
 
     std::chrono::high_resolution_clock::time_point m_startTime;
 };
