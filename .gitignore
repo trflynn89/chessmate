@@ -103,3 +103,6 @@ hs_err_pid*
 *.sdf
 *.cachefile
 *.cache
+*.swp
+*.VC.db
+*.VC.VC.opendb

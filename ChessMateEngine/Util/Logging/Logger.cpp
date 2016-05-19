@@ -140,15 +140,13 @@ void Logger::ioThread()
     String::String::ReplaceAll(timeStr, " ", "_");
 
     std::string fileName = "Log_" + timeStr + "_" + randStr + ".log";
+    std::ofstream file(fileName, std::ios::out);
 
-    std::ofstream file;
-    file.open(fileName.c_str(), std::ios::out);
-
-    while (m_aKeepRunning.load())
+    while (m_aKeepRunning.load() && file.good())
     {
         Log log;
 
-        if (m_logQueue.Pop(log, s_queueWaitTime))
+        if (m_logQueue.Pop(log, s_queueWaitTime) && file.good())
         {
             file << log << std::flush;
         }
