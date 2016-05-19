@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <fstream>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -89,8 +90,10 @@ public:
 
     /**
      * Start the logger. Create a thread to perform all IO operations.
+     *
+     * @return True if the logger was started successfully.
      */
-    void StartLogger();
+    bool StartLogger();
 
     /**
      * Stop the logger. Signal for the IO thread to stop.
@@ -151,6 +154,7 @@ private:
     static LoggerWPtr s_wpInstance;
     static std::mutex s_consoleMutex;
 
+    std::ofstream m_logFile;
     Util::ConcurrentQueue<Log> m_logQueue;
     std::future<void> m_future;
 

@@ -23,8 +23,15 @@ namespace
     {
         auto spLogger = std::make_shared<Util::Logger>();
 
-        Util::Logger::SetInstance(spLogger);
-        spLogger->StartLogger();
+        if (spLogger->StartLogger())
+        {
+            Util::Logger::SetInstance(spLogger);
+        }
+        else
+        {
+            LOGC("Could not start logger, using console instead");
+            spLogger.reset();
+        }
 
         return spLogger;
     }

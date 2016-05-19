@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
-#include <fstream>
 #include <limits.h>
 
 #include "Logger.h"
@@ -36,13 +35,27 @@ Logger::~Logger()
 }
 
 //=============================================================================
-void Logger::StartLogger()
+bool Logger::StartLogger()
 {
-    const LoggerPtr &spThis = shared_from_this();
-    auto function = &Logger::ioThread;
+    std::string randStr = String::GenerateRandomString(10);
+    std::string timeStr = Util::System::LocalTime();
 
-    m_aKeepRunning.store(true);
-    m_future = std::async(std::launch::async, function, spThis);
+    String::ReplaceAll(timeStr, ":", "-");
+    String::ReplaceAll(timeStr, " ", "_");
+
+    std::string fileName = String::Format("Log_%s_%s.log", timeStr, randStr);
+    m_logFile.open(fileName, std::ios::out);
+
+    if (m_logFile.good())
+    {
+        const LoggerPtr &spThis = shared_from_this();
+        auto function = &Logger::ioThread;
+
+        m_aKeepRunning.store(true);
+        m_future = std::async(std::launch::async, function, spThis);
+    }
+
+    return m_future.valid();
 }
 
 //=============================================================================
@@ -92,7 +105,7 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
 {
     LoggerPtr spLogger = GetInstance();
 
-    if (spLogger)
+    if (spLogger && spLogger->m_aKeepRunning.load())
     {
         spLogger->addLog(level, gameId, file, func, line, message);
     }
@@ -133,24 +146,18 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
 //=============================================================================
 void Logger::ioThread()
 {
-    std::string randStr = String::String::GenerateRandomString(10);
-    std::string timeStr = Util::System::LocalTime();
-
-    String::String::ReplaceAll(timeStr, ":", "-");
-    String::String::ReplaceAll(timeStr, " ", "_");
-
-    std::string fileName = "Log_" + timeStr + "_" + randStr + ".log";
-    std::ofstream file(fileName, std::ios::out);
-
-    while (m_aKeepRunning.load() && file.good())
+    while (m_aKeepRunning.load() && m_logFile.good())
     {
         Log log;
 
-        if (m_logQueue.Pop(log, s_queueWaitTime) && file.good())
+        if (m_logQueue.Pop(log, s_queueWaitTime) && m_logFile.good())
         {
-            file << log << std::flush;
+            m_logFile << log << std::flush;
         }
     }
+
+    // Clear in case log file was in a bad state before StopLogger() was called
+    m_aKeepRunning.store(false);
 }
 
 }
