@@ -23,7 +23,14 @@ char System::GetSeparator()
 //=============================================================================
 std::string System::GetTempDirectory()
 {
-    return SystemImpl::GetTempDirectory();
+    std::string ret = SystemImpl::GetTempDirectory();
+
+    if (ret.back() == System::GetSeparator())
+    {
+        ret = ret.substr(0, ret.size() - 1);
+    }
+
+    return ret;
 }
 
 //=============================================================================

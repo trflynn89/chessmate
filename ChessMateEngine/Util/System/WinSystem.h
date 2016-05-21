@@ -13,6 +13,9 @@ namespace Util {
 class SystemImpl
 {
 public:
+    static bool MakeDirectory(const std::string &);
+    static char GetSeparator();
+    static std::string GetTempDirectory();
     static void PrintBacktrace();
     static std::string LocalTime(const std::string &);
     static std::string GetLastError(int *);

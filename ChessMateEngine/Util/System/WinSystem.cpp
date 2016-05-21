@@ -4,6 +4,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <shlobj.h>
 #include <signal.h>
 
 #include <Util/Logging/Logger.h>
@@ -60,6 +61,38 @@ namespace
             SystemImpl::CleanExit(exitCode);
         }
     }
+}
+
+//=============================================================================
+bool SystemImpl::MakeDirectory(const std::string &path)
+{
+    int ret = SHCreateDirectoryEx(NULL, path.c_str(), NULL);
+
+    return (
+        (ret == ERROR_SUCCESS) ||
+        (ret == ERROR_FILE_EXISTS) ||
+        (ret == ERROR_ALREADY_EXISTS)
+    );
+}
+
+//=============================================================================
+char SystemImpl::GetSeparator()
+{
+    return '\\';
+}
+
+//=============================================================================
+std::string SystemImpl::GetTempDirectory()
+{
+    TCHAR buff[MAX_PATH];
+    std::string ret;
+
+    if (GetTempPath(MAX_PATH, buff) > 0)
+    {
+        ret = std::string(buff);
+    }
+
+    return ret;
 }
 
 //=============================================================================

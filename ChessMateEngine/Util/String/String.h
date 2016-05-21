@@ -124,7 +124,7 @@ private:
      * Terminator for the variadic template formatter. Join the last string
      * into the given ostringstream. Only valid for string-like types.
      */
-    template <typename T, typename std::enable_if<is_string<T>{}>::type* = nullptr>
+    template <typename T>
     static void join(std::ostringstream &, const char, T &);
 
     /**
@@ -225,7 +225,7 @@ void String::join(std::ostringstream &stream, const char separator, T &path, con
 }
 
 //=============================================================================
-template <typename T, typename std::enable_if<is_string<T>{}>::type*>
+template <typename T>
 void String::join(std::ostringstream &stream, const char, T &path)
 {
     stream << path;
