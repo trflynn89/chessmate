@@ -16,12 +16,13 @@
 
 namespace
 {
-    static int g_chessMatePort(12389);
+    static size_t g_maxLogFileSize = 20 << 20;
+    static int g_chessMatePort = 12389;
 
     //=========================================================================
     Util::LoggerPtr InitLogger()
     {
-        auto spLogger = std::make_shared<Util::Logger>();
+        auto spLogger = std::make_shared<Util::Logger>(g_maxLogFileSize);
 
         if (spLogger->StartLogger())
         {

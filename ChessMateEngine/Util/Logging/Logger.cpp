@@ -21,8 +21,9 @@ LoggerWPtr Logger::s_wpInstance;
 std::mutex Logger::s_consoleMutex;
 
 //=============================================================================
-Logger::Logger() :
-    m_aLogIndex(0U),
+Logger::Logger(size_t maxFileSize) :
+    m_maxFileSize(maxFileSize),
+    m_fileSize(0),
     m_aKeepRunning(false),
     m_startTime(std::chrono::high_resolution_clock::now())
 {
@@ -37,16 +38,7 @@ Logger::~Logger()
 //=============================================================================
 bool Logger::StartLogger()
 {
-    std::string randStr = String::GenerateRandomString(10);
-    std::string timeStr = Util::System::LocalTime();
-
-    String::ReplaceAll(timeStr, ":", "-");
-    String::ReplaceAll(timeStr, " ", "_");
-
-    std::string fileName = String::Format("Log_%s_%s.log", timeStr, randStr);
-    m_logFile.open(fileName, std::ios::out);
-
-    if (m_logFile.good())
+    if (createLogFile())
     {
         const LoggerPtr &spThis = shared_from_this();
         auto function = &Logger::ioThread;
@@ -129,7 +121,6 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     {
         Log log;
 
-        log.m_index = m_aLogIndex.fetch_add(1);
         log.m_level = level;
         log.m_time = logTime.count();
         log.m_gameId = gameId;
@@ -144,15 +135,48 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
 }
 
 //=============================================================================
+bool Logger::createLogFile()
+{
+    std::string randStr = String::GenerateRandomString(10);
+    std::string timeStr = Util::System::LocalTime();
+
+    String::ReplaceAll(timeStr, ":", "-");
+    String::ReplaceAll(timeStr, " ", "_");
+
+    std::string fileName = String::Format("Log_%s_%s.log", timeStr, randStr);
+
+    if (m_logFile.is_open())
+    {
+        m_logFile.close();
+    }
+
+    LOGC("Creating logger file: %s", fileName);
+    m_logFile.open(fileName, std::ios::out);
+    m_fileSize = 0;
+
+    return m_logFile.good();
+}
+
+//=============================================================================
 void Logger::ioThread()
 {
+    unsigned long long int index = U64(0);
+
     while (m_aKeepRunning.load() && m_logFile.good())
     {
         Log log;
 
         if (m_logQueue.Pop(log, s_queueWaitTime) && m_logFile.good())
         {
-            m_logFile << log << std::flush;
+            const std::string logStr = String::Format("%u\t%s", index++, log);
+
+            m_logFile << logStr << std::flush;
+            m_fileSize += logStr.size();
+
+            if (m_fileSize > m_maxFileSize)
+            {
+                createLogFile();
+            }
         }
     }
 

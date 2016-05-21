@@ -84,8 +84,16 @@ DEFINE_CLASS_PTRS(Logger);
 class Logger : public std::enable_shared_from_this<Logger>
 {
 public:
-    Logger();
+    /**
+     * Constructor.
+     *
+     * @param size_t Max log file size (in bytes) before rotating the log file.
+     */
+    Logger(size_t);
 
+    /**
+     * Destructor - stop the logger if necessary.
+     */
     ~Logger();
 
     /**
@@ -146,6 +154,13 @@ private:
     void addLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
     /**
+     * Create the log file. If a log file is already open, close it.
+     *
+     * @return True if the log file could be opened.
+     */
+    bool createLogFile();
+
+    /**
      * Thread to perform all IO operations. Wait for a log item to be available
      * and write it to disk.
      */
@@ -158,10 +173,12 @@ private:
     Util::ConcurrentQueue<Log> m_logQueue;
     std::future<void> m_future;
 
-    std::atomic_ullong m_aLogIndex;
+    const size_t m_maxFileSize;
+    size_t m_fileSize;
+
     std::atomic_bool m_aKeepRunning;
 
-    std::chrono::high_resolution_clock::time_point m_startTime;
+    const std::chrono::high_resolution_clock::time_point m_startTime;
 };
 
 }

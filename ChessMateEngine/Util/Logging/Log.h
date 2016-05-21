@@ -26,21 +26,19 @@ namespace Util {
 /**
  * Struct to store data about single log. A log contains:
  *
- * 1. The log index.
- * 2. The log level.
- * 3. The time the log was made.
- * 4. The ID of the game/socket making the log.
- * 5. The file name the log is in.
- * 6. The function name the log is in.
- * 7. The line number the log is on.
- * 8. The message being logged.
+ * 1. The log level.
+ * 2. The time the log was made.
+ * 3. The ID of the game/socket making the log.
+ * 4. The file name the log is in.
+ * 5. The function name the log is in.
+ * 6. The line number the log is on.
+ * 7. The message being logged.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version December 19, 2012
  */
 struct Log
 {
-    unsigned long long int m_index = UINT_MAX;
     LogLevel m_level = NUM_LEVELS;
     double m_time = -1.0;
     ssize_t m_gameId = -1;
@@ -51,7 +49,6 @@ struct Log
 
     friend std::ostream &operator << (std::ostream &stream, const Log &log)
     {
-        stream << log.m_index << "\t";
         stream << log.m_level << "\t";
         stream << log.m_time << "\t";
         stream << log.m_gameId << "\t";
