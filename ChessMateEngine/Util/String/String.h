@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <Util/Utilities.h>
 #include <Util/Random/RandomDevice.h>
 
 namespace Util {
@@ -12,7 +13,7 @@ namespace Util {
  * Static class to provide string utilities not provided by the STL.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version September 7, 2014
+ * @version May 21, 2016
  */
 class String
 {
@@ -86,6 +87,19 @@ public:
     template <typename ... Args>
     static std::string Format(const char *, const Args &...);
 
+    /**
+     * Concatenate a list of strings with the given separator.
+     *
+     * @tparam Args Variadic template arguments.
+     *
+     * @param char Character to use as a separator.
+     * @param Args The variadic list of string-like arguments to be joined.
+     *
+     * @return The resulting join of the given arguments.
+     */
+    template <typename ... Args>
+    static std::string Join(const char, const Args &...);
+
 private:
     /**
      * Recursively format a string with one argument. The result is streamed
@@ -99,6 +113,19 @@ private:
      * string into the given ostringstream.
      */
     static void format(std::ostringstream &, const char *);
+
+    /**
+     * Recursively join one argument into the given ostringstream.
+     */
+    template <typename T, typename ... Args>
+    static void join(std::ostringstream &, const char, T &, const Args &...);
+
+    /**
+     * Terminator for the variadic template formatter. Join the last string
+     * into the given ostringstream. Only valid for string-like types.
+     */
+    template <typename T, typename std::enable_if<is_string<T>{}>::type* = nullptr>
+    static void join(std::ostringstream &, const char, T &);
 
     /**
      * String to contain all alphanumeric characters with both capitalizations.
@@ -177,6 +204,31 @@ void String::format(std::ostringstream &stream, const char *fmt, T &value, const
 
         stream << *fmt;
     }
+}
+
+//=============================================================================
+template <typename ... Args>
+std::string String::Join(const char separator, const Args &...args)
+{
+    std::ostringstream stream;
+    join(stream, separator, args...);
+
+    return stream.str();
+}
+
+//=============================================================================
+template <typename T, typename ... Args>
+void String::join(std::ostringstream &stream, const char separator, T &path, const Args &...args)
+{
+    stream << path << separator;
+    join(stream, separator, args...);
+}
+
+//=============================================================================
+template <typename T, typename std::enable_if<is_string<T>{}>::type*>
+void String::join(std::ostringstream &stream, const char, T &path)
+{
+    stream << path;
 }
 
 }

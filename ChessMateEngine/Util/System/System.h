@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <string>
 
 #include <Util/Utilities.h>
@@ -10,11 +11,30 @@ namespace Util {
  * Static class to provide interface to system calls.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version May 15, 2016
+ * @version May 21, 2016
  */
 class System
 {
 public:
+    /**
+     * Create a directory and the path to that directory, if needed.
+     *
+     * @param std::string Path to the directory to create.
+     *
+     * @return True if the directory could be created (or already exists).
+     */
+    static bool MakeDirectory(const std::string &);
+
+    /**
+     * @return The system's path separator.
+     */
+    static char GetSeparator();
+
+    /**
+     * @return The system's temporary directory path.
+     */
+    static std::string GetTempDirectory();
+
     /**
      * Print the backtrace to stderr.
      */

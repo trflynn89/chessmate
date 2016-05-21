@@ -9,6 +9,24 @@
 namespace Util {
 
 //=============================================================================
+bool System::MakeDirectory(const std::string &path)
+{
+    return SystemImpl::MakeDirectory(path);
+}
+
+//=============================================================================
+char System::GetSeparator()
+{
+    return SystemImpl::GetSeparator();
+}
+
+//=============================================================================
+std::string System::GetTempDirectory()
+{
+    return SystemImpl::GetTempDirectory();
+}
+
+//=============================================================================
 void System::PrintBacktrace()
 {
     SystemImpl::PrintBacktrace();

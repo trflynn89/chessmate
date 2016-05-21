@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 // Determine operating system
 #if defined(_WIN32)
@@ -30,3 +31,19 @@
     typedef std::shared_ptr<classname> classname##Ptr;  \
     typedef std::unique_ptr<classname> classname##UPtr; \
     typedef std::weak_ptr<classname> classname##WPtr;
+
+// Custom type traits
+namespace Util
+{
+    template <typename T>
+    struct is_string : public std::integral_constant<bool,
+        std::is_same<char,         typename std::decay<T>::type>::value ||
+        std::is_same<char *,       typename std::decay<T>::type>::value ||
+        std::is_same<const char,   typename std::decay<T>::type>::value ||
+        std::is_same<const char *, typename std::decay<T>::type>::value>
+    {
+    };
+
+    template <> struct is_string<std::string> : public std::true_type { };
+    template <> struct is_string<const std::string> : public std::true_type { };
+}

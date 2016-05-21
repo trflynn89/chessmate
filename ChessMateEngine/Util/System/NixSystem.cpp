@@ -2,12 +2,15 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <execinfo.h>
 #include <signal.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <Util/Logging/Logger.h>
+#include <Util/String/String.h>
 
 namespace Util {
 
@@ -63,6 +66,60 @@ namespace
             SystemImpl::CleanExit(exitCode);
         }
     }
+}
+
+//=============================================================================
+bool SystemImpl::MakeDirectory(const std::string &path)
+{
+    static const mode_t mode = S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH;
+    struct stat st;
+
+    if (::stat(path.c_str(), &st) == 0)
+    {
+        if (!S_ISDIR(st.st_mode))
+        {
+            errno = ENOTDIR;
+            return false;
+        }
+
+        return true;
+    }
+
+    size_t pos = path.rfind('/');
+
+    if (pos != std::string::npos)
+    {
+        if (!MakeDirectory(path.substr(0, pos)))
+        {
+            return false;
+        }
+    }
+
+    return ((::mkdir(path.c_str(), mode) == 0) || (errno == EEXIST));
+}
+
+//=============================================================================
+char SystemImpl::GetSeparator()
+{
+    return '/';
+}
+
+//=============================================================================
+std::string SystemImpl::GetTempDirectory()
+{
+    static const std::string envs[] = { "TMPDIR", "TMP", "TEMP", "TEMPDIR", "" };
+
+    for (int i = 0; !envs[i].empty(); ++i)
+    {
+        char *dir = ::getenv(envs[i].c_str());
+
+        if (dir != NULL)
+        {
+            return std::string(dir);
+        }
+    }
+
+    return std::string("/tmp");
 }
 
 //=============================================================================

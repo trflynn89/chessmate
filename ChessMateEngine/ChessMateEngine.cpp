@@ -1,4 +1,4 @@
-// TODO: log file location, fix evaluator, instrument, faster bit board
+// TODO: fix evaluator, instrument, faster bit board
 // TODO: add ID to async requests
 // TODO: max pending IO requests
 // TODO: use shared_ptr more liberally
@@ -22,7 +22,12 @@ namespace
     //=========================================================================
     Util::LoggerPtr InitLogger()
     {
-        auto spLogger = std::make_shared<Util::Logger>(g_maxLogFileSize);
+        const char sep = Util::System::GetSeparator();
+
+        const std::string temp = Util::System::GetTempDirectory();
+        const std::string path = Util::String::Join(sep, temp, "ChessMate");
+
+        auto spLogger = std::make_shared<Util::Logger>(path, g_maxLogFileSize);
 
         if (spLogger->StartLogger())
         {

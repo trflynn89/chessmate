@@ -21,7 +21,8 @@ LoggerWPtr Logger::s_wpInstance;
 std::mutex Logger::s_consoleMutex;
 
 //=============================================================================
-Logger::Logger(size_t maxFileSize) :
+Logger::Logger(const std::string &filePath, size_t maxFileSize) :
+    m_filePath(filePath),
     m_maxFileSize(maxFileSize),
     m_fileSize(0),
     m_aKeepRunning(false),
@@ -38,7 +39,7 @@ Logger::~Logger()
 //=============================================================================
 bool Logger::StartLogger()
 {
-    if (createLogFile())
+    if (System::MakeDirectory(m_filePath) && createLogFile())
     {
         const LoggerPtr &spThis = shared_from_this();
         auto function = &Logger::ioThread;
@@ -81,7 +82,7 @@ LoggerPtr Logger::GetInstance()
 void Logger::ConsoleLog(bool acquireLock, const std::string &message)
 {
     std::unique_lock<std::mutex> lock(s_consoleMutex, std::defer_lock);
-    std::string timeStr = Util::System::LocalTime();
+    std::string timeStr = System::LocalTime();
 
     if (acquireLock)
     {
@@ -103,7 +104,7 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
     }
     else
     {
-        std::string console = Util::String::Format("%d %d %s:%s:%d %s",
+        std::string console = String::Format("%d %d %s:%s:%d %s",
             level, gameId, file, func, line, message);
 
         ConsoleLog(true, console);
@@ -138,12 +139,13 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
 bool Logger::createLogFile()
 {
     std::string randStr = String::GenerateRandomString(10);
-    std::string timeStr = Util::System::LocalTime();
+    std::string timeStr = System::LocalTime();
 
     String::ReplaceAll(timeStr, ":", "-");
     String::ReplaceAll(timeStr, " ", "_");
 
     std::string fileName = String::Format("Log_%s_%s.log", timeStr, randStr);
+    fileName = String::Join(System::GetSeparator(), m_filePath, fileName);
 
     if (m_logFile.is_open())
     {

@@ -79,7 +79,7 @@ DEFINE_CLASS_PTRS(Logger);
  * inside, e.g., a signal handler.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version May 15, 2016
+ * @version May 21, 2016
  */
 class Logger : public std::enable_shared_from_this<Logger>
 {
@@ -87,9 +87,10 @@ public:
     /**
      * Constructor.
      *
+     * @param string Path to store the log file.
      * @param size_t Max log file size (in bytes) before rotating the log file.
      */
-    Logger(size_t);
+    Logger(const std::string &, size_t);
 
     /**
      * Destructor - stop the logger if necessary.
@@ -173,6 +174,7 @@ private:
     Util::ConcurrentQueue<Log> m_logQueue;
     std::future<void> m_future;
 
+    const std::string m_filePath;
     const size_t m_maxFileSize;
     size_t m_fileSize;
 
