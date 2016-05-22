@@ -36,23 +36,18 @@
 namespace Util
 {
     template <typename T>
-    struct is_string : public std::integral_constant<bool,
+    using is_string = std::integral_constant<bool,
         std::is_same<char,              typename std::decay<T>::type>::value ||
         std::is_same<char *,            typename std::decay<T>::type>::value ||
         std::is_same<std::string,       typename std::decay<T>::type>::value ||
         std::is_same<const char,        typename std::decay<T>::type>::value ||
         std::is_same<const char *,      typename std::decay<T>::type>::value ||
-        std::is_same<const std::string, typename std::decay<T>::type>::value>
-    {
-    };
+        std::is_same<const std::string, typename std::decay<T>::type>::value
+    >;
 
     template <typename T, typename S = void>
-    struct enable_if_str : public std::enable_if<is_string<T>::value, S>
-    {
-    };
+    using enable_if_str = std::enable_if<is_string<T>::value, S>;
 
     template <typename T, typename S = void>
-    struct disable_if_str : public std::enable_if<!is_string<T>::value, S>
-    {
-    };
+    using disable_if_str = std::enable_if<!is_string<T>::value, S>;
 }
