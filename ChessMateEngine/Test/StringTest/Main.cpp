@@ -120,3 +120,43 @@ TEST(StringTest, FormatTest)
     ASSERT_EQ("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
     ASSERT_EQ("test 1 true 2.100000 false 1.230000e+02 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
 }
+
+//=============================================================================
+TEST(StringTest, JoinTest)
+{
+    std::string str1("a");
+    const std::string str2("b");
+
+    char *ctr1 = (char *)"c";
+    const char *ctr2 = "d";
+
+    char chr1 = 'e';
+    const char chr2 = 'f';
+
+    char arr1[] = { 'g', '\0' };
+    const char arr2[] = { 'h', '\0' };
+
+    ASSERT_EQ("a", Util::String::Join('.', str1));
+    ASSERT_EQ("b", Util::String::Join('.', str2));
+    ASSERT_EQ("c", Util::String::Join('.', ctr1));
+    ASSERT_EQ("d", Util::String::Join('.', ctr2));
+    ASSERT_EQ("e", Util::String::Join('.', chr1));
+    ASSERT_EQ("f", Util::String::Join('.', chr2));
+    ASSERT_EQ("g", Util::String::Join('.', arr1));
+    ASSERT_EQ("h", Util::String::Join('.', arr2));
+
+    ASSERT_EQ("a,b", Util::String::Join(',', str1, str2));
+    ASSERT_EQ("a,c", Util::String::Join(',', str1, ctr1));
+    ASSERT_EQ("b,e", Util::String::Join(',', str2, chr1));
+    ASSERT_EQ("a,h", Util::String::Join(',', str1, arr2));
+    ASSERT_EQ("c,d", Util::String::Join(',', ctr1, ctr2));
+    ASSERT_EQ("c,f", Util::String::Join(',', ctr1, chr2));
+    ASSERT_EQ("d,g", Util::String::Join(',', ctr2, arr1));
+    ASSERT_EQ("e,f", Util::String::Join(',', chr1, chr2));
+    ASSERT_EQ("e,g", Util::String::Join(',', chr1, arr1));
+    ASSERT_EQ("g,h", Util::String::Join(',', arr1, arr2));
+
+    ASSERT_EQ("a:b:c:d:e:f:g:h", Util::String::Join(':',
+        str1, str2, ctr1, ctr2, chr1, chr2, arr1, arr2)
+    );
+}

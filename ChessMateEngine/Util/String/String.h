@@ -98,7 +98,7 @@ public:
      * @return The resulting join of the given arguments.
      */
     template <typename ... Args>
-    static std::string Join(const char, const Args &...);
+    static std::string Join(const char &, const Args &...);
 
 private:
     /**
@@ -106,7 +106,7 @@ private:
      * into the given ostringstream.
      */
     template <typename T, typename ... Args>
-    static void format(std::ostringstream &, const char *, T &, const Args &...);
+    static void format(std::ostringstream &, const char *, const T &, const Args &...);
 
     /**
      * Terminator for the variadic template formatter. Stream the rest of the
@@ -118,14 +118,16 @@ private:
      * Recursively join one argument into the given ostringstream.
      */
     template <typename T, typename ... Args>
-    static void join(std::ostringstream &, const char, T &, const Args &...);
+    static typename enable_if_str<T>::type join(
+        std::ostringstream &, const char &, const T &, const Args &...);
 
     /**
-     * Terminator for the variadic template formatter. Join the last string
+     * Terminator for the variadic template joiner. Join the last string
      * into the given ostringstream. Only valid for string-like types.
      */
     template <typename T>
-    static typename enable_if_str<T>::type join(std::ostringstream &, const char, T &);
+    static typename enable_if_str<T>::type join(
+        std::ostringstream &, const char &, const T &);
 
     /**
      * String to contain all alphanumeric characters with both capitalizations.
@@ -160,7 +162,7 @@ std::string String::Format(const char *fmt, const Args &...args)
 
 //=============================================================================
 template <typename T, typename ... Args>
-void String::format(std::ostringstream &stream, const char *fmt, T &value, const Args &...args)
+void String::format(std::ostringstream &stream, const char *fmt, const T &value, const Args &...args)
 {
     for ( ; *fmt != '\0'; ++fmt)
     {
@@ -208,7 +210,7 @@ void String::format(std::ostringstream &stream, const char *fmt, T &value, const
 
 //=============================================================================
 template <typename ... Args>
-std::string String::Join(const char separator, const Args &...args)
+std::string String::Join(const char &separator, const Args &...args)
 {
     std::ostringstream stream;
     join(stream, separator, args...);
@@ -218,17 +220,26 @@ std::string String::Join(const char separator, const Args &...args)
 
 //=============================================================================
 template <typename T, typename ... Args>
-void String::join(std::ostringstream &stream, const char separator, T &path, const Args &...args)
+typename enable_if_str<T>::type String::join(
+    std::ostringstream &stream,
+    const char &separator,
+    const T &str,
+    const Args &...args
+)
 {
-    stream << path << separator;
+    stream << str << separator;
     join(stream, separator, args...);
 }
 
 //=============================================================================
 template <typename T>
-typename enable_if_str<T>::type String::join(std::ostringstream &stream, const char, T &path)
+typename enable_if_str<T>::type String::join(
+    std::ostringstream &stream,
+    const char &,
+    const T &str
+)
 {
-    stream << path;
+    stream << str;
 }
 
 }
