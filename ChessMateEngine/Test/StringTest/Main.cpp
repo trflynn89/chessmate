@@ -159,4 +159,8 @@ TEST(StringTest, JoinTest)
     ASSERT_EQ("a:b:c:d:e:f:g:h", Util::String::Join(':',
         str1, str2, ctr1, ctr2, chr1, chr2, arr1, arr2)
     );
+
+    ASSERT_THROW(Util::String::Join(' ', str1, str2, 1), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', str1, true, str2), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', 1.234, str1, str2), std::invalid_argument);
 }

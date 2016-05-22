@@ -50,4 +50,9 @@ namespace Util
     struct enable_if_str : public std::enable_if<is_string<T>::value, S>
     {
     };
+
+    template <typename T, typename S = void>
+    struct disable_if_str : public std::enable_if<!is_string<T>::value, S>
+    {
+    };
 }

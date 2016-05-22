@@ -42,17 +42,17 @@ clean:
 
 # Run all unit tests defined in Targets.mk
 tests:
-	$(Q)numPass=0; numFail=0;                                                 \
-	for tgt in $(TEST_TARGETS) ; do                                           \
-		echo -e "------------- [Test $$tgt] -------------\n";                 \
-		$(MAKE) -j $(NUM_CORES) target=$$tgt test;                            \
-		if [ $$? -ne 0 ] ; then                                               \
-			echo -e "[ERROR $$tgt]\n";                                        \
-			numFail=$$((numFail+1));                                          \
-		else                                                                  \
-			echo -e "[SUCCESS $$tgt]\n";                                      \
-			numPass=$$((numPass+1));                                          \
-		fi;                                                                   \
-	done;                                                                     \
-	echo -e "------------- [Pass $$numPass, Fail $$numFail] -------------\n"; \
+	$(Q)numPass=0; numFail=0; \
+	for tgt in $(TEST_TARGETS) ; do \
+		printf -- "----------- [Test $$tgt] -----------\n\n"; \
+		$(MAKE) -j $(NUM_CORES) target=$$tgt test; \
+		if [ $$? -ne 0 ] ; then \
+			printf -- "[ERROR $$tgt]\n\n"; \
+			numFail=$$((numFail+1)); \
+		else \
+			printf -- "[SUCCESS $$tgt]\n\n"; \
+			numPass=$$((numPass+1)); \
+		fi; \
+	done; \
+	printf -- "----------- [Pass $$numPass, Fail $$numFail] -----------\n\n"; \
 	exit $$numFail

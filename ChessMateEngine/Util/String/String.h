@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -122,11 +123,25 @@ private:
         std::ostringstream &, const char &, const T &, const Args &...);
 
     /**
+     * @throws std::invalid_argument
+     */
+    template <typename T, typename ... Args>
+    static typename disable_if_str<T>::type join(
+        std::ostringstream &, const char &, const T &, const Args &...);
+
+    /**
      * Terminator for the variadic template joiner. Join the last string
      * into the given ostringstream. Only valid for string-like types.
      */
     template <typename T>
     static typename enable_if_str<T>::type join(
+        std::ostringstream &, const char &, const T &);
+
+    /**
+     * @throws std::invalid_argument
+     */
+    template <typename T>
+    static typename disable_if_str<T>::type join(
         std::ostringstream &, const char &, const T &);
 
     /**
@@ -232,6 +247,19 @@ typename enable_if_str<T>::type String::join(
 }
 
 //=============================================================================
+template <typename T, typename ... Args>
+typename disable_if_str<T>::type String::join(
+    std::ostringstream &,
+    const char &,
+    const T &str,
+    const Args &...
+)
+{
+    std::string message = Format("Cannot join non-string argument: %s", str);
+    throw std::invalid_argument(message);
+}
+
+//=============================================================================
 template <typename T>
 typename enable_if_str<T>::type String::join(
     std::ostringstream &stream,
@@ -240,6 +268,18 @@ typename enable_if_str<T>::type String::join(
 )
 {
     stream << str;
+}
+
+//=============================================================================
+template <typename T>
+typename disable_if_str<T>::type String::join(
+    std::ostringstream &,
+    const char &,
+    const T &str
+)
+{
+    std::string message = Format("Cannot join non-string argument: %s", str);
+    throw std::invalid_argument(message);
 }
 
 }
