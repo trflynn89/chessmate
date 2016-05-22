@@ -125,7 +125,7 @@ private:
      * into the given ostringstream. Only valid for string-like types.
      */
     template <typename T>
-    static void join(std::ostringstream &, const char, T &);
+    static typename enable_if_str<T>::type join(std::ostringstream &, const char, T &);
 
     /**
      * String to contain all alphanumeric characters with both capitalizations.
@@ -226,7 +226,7 @@ void String::join(std::ostringstream &stream, const char separator, T &path, con
 
 //=============================================================================
 template <typename T>
-void String::join(std::ostringstream &stream, const char, T &path)
+typename enable_if_str<T>::type String::join(std::ostringstream &stream, const char, T &path)
 {
     stream << path;
 }
