@@ -96,6 +96,8 @@ public:
      * @param char Character to use as a separator.
      * @param Args The variadic list of string-like arguments to be joined.
      *
+     * @throws std::invalid_argument An argument is not string-like.
+     *
      * @return The resulting join of the given arguments.
      */
     template <typename ... Args>
