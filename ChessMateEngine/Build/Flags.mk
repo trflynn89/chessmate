@@ -16,7 +16,7 @@ endif
 
 # Optimize release builds and add GDB symbols to debug builds
 ifeq ($(release), 1)
-	CF_ALL += -O2
+	CF_ALL += -O2 -Werror
 else
 	CF_ALL += -g
 endif
