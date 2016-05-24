@@ -160,6 +160,15 @@ TEST(StringTest, JoinTest)
         str1, str2, ctr1, ctr2, chr1, chr2, arr1, arr2)
     );
 
+    ASSERT_THROW(Util::String::Join(' ', &str1), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', &str2), std::invalid_argument);
+    //ASSERT_THROW(Util::String::Join(' ', &chr1), std::invalid_argument);
+    //ASSERT_THROW(Util::String::Join(' ', &chr2), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', &ctr1), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', &ctr2), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', &arr1), std::invalid_argument);
+    ASSERT_THROW(Util::String::Join(' ', &arr2), std::invalid_argument);
+
     ASSERT_THROW(Util::String::Join(' ', str1, str2, 1234), std::invalid_argument);
     ASSERT_THROW(Util::String::Join(' ', str1, true, str2), std::invalid_argument);
     ASSERT_THROW(Util::String::Join(' ', 1.23, str1, str2), std::invalid_argument);
