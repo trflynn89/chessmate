@@ -56,7 +56,7 @@ public:
     static std::string GenerateRandomString(const unsigned int);
 
     /**
-     * Calculate the entropy of the given string. The large the entropy, the
+     * Calculate the entropy of the given string. The larger the entropy, the
      * more random the string. An entropy of 0.0 implies completely non-random.
      *
      * @param string The string to examine.

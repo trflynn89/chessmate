@@ -36,14 +36,19 @@
 namespace Util
 {
     template <typename T>
+    using base_type =
+        typename std::decay<
+            typename std::remove_pointer<
+                typename std::remove_all_extents<
+                    T
+                >::type
+            >::type
+        >::type;
+
+    template <typename T>
     using is_string = std::integral_constant<bool,
-        std::is_same<char,              typename std::decay<T>::type>::value ||
-        std::is_same<char *,            typename std::decay<T>::type>::value ||
-        std::is_same<std::string,       typename std::decay<T>::type>::value ||
-        std::is_same<const char,        typename std::decay<T>::type>::value ||
-        std::is_same<const char *,      typename std::decay<T>::type>::value ||
-        std::is_same<const std::string, typename std::decay<T>::type>::value
-    >;
+        std::is_same<char,        base_type<T>>::value ||
+        std::is_same<std::string, base_type<T>>::value>;
 
     template <typename T, typename S = void>
     using enable_if_str = std::enable_if<is_string<T>::value, S>;
