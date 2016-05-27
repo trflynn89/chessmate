@@ -102,7 +102,7 @@ float String::CalculateEntropy(const std::string &source)
 }
 
 //=============================================================================
-void String::format(std::ostringstream &stream, const char *fmt)
+void String::format(std::ostream &stream, const char *fmt)
 {
     stream << fmt;
 }

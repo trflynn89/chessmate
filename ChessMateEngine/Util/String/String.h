@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <vector>
 
 #include <Util/Utilities.h>
 #include <Util/Random/RandomDevice.h>
+#include <Util/Traits/TypeTraits.h>
 
 namespace Util {
 
@@ -14,7 +14,7 @@ namespace Util {
  * Static class to provide string utilities not provided by the STL.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version May 21, 2016
+ * @version May 26, 2016
  */
 class String
 {
@@ -89,14 +89,12 @@ public:
     static std::string Format(const char *, const Args &...);
 
     /**
-     * Concatenate a list of strings with the given separator.
+     * Concatenate a list of objects with the given separator.
      *
      * @tparam Args Variadic template arguments.
      *
      * @param char Character to use as a separator.
-     * @param Args The variadic list of string-like arguments to be joined.
-     *
-     * @throws std::invalid_argument An argument is not string-like.
+     * @param Args The variadic list of arguments to be joined.
      *
      * @return The resulting join of the given arguments.
      */
@@ -106,45 +104,29 @@ public:
 private:
     /**
      * Recursively format a string with one argument. The result is streamed
-     * into the given ostringstream.
+     * into the given ostream.
      */
     template <typename T, typename ... Args>
-    static void format(std::ostringstream &, const char *, const T &, const Args &...);
+    static void format(std::ostream &, const char *, const T &, const Args &...);
 
     /**
      * Terminator for the variadic template formatter. Stream the rest of the
-     * string into the given ostringstream.
+     * string into the given ostream.
      */
-    static void format(std::ostringstream &, const char *);
+    static void format(std::ostream &, const char *);
 
     /**
-     * Recursively join one argument into the given ostringstream.
+     * Recursively join one argument into the given ostream.
      */
     template <typename T, typename ... Args>
-    static typename enable_if_str<T>::type join(
-        std::ostringstream &, const char &, const T &, const Args &...);
+    static void join(std::ostream &, const char &, const T &, const Args &...);
 
     /**
-     * @throws std::invalid_argument
-     */
-    template <typename T, typename ... Args>
-    static typename disable_if_str<T>::type join(
-        std::ostringstream &, const char &, const T &, const Args &...);
-
-    /**
-     * Terminator for the variadic template joiner. Join the last string
-     * into the given ostringstream. Only valid for string-like types.
+     * Terminator for the variadic template joiner. Join the last argument
+     * into the given ostream.
      */
     template <typename T>
-    static typename enable_if_str<T>::type join(
-        std::ostringstream &, const char &, const T &);
-
-    /**
-     * @throws std::invalid_argument
-     */
-    template <typename T>
-    static typename disable_if_str<T>::type join(
-        std::ostringstream &, const char &, const T &);
+    static void join(std::ostream &, const char &, const T &);
 
     /**
      * String to contain all alphanumeric characters with both capitalizations.
@@ -160,6 +142,19 @@ private:
      * A RNG for uniform integers.
      */
     static UniformIntegerDevice<size_t, std::mt19937> s_randomDevice;
+
+    /**
+     * Stream the given value into the given stream.
+     */
+    template <typename T, if_ostream::enabled<T> = 0>
+    static bool getValue(std::ostream &, const T &);
+
+    /**
+     * Streams are not enabled for this type, so do nothing.
+     */
+    template <typename T, if_ostream::disabled<T> = 0>
+    static bool getValue(std::ostream &, const T &);
+
 };
 
 //=============================================================================
@@ -179,7 +174,12 @@ std::string String::Format(const char *fmt, const Args &...args)
 
 //=============================================================================
 template <typename T, typename ... Args>
-void String::format(std::ostringstream &stream, const char *fmt, const T &value, const Args &...args)
+void String::format(
+    std::ostream &stream,
+    const char *fmt,
+    const T &value,
+    const Args &...args
+)
 {
     for ( ; *fmt != '\0'; ++fmt)
     {
@@ -195,25 +195,29 @@ void String::format(std::ostringstream &stream, const char *fmt, const T &value,
 
             case 'x':
             case 'X':
-                stream << "0x" << std::hex << value << std::dec;
+                stream << "0x" << std::hex;
+                getValue(stream, value);
+                stream << std::dec;
                 break;
 
             case 'f':
             case 'F':
             case 'g':
             case 'G':
-                stream << std::fixed << value;
+                stream << std::fixed;
+                getValue(stream, value);
                 stream.unsetf(std::ios_base::fixed);
                 break;
 
             case 'e':
             case 'E':
-                stream << std::scientific << value;
+                stream << std::scientific;
+                getValue(stream, value);
                 stream.unsetf(std::ios_base::scientific);
                 break;
 
             default:
-                stream << std::boolalpha << value;
+                getValue(stream, value);
                 break;
             }
 
@@ -237,51 +241,41 @@ std::string String::Join(const char &separator, const Args &...args)
 
 //=============================================================================
 template <typename T, typename ... Args>
-typename enable_if_str<T>::type String::join(
-    std::ostringstream &stream,
+void String::join(
+    std::ostream &stream,
     const char &separator,
-    const T &str,
+    const T &value,
     const Args &...args
 )
 {
-    stream << str << separator;
+    if (getValue(stream, value))
+    {
+        stream << separator;
+    }
+
     join(stream, separator, args...);
 }
 
 //=============================================================================
-template <typename T, typename ... Args>
-typename disable_if_str<T>::type String::join(
-    std::ostringstream &,
-    const char &,
-    const T &str,
-    const Args &...
-)
+template <typename T>
+void String::join(std::ostream &stream, const char &, const T &value)
 {
-    std::string message = Format("Cannot join non-string argument: %s", str);
-    throw std::invalid_argument(message);
+    getValue(stream, value);
 }
 
 //=============================================================================
-template <typename T>
-typename enable_if_str<T>::type String::join(
-    std::ostringstream &stream,
-    const char &,
-    const T &str
-)
+template <typename T, if_ostream::enabled<T>>
+bool String::getValue(std::ostream &stream, const T &value)
 {
-    stream << str;
+    stream << std::boolalpha << value;
+    return true;
 }
 
 //=============================================================================
-template <typename T>
-typename disable_if_str<T>::type String::join(
-    std::ostringstream &,
-    const char &,
-    const T &str
-)
+template <typename T, if_ostream::disabled<T>>
+bool String::getValue(std::ostream &, const T &)
 {
-    std::string message = Format("Cannot join non-string argument: %s", str);
-    throw std::invalid_argument(message);
+    return false;
 }
 
 }

@@ -6,6 +6,44 @@
 #include <Util/Logging/Logger.h>
 #include <Util/String/String.h>
 
+namespace
+{
+    //=========================================================================
+    class Streamable
+    {
+    public:
+        Streamable(const std::string &str, int num) :
+            m_str(str),
+            m_num(num)
+        {
+        }
+
+        std::string GetStr() const { return m_str; };
+        int GetNum() const { return m_num; };
+
+        friend std::ostream &operator << (std::ostream &, const Streamable &);
+
+    private:
+        std::string m_str;
+        int m_num;
+    };
+
+    std::ostream &operator << (std::ostream &stream, const Streamable &obj)
+    {
+        stream << '[' << obj.GetStr() << ' ' << std::hex << obj.GetNum() << std::dec << ']';
+        return stream;
+    }
+
+    //=========================================================================
+    class NotStreamable
+    {
+    public:
+        NotStreamable(const std::string &, int)
+        {
+        }
+    };
+}
+
 //=============================================================================
 TEST(StringTest, SplitTest)
 {
@@ -124,52 +162,39 @@ TEST(StringTest, FormatTest)
 //=============================================================================
 TEST(StringTest, JoinTest)
 {
-    std::string str1("a");
-    const std::string str2("b");
+    Streamable obj1("hello", 0xdead);
+    NotStreamable obj2("goodbye", 0xbeef);
 
-    char *ctr1 = (char *)"c";
-    const char *ctr2 = "d";
+    std::string str("a");
+    const char *ctr = "b";
+    char arr[] = { 'c', '\0' };
+    char chr = 'd';
 
-    char chr1 = 'e';
-    const char chr2 = 'f';
+    ASSERT_EQ("a", Util::String::Join('.', str));
+    ASSERT_EQ("b", Util::String::Join('.', ctr));
+    ASSERT_EQ("c", Util::String::Join('.', arr));
+    ASSERT_EQ("d", Util::String::Join('.', chr));
 
-    char arr1[] = { 'g', '\0' };
-    const char arr2[] = { 'h', '\0' };
+    ASSERT_EQ("a,a", Util::String::Join(',', str, str));
+    ASSERT_EQ("a,b", Util::String::Join(',', str, ctr));
+    ASSERT_EQ("a,c", Util::String::Join(',', str, arr));
+    ASSERT_EQ("a,d", Util::String::Join(',', str, chr));
+    ASSERT_EQ("b,a", Util::String::Join(',', ctr, str));
+    ASSERT_EQ("b,b", Util::String::Join(',', ctr, ctr));
+    ASSERT_EQ("b,c", Util::String::Join(',', ctr, arr));
+    ASSERT_EQ("b,d", Util::String::Join(',', ctr, chr));
+    ASSERT_EQ("c,a", Util::String::Join(',', arr, str));
+    ASSERT_EQ("c,b", Util::String::Join(',', arr, ctr));
+    ASSERT_EQ("c,c", Util::String::Join(',', arr, arr));
+    ASSERT_EQ("c,d", Util::String::Join(',', arr, chr));
+    ASSERT_EQ("d,a", Util::String::Join(',', chr, str));
+    ASSERT_EQ("d,b", Util::String::Join(',', chr, ctr));
+    ASSERT_EQ("d,c", Util::String::Join(',', chr, arr));
+    ASSERT_EQ("d,d", Util::String::Join(',', chr, chr));
 
-    ASSERT_EQ("a", Util::String::Join('.', str1));
-    ASSERT_EQ("b", Util::String::Join('.', str2));
-    ASSERT_EQ("c", Util::String::Join('.', ctr1));
-    ASSERT_EQ("d", Util::String::Join('.', ctr2));
-    ASSERT_EQ("e", Util::String::Join('.', chr1));
-    ASSERT_EQ("f", Util::String::Join('.', chr2));
-    ASSERT_EQ("g", Util::String::Join('.', arr1));
-    ASSERT_EQ("h", Util::String::Join('.', arr2));
+    ASSERT_EQ("[hello dead]", Util::String::Join('.', obj1));
+    ASSERT_EQ("", Util::String::Join(',', obj2));
 
-    ASSERT_EQ("a,b", Util::String::Join(',', str1, str2));
-    ASSERT_EQ("a,c", Util::String::Join(',', str1, ctr1));
-    ASSERT_EQ("b,e", Util::String::Join(',', str2, chr1));
-    ASSERT_EQ("a,h", Util::String::Join(',', str1, arr2));
-    ASSERT_EQ("c,d", Util::String::Join(',', ctr1, ctr2));
-    ASSERT_EQ("c,f", Util::String::Join(',', ctr1, chr2));
-    ASSERT_EQ("d,g", Util::String::Join(',', ctr2, arr1));
-    ASSERT_EQ("e,f", Util::String::Join(',', chr1, chr2));
-    ASSERT_EQ("e,g", Util::String::Join(',', chr1, arr1));
-    ASSERT_EQ("g,h", Util::String::Join(',', arr1, arr2));
-
-    ASSERT_EQ("a:b:c:d:e:f:g:h", Util::String::Join(':',
-        str1, str2, ctr1, ctr2, chr1, chr2, arr1, arr2)
-    );
-
-    ASSERT_THROW(Util::String::Join(' ', &str1), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', &str2), std::invalid_argument);
-    //ASSERT_THROW(Util::String::Join(' ', &chr1), std::invalid_argument);
-    //ASSERT_THROW(Util::String::Join(' ', &chr2), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', &ctr1), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', &ctr2), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', &arr1), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', &arr2), std::invalid_argument);
-
-    ASSERT_THROW(Util::String::Join(' ', str1, str2, 1234), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', str1, true, str2), std::invalid_argument);
-    ASSERT_THROW(Util::String::Join(' ', 1.23, str1, str2), std::invalid_argument);
+    ASSERT_EQ("a:[hello dead]:c:d", Util::String::Join(':', str, obj1, arr, chr));
+    ASSERT_EQ("a:c:d", Util::String::Join(':', str, obj2, arr, chr));
 }
