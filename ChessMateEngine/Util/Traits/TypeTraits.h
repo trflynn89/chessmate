@@ -60,6 +60,9 @@ namespace if_##label \
     \
     template <typename Type, typename S = bool> \
     using disabled = invoke<std::enable_if<is_undefined<Type>::value, S>>; \
+    \
+    template <typename Type> \
+    using value = std::integral_constant<bool, !is_undefined<Type>::value>; \
 }
 
 /**

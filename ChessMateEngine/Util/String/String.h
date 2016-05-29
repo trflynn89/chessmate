@@ -132,19 +132,21 @@ private:
      * Stream the given value into the given stream.
      */
     template <typename T, if_ostream::enabled<T> = 0>
-    static bool getValue(std::ostream &, const T &);
+    static void getValue(std::ostream &, const T &);
 
     /**
      * Stream the hash of the given value into the given stream.
      */
     template <typename T, if_ostream::disabled<T> = 0, if_hash::enabled<T> = 0>
-    static bool getValue(std::ostream &, const T &);
+    static void getValue(std::ostream &, const T &);
 
     /**
-     * Streaming/hashing is not enabled for this type, so do nothing.
+     * Streaming/hashing is not enabled for this type, raise compile error.
+     * This override could be left undefined, but this compile error is much
+     * easier to read.
      */
     template <typename T, if_ostream::disabled<T> = 0, if_hash::disabled<T> = 0>
-    static bool getValue(std::ostream &, const T &);
+    static void getValue(std::ostream &, const T &);
 
     /**
      * String to contain all alphanumeric characters with both capitalizations.
@@ -254,10 +256,8 @@ void String::join(
     const Args &...args
 )
 {
-    if (getValue(stream, value))
-    {
-        stream << separator;
-    }
+    getValue(stream, value);
+    stream << separator;
 
     join(stream, separator, args...);
 }
@@ -271,26 +271,25 @@ void String::join(std::ostream &stream, const char &, const T &value)
 
 //=============================================================================
 template <typename T, if_ostream::enabled<T>>
-bool String::getValue(std::ostream &stream, const T &value)
+void String::getValue(std::ostream &stream, const T &value)
 {
     stream << std::boolalpha << value;
-    return true;
 }
 
 //=============================================================================
 template <typename T, if_ostream::disabled<T>, if_hash::enabled<T>>
-bool String::getValue(std::ostream &stream, const T &value)
+void String::getValue(std::ostream &stream, const T &value)
 {
     static std::hash<T> hasher;
     stream << "[0x" << std::hex << hasher(value) << std::dec << ']';
-    return true;
 }
 
 //=============================================================================
 template <typename T, if_ostream::disabled<T>, if_hash::disabled<T>>
-bool String::getValue(std::ostream &, const T &)
+void String::getValue(std::ostream &, const T &)
 {
-    return false;
+    static_assert(if_ostream::value<T>::value || if_hash::value<T>::value,
+        "Given type is neither streamable nor hashable");
 }
 
 }

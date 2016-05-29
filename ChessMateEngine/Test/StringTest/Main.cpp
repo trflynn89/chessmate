@@ -82,15 +82,6 @@ namespace
         stream << '[' << obj.GetStr() << ' ' << std::hex << obj.GetNum() << std::dec << ']';
         return stream;
     }
-
-    //=========================================================================
-    class NotHashableOrStreamable : public Base
-    {
-    public:
-        NotHashableOrStreamable(const std::string &str, int num) : Base(str, num)
-        {
-        }
-    };
 }
 
 //=============================================================================
@@ -236,7 +227,6 @@ TEST(StringTest, JoinTest)
     Hashable obj1("hello", 0xdead);
     Streamable obj2("goodbye", 0xbeef);
     HashableAndStreamable obj3("world", 0xf00d);
-    NotHashableOrStreamable obj4("earth", 0xcafe);
 
     std::string str("a");
     const char *ctr = "b";
@@ -266,10 +256,8 @@ TEST(StringTest, JoinTest)
     ASSERT_EQ("d,d", Util::String::Join(',', chr, chr));
 
     ASSERT_EQ("[goodbye beef]", Util::String::Join('.', obj2));
-    ASSERT_EQ("", Util::String::Join(',', obj4));
-
     ASSERT_EQ("a:[goodbye beef]:c:d", Util::String::Join(':', str, obj2, arr, chr));
-    ASSERT_EQ("a:c:d", Util::String::Join(':', str, obj4, arr, chr));
+    ASSERT_EQ("a:c:d", Util::String::Join(':', str, arr, chr));
 
     std::regex test("(\\[0x[0-9a-f]+\\]:2:\\[goodbye beef\\]:\\[world f00d\\])");
     ASSERT_TRUE(std::regex_match(Util::String::Join(':', obj1, 2, obj2, obj3), test));
