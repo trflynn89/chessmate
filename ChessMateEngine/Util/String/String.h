@@ -14,7 +14,7 @@ namespace Util {
  * Static class to provide string utilities not provided by the STL.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version May 26, 2016
+ * @version May 29, 2016
  */
 class String
 {
@@ -129,6 +129,24 @@ private:
     static void join(std::ostream &, const char &, const T &);
 
     /**
+     * Stream the given value into the given stream.
+     */
+    template <typename T, if_ostream::enabled<T> = 0>
+    static bool getValue(std::ostream &, const T &);
+
+    /**
+     * Stream the hash of the given value into the given stream.
+     */
+    template <typename T, if_ostream::disabled<T> = 0, if_hash::enabled<T> = 0>
+    static bool getValue(std::ostream &, const T &);
+
+    /**
+     * Streaming/hashing is not enabled for this type, so do nothing.
+     */
+    template <typename T, if_ostream::disabled<T> = 0, if_hash::disabled<T> = 0>
+    static bool getValue(std::ostream &, const T &);
+
+    /**
      * String to contain all alphanumeric characters with both capitalizations.
      */
     static const std::string s_alphaNum;
@@ -142,18 +160,6 @@ private:
      * A RNG for uniform integers.
      */
     static UniformIntegerDevice<size_t, std::mt19937> s_randomDevice;
-
-    /**
-     * Stream the given value into the given stream.
-     */
-    template <typename T, if_ostream::enabled<T> = 0>
-    static bool getValue(std::ostream &, const T &);
-
-    /**
-     * Streams are not enabled for this type, so do nothing.
-     */
-    template <typename T, if_ostream::disabled<T> = 0>
-    static bool getValue(std::ostream &, const T &);
 
 };
 
@@ -272,7 +278,16 @@ bool String::getValue(std::ostream &stream, const T &value)
 }
 
 //=============================================================================
-template <typename T, if_ostream::disabled<T>>
+template <typename T, if_ostream::disabled<T>, if_hash::enabled<T>>
+bool String::getValue(std::ostream &stream, const T &value)
+{
+    static std::hash<T> hasher;
+    stream << "[0x" << std::hex << hasher(value) << std::dec << ']';
+    return true;
+}
+
+//=============================================================================
+template <typename T, if_ostream::disabled<T>, if_hash::disabled<T>>
 bool String::getValue(std::ostream &, const T &)
 {
     return false;

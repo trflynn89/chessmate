@@ -1,3 +1,4 @@
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -9,10 +10,10 @@
 namespace
 {
     //=========================================================================
-    class Streamable
+    class Base
     {
     public:
-        Streamable(const std::string &str, int num) :
+        Base(const std::string &str, int num) :
             m_str(str),
             m_num(num)
         {
@@ -21,11 +22,42 @@ namespace
         std::string GetStr() const { return m_str; };
         int GetNum() const { return m_num; };
 
-        friend std::ostream &operator << (std::ostream &, const Streamable &);
+        size_t Hash() const
+        {
+            static std::hash<std::string> strHasher;
+            static std::hash<int> numHasher;
+            static int magic = 0x9e3779b9;
+
+            size_t strHash = strHasher(m_str);
+            size_t numHash = numHasher(m_num);
+
+            // Derived from boost::hash_combine
+            return (strHash ^ (numHash + magic + (strHash << 6) + (strHash >> 2)));
+        }
 
     private:
         std::string m_str;
         int m_num;
+    };
+
+    //=========================================================================
+    class Hashable : public Base
+    {
+    public:
+        Hashable(const std::string &str, int num) : Base(str, num)
+        {
+        }
+    };
+
+    //=========================================================================
+    class Streamable : public Base
+    {
+    public:
+        Streamable(const std::string &str, int num) : Base(str, num)
+        {
+        }
+
+        friend std::ostream &operator << (std::ostream &, const Streamable &);
     };
 
     std::ostream &operator << (std::ostream &stream, const Streamable &obj)
@@ -35,11 +67,50 @@ namespace
     }
 
     //=========================================================================
-    class NotStreamable
+    class HashableAndStreamable : public Base
     {
     public:
-        NotStreamable(const std::string &, int)
+        HashableAndStreamable(const std::string &str, int num) : Base(str, num)
         {
+        }
+
+        friend std::ostream &operator << (std::ostream &, const HashableAndStreamable &);
+    };
+
+    std::ostream &operator << (std::ostream &stream, const HashableAndStreamable &obj)
+    {
+        stream << '[' << obj.GetStr() << ' ' << std::hex << obj.GetNum() << std::dec << ']';
+        return stream;
+    }
+
+    //=========================================================================
+    class NotHashableOrStreamable : public Base
+    {
+    public:
+        NotHashableOrStreamable(const std::string &str, int num) : Base(str, num)
+        {
+        }
+    };
+}
+
+//=============================================================================
+namespace std
+{
+    template <>
+    struct hash<Hashable>
+    {
+        size_t operator()(const Hashable &value) const
+        {
+            return value.Hash();
+        }
+    };
+
+    template <>
+    struct hash<HashableAndStreamable>
+    {
+        size_t operator()(const HashableAndStreamable &value) const
+        {
+            return value.Hash();
         }
     };
 }
@@ -162,8 +233,10 @@ TEST(StringTest, FormatTest)
 //=============================================================================
 TEST(StringTest, JoinTest)
 {
-    Streamable obj1("hello", 0xdead);
-    NotStreamable obj2("goodbye", 0xbeef);
+    Hashable obj1("hello", 0xdead);
+    Streamable obj2("goodbye", 0xbeef);
+    HashableAndStreamable obj3("world", 0xf00d);
+    NotHashableOrStreamable obj4("earth", 0xcafe);
 
     std::string str("a");
     const char *ctr = "b";
@@ -192,9 +265,12 @@ TEST(StringTest, JoinTest)
     ASSERT_EQ("d,c", Util::String::Join(',', chr, arr));
     ASSERT_EQ("d,d", Util::String::Join(',', chr, chr));
 
-    ASSERT_EQ("[hello dead]", Util::String::Join('.', obj1));
-    ASSERT_EQ("", Util::String::Join(',', obj2));
+    ASSERT_EQ("[goodbye beef]", Util::String::Join('.', obj2));
+    ASSERT_EQ("", Util::String::Join(',', obj4));
 
-    ASSERT_EQ("a:[hello dead]:c:d", Util::String::Join(':', str, obj1, arr, chr));
-    ASSERT_EQ("a:c:d", Util::String::Join(':', str, obj2, arr, chr));
+    ASSERT_EQ("a:[goodbye beef]:c:d", Util::String::Join(':', str, obj2, arr, chr));
+    ASSERT_EQ("a:c:d", Util::String::Join(':', str, obj4, arr, chr));
+
+    std::regex test("(\\[0x[0-9a-f]+\\]:2:\\[goodbye beef\\]:\\[world f00d\\])");
+    ASSERT_TRUE(std::regex_match(Util::String::Join(':', obj1, 2, obj2, obj3), test));
 }
