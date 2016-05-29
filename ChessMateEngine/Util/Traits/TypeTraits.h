@@ -77,11 +77,11 @@ namespace if_string
             std::is_same<std::string,  invoke<std::decay<T>>>::value>;
     }
 
-    template <typename T, typename S = void>
-    using enabled = std::enable_if<is_string<T>::value, S>;
+    template <typename T, typename S = bool>
+    using enabled = invoke<std::enable_if<is_string<T>::value, S>>;
 
-    template <typename T, typename S = void>
-    using disabled = std::enable_if<!is_string<T>::value, S>;
+    template <typename T, typename S = bool>
+    using disabled = invoke<std::enable_if<!is_string<T>::value, S>>;
 }
 
 /**
