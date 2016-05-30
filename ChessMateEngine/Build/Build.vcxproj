@@ -169,6 +169,7 @@
     <ClInclude Include="..\Util\String\String.h" />
     <ClInclude Include="..\Util\System\System.h" />
     <ClInclude Include="..\Util\System\WinSystem.h" />
+    <ClInclude Include="..\Util\Traits\TypeTraits.h" />
     <ClInclude Include="..\Util\Utilities.h" />
   </ItemGroup>
   <ItemGroup>

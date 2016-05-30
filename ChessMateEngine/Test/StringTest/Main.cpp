@@ -259,6 +259,10 @@ TEST(StringTest, JoinTest)
     ASSERT_EQ("a:[goodbye beef]:c:d", Util::String::Join(':', str, obj2, arr, chr));
     ASSERT_EQ("a:c:d", Util::String::Join(':', str, arr, chr));
 
+#ifndef BUILD_WINDOWS
+
     std::regex test("(\\[0x[0-9a-f]+\\]:2:\\[goodbye beef\\]:\\[world f00d\\])");
     ASSERT_TRUE(std::regex_match(Util::String::Join(':', obj1, 2, obj2, obj3), test));
+
+#endif // BUILD_WINDOWS
 }

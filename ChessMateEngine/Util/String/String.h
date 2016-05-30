@@ -128,6 +128,16 @@ private:
     template <typename T>
     static void join(std::ostream &, const char &, const T &);
 
+#ifdef BUILD_WINDOWS
+
+    /**
+     * Stream the given value into the given stream.
+     */
+    template <typename T>
+    static void getValue(std::ostream &, const T &);
+
+#else // BUILD_WINDOWS
+
     /**
      * Stream the given value into the given stream.
      */
@@ -147,6 +157,8 @@ private:
      */
     template <typename T, if_ostream::disabled<T> = 0, if_hash::disabled<T> = 0>
     static void getValue(std::ostream &, const T &);
+
+#endif // BUILD_WINDOWS
 
     /**
      * String to contain all alphanumeric characters with both capitalizations.
@@ -269,6 +281,17 @@ void String::join(std::ostream &stream, const char &, const T &value)
     getValue(stream, value);
 }
 
+#ifdef BUILD_WINDOWS
+
+//=============================================================================
+template <typename T>
+void String::getValue(std::ostream &stream, const T &value)
+{
+    stream << std::boolalpha << value;
+}
+
+#else // BUILD_WINDOWS
+
 //=============================================================================
 template <typename T, if_ostream::enabled<T>>
 void String::getValue(std::ostream &stream, const T &value)
@@ -291,5 +314,7 @@ void String::getValue(std::ostream &, const T &)
     static_assert(if_ostream::value<T>::value || if_hash::value<T>::value,
         "Given type is neither streamable nor hashable");
 }
+
+#endif // BUILD_WINDOWS
 
 }

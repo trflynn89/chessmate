@@ -31,6 +31,9 @@
     <Filter Include="Util\System">
       <UniqueIdentifier>{c7bd89a3-2cf4-4db3-9e9b-e7d75eed1b16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util\Traits">
+      <UniqueIdentifier>{b1cd74d0-fc25-413a-a1ff-410c078fe9a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="..\Util\Utilities.h">
       <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Traits\TypeTraits.h">
+      <Filter>Util\Traits</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
