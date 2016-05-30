@@ -79,7 +79,7 @@ using bool_constant = std::integral_constant<bool, B>;
 #define DECL_TESTS(label, Type, functor) \
 namespace if_##label \
 { \
-    namespace \
+    namespace detail \
     { \
         template <typename Type> auto test_##label(Type *) -> decltype(functor); \
         template <typename Type> auto test_##label(...) -> std::false_type; \
@@ -89,10 +89,10 @@ namespace if_##label \
     } \
     \
     template <typename Type, typename S = bool> \
-    using enabled = bool_constant<!is_undefined<Type>::value>; \
+    using enabled = bool_constant<!detail::is_undefined<Type>::value>; \
     \
     template <typename Type, typename S = bool> \
-    using disabled = bool_constant<is_undefined<Type>::value>; \
+    using disabled = bool_constant<detail::is_undefined<Type>::value>; \
 }
 
 /**
@@ -100,7 +100,7 @@ namespace if_##label \
  */
 namespace if_string
 {
-    namespace
+    namespace detail
     {
         template <typename T>
         using is_string = bool_constant<
@@ -111,10 +111,10 @@ namespace if_string
     }
 
     template <typename T, typename S = bool>
-    using enabled = bool_constant<is_string<T>::value>;
+    using enabled = bool_constant<detail::is_string<T>::value>;
 
     template <typename T, typename S = bool>
-    using disabled = bool_constant<!is_string<T>::value>;
+    using disabled = bool_constant<!detail::is_string<T>::value>;
 }
 
 /**
