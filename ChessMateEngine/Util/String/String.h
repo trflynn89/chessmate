@@ -141,13 +141,13 @@ private:
     /**
      * Stream the given value into the given stream.
      */
-    template <typename T, if_ostream::enabled<T> = 0>
+    template <typename T, enable_if_all<if_ostream::enabled<T>>...>
     static void getValue(std::ostream &, const T &);
 
     /**
      * Stream the hash of the given value into the given stream.
      */
-    template <typename T, if_ostream::disabled<T> = 0, if_hash::enabled<T> = 0>
+    template <typename T, enable_if_all<if_ostream::disabled<T>, if_hash::enabled<T>>...>
     static void getValue(std::ostream &, const T &);
 
     /**
@@ -155,7 +155,7 @@ private:
      * This override could be left undefined, but this compile error is much
      * easier to read.
      */
-    template <typename T, if_ostream::disabled<T> = 0, if_hash::disabled<T> = 0>
+    template <typename T, enable_if_all<if_ostream::disabled<T>, if_hash::disabled<T>>...>
     static void getValue(std::ostream &, const T &);
 
 #endif // BUILD_WINDOWS
@@ -293,14 +293,14 @@ void String::getValue(std::ostream &stream, const T &value)
 #else // BUILD_WINDOWS
 
 //=============================================================================
-template <typename T, if_ostream::enabled<T>>
+template <typename T, enable_if_all<if_ostream::enabled<T>>...>
 void String::getValue(std::ostream &stream, const T &value)
 {
     stream << std::boolalpha << value;
 }
 
 //=============================================================================
-template <typename T, if_ostream::disabled<T>, if_hash::enabled<T>>
+template <typename T, enable_if_all<if_ostream::disabled<T>, if_hash::enabled<T>>...>
 void String::getValue(std::ostream &stream, const T &value)
 {
     static std::hash<T> hasher;
@@ -308,10 +308,10 @@ void String::getValue(std::ostream &stream, const T &value)
 }
 
 //=============================================================================
-template <typename T, if_ostream::disabled<T>, if_hash::disabled<T>>
+template <typename T, enable_if_all<if_ostream::disabled<T>, if_hash::disabled<T>>...>
 void String::getValue(std::ostream &, const T &)
 {
-    static_assert(if_ostream::value<T>::value || if_hash::value<T>::value,
+    static_assert(if_ostream::enabled<T>::value || if_hash::enabled<T>::value,
         "Given type is neither streamable nor hashable");
 }
 
