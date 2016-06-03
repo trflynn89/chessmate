@@ -47,18 +47,7 @@ struct Log
     unsigned int m_line = -1;
     char m_message[MAX_MESSAGE_SIZE + 1];
 
-    friend std::ostream &operator << (std::ostream &stream, const Log &log)
-    {
-        stream << log.m_level << "\t";
-        stream << log.m_time << "\t";
-        stream << log.m_gameId << "\t";
-        stream << log.m_file << "\t";
-        stream << log.m_function << "\t";
-        stream << log.m_line << "\t";
-        stream << log.m_message << "\n";
-
-        return stream;
-    }
+    friend std::ostream &operator << (std::ostream &stream, const Log &log);
 };
 
 }
