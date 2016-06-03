@@ -3,6 +3,8 @@
 #include <climits>
 #include <iostream>
 
+#include <Util/Utilities.h>
+
 /**
  * Enumeration to define the level of a log.
  */
