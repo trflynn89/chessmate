@@ -170,5 +170,8 @@
     <ClCompile Include="..\Engine\MoveSelector.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Util\Logging\Log.cpp">
+      <Filter>Util\Logging</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

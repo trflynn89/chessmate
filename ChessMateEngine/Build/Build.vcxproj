@@ -182,6 +182,7 @@
     <ClCompile Include="..\Movement\Move.cpp" />
     <ClCompile Include="..\Movement\MoveSet.cpp" />
     <ClCompile Include="..\Movement\ValidMoveSet.cpp" />
+    <ClCompile Include="..\Util\Logging\Log.cpp" />
     <ClCompile Include="..\Util\Logging\Logger.cpp" />
     <ClCompile Include="..\Util\Socket\AsyncStructs.cpp" />
     <ClCompile Include="..\Util\Socket\Socket.cpp" />
