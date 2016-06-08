@@ -33,6 +33,11 @@
 *.a
 *.lib
 
+# Gtags files
+GPATH
+GRTAGS
+GTAGS
+
 # Executables
 ChessMateEngine/Build/release-x64/bin/*
 ChessMateEngine/Build/release-x86/bin/*

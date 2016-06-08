@@ -56,3 +56,13 @@ tests:
 	done; \
 	printf -- "----------- [Pass $$numPass, Fail $$numFail] -----------\n\n"; \
 	exit $$numFail
+
+ifeq ($(verbose),1)
+tags: GTAGS_FLAGS := -v --statistics
+else
+tags: GTAGS_FLAGS := -q
+endif
+
+tags:
+	$(Q)cd $(SOURCE_ROOT) && rm -f GPATH && rm -f GRTAGS && rm -f GTAGS
+	$(Q)cd $(SOURCE_ROOT) && gtags $(GTAGS_FLAGS)
