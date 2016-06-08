@@ -32,3 +32,10 @@ CXXFLAGS := -std=c++11 $(CF_ALL)
 # Linker flags
 LDFLAGS :=
 LDLIBS :=
+
+# GNU Global flags
+ifeq ($(verbose),1)
+    GTAGS_FLAGS := -v --statistics
+else
+    GTAGS_FLAGS := -q
+endif

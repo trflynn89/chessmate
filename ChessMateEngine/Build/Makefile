@@ -57,12 +57,7 @@ tests:
 	printf -- "----------- [Pass $$numPass, Fail $$numFail] -----------\n\n"; \
 	exit $$numFail
 
-ifeq ($(verbose),1)
-tags: GTAGS_FLAGS := -v --statistics
-else
-tags: GTAGS_FLAGS := -q
-endif
-
+# Command to generate GNU Global tags
 tags:
-	$(Q)cd $(SOURCE_ROOT) && rm -f GPATH && rm -f GRTAGS && rm -f GTAGS
+	$(Q)cd $(SOURCE_ROOT) && rm -f GPATH GRTAGS GTAGS
 	$(Q)cd $(SOURCE_ROOT) && gtags $(GTAGS_FLAGS)
