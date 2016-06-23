@@ -47,6 +47,26 @@ public:
     static void RemoveAll(std::string &, const std::string &);
 
     /**
+     * Check if a string begins with another string.
+     *
+     * @param string The string to check.
+     * @param string The beginning to search for.
+     *
+     * @return True if the string begins with the search string.
+     */
+    static bool StartsWith(const std::string &, const std::string &);
+
+    /**
+     * Check if a string ends with another string.
+     *
+     * @param string The string to check.
+     * @param string The ending to search for.
+     *
+     * @return True if the string ends with the search string.
+     */
+    static bool EndsWith(const std::string &, const std::string &);
+
+    /**
      * Generate a random string of the given size.
      *
      * @param unsigned int The length of the string to generate.

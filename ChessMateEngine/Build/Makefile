@@ -59,5 +59,4 @@ tests:
 
 # Command to generate GNU Global tags
 tags:
-	$(Q)cd $(SOURCE_ROOT) && rm -f GPATH GRTAGS GTAGS
-	$(Q)cd $(SOURCE_ROOT) && gtags $(GTAGS_FLAGS)
+	$(Q)cd $(SOURCE_ROOT) && GTAGSFORCECPP=1 gtags $(GTAGS_FLAGS)

@@ -68,6 +68,38 @@ std::string String::GenerateRandomString(const unsigned int len)
 }
 
 //=============================================================================
+bool String::StartsWith(const std::string &source, const std::string &search)
+{
+    bool ret = false;
+
+    const size_t sourceSz = source.length();
+    const size_t searchSz = search.length();
+
+    if (sourceSz >= searchSz)
+    {
+        ret = (source.compare(0, searchSz, search) == 0);
+    }
+
+    return ret;
+}
+
+//=============================================================================
+bool String::EndsWith(const std::string &source, const std::string &search)
+{
+    bool ret = false;
+
+    const size_t sourceSz = source.length();
+    const size_t searchSz = search.length();
+
+    if (sourceSz >= searchSz)
+    {
+        ret = (source.compare(sourceSz - searchSz, searchSz, search) == 0);
+    }
+
+    return ret;
+}
+
+//=============================================================================
 float String::CalculateEntropy(const std::string &source)
 {
     long charCount[s_asciiSize] = { 0 };

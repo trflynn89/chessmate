@@ -1,4 +1,3 @@
-#include <regex>
 #include <string>
 #include <vector>
 
@@ -179,6 +178,36 @@ TEST(StringTest, RemoveAllWithEmptyTest)
 }
 
 //=============================================================================
+TEST(StringTest, StartsWithTest)
+{
+    EXPECT_TRUE(Util::String::StartsWith("", ""));
+    EXPECT_TRUE(Util::String::StartsWith("a", ""));
+    EXPECT_TRUE(Util::String::StartsWith("abc", "a"));
+    EXPECT_TRUE(Util::String::StartsWith("abc", "ab"));
+    EXPECT_TRUE(Util::String::StartsWith("abc", "abc"));
+
+    EXPECT_FALSE(Util::String::StartsWith("", "a"));
+    EXPECT_FALSE(Util::String::StartsWith("a", "ab"));
+    EXPECT_FALSE(Util::String::StartsWith("ab", "abc"));
+    EXPECT_FALSE(Util::String::StartsWith("abc", "abd"));
+}
+
+//=============================================================================
+TEST(StringTest, EndsWithTest)
+{
+    EXPECT_TRUE(Util::String::EndsWith("", ""));
+    EXPECT_TRUE(Util::String::EndsWith("a", ""));
+    EXPECT_TRUE(Util::String::EndsWith("abc", "c"));
+    EXPECT_TRUE(Util::String::EndsWith("abc", "bc"));
+    EXPECT_TRUE(Util::String::EndsWith("abc", "abc"));
+
+    EXPECT_FALSE(Util::String::EndsWith("", "a"));
+    EXPECT_FALSE(Util::String::EndsWith("a", "ba"));
+    EXPECT_FALSE(Util::String::EndsWith("ab", "a"));
+    EXPECT_FALSE(Util::String::EndsWith("abc", "dbc"));
+}
+
+//=============================================================================
 TEST(StringTest, GenerateRandomStringTest)
 {
     static const int length = (1 << 20);
@@ -261,8 +290,23 @@ TEST(StringTest, JoinTest)
 
 #ifndef BUILD_WINDOWS
 
-    std::regex test("(\\[0x[0-9a-f]+\\]:2:\\[goodbye beef\\]:\\[world f00d\\])");
-    ASSERT_TRUE(std::regex_match(Util::String::Join(':', obj1, 2, obj2, obj3), test));
+    std::string joined = Util::String::Join(':', obj1, 2, obj2, obj3);
+
+    std::string start("[0x");
+    std::string end("]:2:[goodbye beef]:[world f00d]");
+
+    ASSERT_TRUE(Util::String::StartsWith(joined, start));
+    ASSERT_TRUE(Util::String::EndsWith(joined, end));
+
+    bool atLeastOneChar = false;
+
+    for (size_t i = joined.find(start) + start.length(); i < joined.find(end); ++i)
+    {
+        ASSERT_NE(isxdigit(joined[i]), 0);
+        atLeastOneChar = true;
+    }
+
+    ASSERT_TRUE(atLeastOneChar);
 
 #endif // BUILD_WINDOWS
 }
