@@ -156,6 +156,7 @@
     <ClInclude Include="..\Movement\MoveSet.h" />
     <ClInclude Include="..\Movement\ValidMoveSet.h" />
     <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h" />
+    <ClInclude Include="..\Util\ExitCodes.h" />
     <ClInclude Include="..\Util\Logging\Log.h" />
     <ClInclude Include="..\Util\Logging\Logger.h" />
     <ClInclude Include="..\Util\Random\RandomDevice.h" />

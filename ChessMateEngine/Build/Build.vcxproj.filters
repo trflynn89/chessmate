@@ -114,6 +114,9 @@
     <ClInclude Include="..\Util\Traits\TypeTraits.h">
       <Filter>Util\Traits</Filter>
     </ClInclude>
+    <ClInclude Include="..\Util\ExitCodes.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Util\Logging\Logger.cpp">
