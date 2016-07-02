@@ -13,8 +13,8 @@ namespace Util {
 
 namespace
 {
+    static std::atomic<ExitCode> g_aExitCode(Normal);
     static std::atomic_bool g_aKeepRunning(true);
-    static std::atomic_int g_aExitCode(0);
 
     //=========================================================================
     void handleSignal(int sig)
@@ -50,12 +50,12 @@ namespace
 
         if (cleanExit)
         {
-            int exitCode = 0;
+            ExitCode exitCode = Normal;
 
             if (fatalSignal)
             {
                 SystemImpl::PrintBacktrace();
-                exitCode = sig;
+                exitCode = FatalSignal;
             }
 
             SystemImpl::CleanExit(exitCode);
@@ -170,7 +170,7 @@ void SystemImpl::SetupSignalHandler()
 }
 
 //=============================================================================
-void SystemImpl::CleanExit(int exitCode)
+void SystemImpl::CleanExit(ExitCode exitCode)
 {
     g_aExitCode.store(exitCode);
     g_aKeepRunning.store(false);
@@ -183,7 +183,7 @@ bool SystemImpl::KeepRunning()
 }
 
 //=============================================================================
-int SystemImpl::ExitCode()
+ExitCode SystemImpl::GetExitCode()
 {
     return g_aExitCode.load();
 }

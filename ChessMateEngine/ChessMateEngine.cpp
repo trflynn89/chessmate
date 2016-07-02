@@ -9,6 +9,7 @@
 #include <thread>
 
 #include <Game/GameManager.h>
+#include <Util/ExitCodes.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
@@ -77,7 +78,7 @@ namespace
         if (!spGameManager->StartGameManager(g_chessMatePort))
         {
             spGameManager.reset();
-            Util::System::CleanExit(1);
+            Util::System::CleanExit(Util::InitFailed);
         }
 
         return spGameManager;
@@ -114,5 +115,5 @@ int main()
     StopLogger(spLogger);
 
     LOGC("Exiting ChessMateEngine");
-    return Util::System::ExitCode();
+    return Util::System::GetExitCode();
 }

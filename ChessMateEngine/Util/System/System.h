@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 
+#include <Util/ExitCodes.h>
 #include <Util/Utilities.h>
 
 namespace Util {
@@ -11,7 +12,7 @@ namespace Util {
  * Static class to provide interface to system calls.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version May 21, 2016
+ * @version July 2, 2016
  */
 class System
 {
@@ -64,9 +65,9 @@ public:
     /**
      * Signal the main thread to exit with the given exit code.
      *
-     * @param int Code to exit with.
+     * @param ExitCode Code to exit with.
      */
-    static void CleanExit(int);
+    static void CleanExit(ExitCode);
 
     /**
      * @return Whether the system is in a state in which it should keep running.
@@ -76,7 +77,7 @@ public:
     /**
      * @return The code the system should exit with.
      */
-    static int ExitCode();
+    static ExitCode GetExitCode();
 };
 
 }

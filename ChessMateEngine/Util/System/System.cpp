@@ -58,7 +58,7 @@ void System::SetupSignalHandler()
 }
 
 //=============================================================================
-void System::CleanExit(int exitCode)
+void System::CleanExit(ExitCode exitCode)
 {
     return SystemImpl::CleanExit(exitCode);
 }
@@ -70,9 +70,9 @@ bool System::KeepRunning()
 }
 
 //=============================================================================
-int System::ExitCode()
+ExitCode System::GetExitCode()
 {
-    return SystemImpl::ExitCode();
+    return SystemImpl::GetExitCode();
 }
 
 }
