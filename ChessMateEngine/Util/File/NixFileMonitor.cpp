@@ -103,13 +103,11 @@ bool FileMonitorImpl::handleEvents()
         if (len == -1)
         {
             int error = 0;
+            std::string errorStr = Util::System::GetLastError(&error);
 
-            LOGW(-1, "Could not read polled event for \"%s\": %s",
-                m_path, Util::System::GetLastError(&error)
-            );
-
-            if (error == EAGAIN)
+            if (error != EAGAIN)
             {
+                LOGW(-1, "Could not read polled event for \"%s\": %s", m_path, error);
                 close();
             }
         }

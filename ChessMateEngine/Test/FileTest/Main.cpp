@@ -14,16 +14,13 @@ class FileMonitorTest : public ::testing::Test
 public:
     FileMonitorTest() :
         m_spMonitor(),
+        m_path(Util::System::GetTempDirectory()),
+        m_file(Util::String::GenerateRandomString(10) + ".txt"),
         m_numCreatedFiles(0),
         m_numDeletedFiles(0),
         m_numChangedFiles(0),
         m_numOtherEvents(0)
     {
-        static const char sep = Util::System::GetSeparator();
-        static const std::string temp = Util::System::GetTempDirectory();
-
-        m_path = Util::String::Join(sep, temp, "ChessMate");
-        m_file = Util::String::GenerateRandomString(10) + ".txt";
     }
 
     /**
