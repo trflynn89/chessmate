@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Build", "Build\Build.vcxproj", "{413156B2-E6D8-4934-B8E0-319FD15D20C4}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MovementTest", "Test\MovementTest\MovementTest.vcxproj", "{860A6EA3-202A-42A6-BAEB-50997F128E27}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SocketTest", "Test\SocketTest\SocketTest.vcxproj", "{F00C125C-2027-4BF3-AFC8-7195DD56CCCF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileTest", "Test\FileTest\FileTest.vcxproj", "{F97E2E09-CE3E-45E9-BD18-89827589BAA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,14 @@ Global
 		{F00C125C-2027-4BF3-AFC8-7195DD56CCCF}.Release|x64.Build.0 = Release|x64
 		{F00C125C-2027-4BF3-AFC8-7195DD56CCCF}.Release|x86.ActiveCfg = Release|Win32
 		{F00C125C-2027-4BF3-AFC8-7195DD56CCCF}.Release|x86.Build.0 = Release|Win32
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Debug|x64.ActiveCfg = Debug|x64
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Debug|x64.Build.0 = Debug|x64
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Debug|x86.ActiveCfg = Debug|Win32
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Debug|x86.Build.0 = Debug|Win32
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Release|x64.ActiveCfg = Release|x64
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Release|x64.Build.0 = Release|x64
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Release|x86.ActiveCfg = Release|Win32
+		{F97E2E09-CE3E-45E9-BD18-89827589BAA7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

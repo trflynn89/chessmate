@@ -34,6 +34,9 @@
     <Filter Include="Util\Traits">
       <UniqueIdentifier>{b1cd74d0-fc25-413a-a1ff-410c078fe9a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util\File">
+      <UniqueIdentifier>{399fab50-c973-4dcb-8c46-8250dabdf719}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h">
@@ -117,6 +120,15 @@
     <ClInclude Include="..\Util\ExitCodes.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="..\Util\File\FileMonitor.h">
+      <Filter>Util\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\File\FileMonitorImpl.h">
+      <Filter>Util\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\File\WinFileMonitor.h">
+      <Filter>Util\File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Util\Logging\Logger.cpp">
@@ -175,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="..\Util\Logging\Log.cpp">
       <Filter>Util\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\File\FileMonitor.cpp">
+      <Filter>Util\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\File\WinFileMonitor.cpp">
+      <Filter>Util\File</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
