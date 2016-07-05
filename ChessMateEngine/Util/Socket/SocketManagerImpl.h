@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Util/Utilities.h>
+#include <Util/Socket/SocketManager.h>
 
 #if defined(BUILD_WINDOWS)
-    #include "WinSocketManager.h"
+    #include <Util/Socket/WinSocketManager.h>
 #elif defined(BUILD_LINUX)
-    #include "NixSocketManager.h"
+    #include <Util/Socket/NixSocketManager.h>
 #endif

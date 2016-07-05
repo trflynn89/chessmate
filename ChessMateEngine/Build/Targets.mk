@@ -40,6 +40,7 @@ $(eval $(call ADD_TEST_TARGET, MessageTest, Test/MessageTest))
 $(eval $(call ADD_TEST_TARGET, ConcurrencyTest, Test/ConcurrencyTest))
 $(eval $(call ADD_TEST_TARGET, MovementTest, Test/MovementTest))
 $(eval $(call ADD_TEST_TARGET, TraitsTest, Test/TraitsTest))
+$(eval $(call ADD_TEST_TARGET, FileTest, Test/FileTest))
 
 ### END define all targets
 

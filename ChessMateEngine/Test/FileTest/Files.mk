@@ -1,16 +1,17 @@
 # Define the directories to include and compile
 SRC_DIRS_$(d) := \
-    Engine \
-    Game \
-    Movement \
     Util/File \
     Util/Logging \
-    Util/Socket \
     Util/String \
-    Util/System
+    Util/System \
+    Test/GoogleTest
 
 # Define libraries to link
 LDLIBS_$(d) := -lpthread
 
 # Define source files
 $(eval $(call WILDCARD_SOURCES))
+
+# Define rule to build and run the test
+test: $(TGT_BIN)
+	@$(TGT_BIN)

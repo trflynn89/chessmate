@@ -9,7 +9,6 @@
 #include <Util/Concurrency/ConcurrentQueue.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/AsyncStructs.h>
-#include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
 #include <Util/String/String.h>
 
