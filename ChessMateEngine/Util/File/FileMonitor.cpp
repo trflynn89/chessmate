@@ -15,10 +15,10 @@ FileMonitor::FileMonitor(
     const std::string &path,
     const std::string &file
 ) :
-    m_handler(handler),
     m_path(path),
     m_file(file),
-    m_aKeepRunning(true)
+    m_aKeepRunning(true),
+    m_handler(handler)
 {
 }
 
