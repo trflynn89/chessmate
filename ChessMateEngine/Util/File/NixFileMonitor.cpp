@@ -71,10 +71,8 @@ void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
 
     if (numEvents == -1)
     {
-        int error = 0;
-
         LOGW(-1, "Could not create poller for \"%s\": %s",
-            m_path, Util::System::GetLastError(&error)
+            m_path, Util::System::GetLastError()
         );
 
         close();
@@ -107,7 +105,7 @@ bool FileMonitorImpl::handleEvents()
 
             if (error != EAGAIN)
             {
-                LOGW(-1, "Could not read polled event for \"%s\": %s", m_path, error);
+                LOGW(-1, "Could not read polled event for \"%s\": %s", m_path, errorStr);
                 close();
             }
         }
@@ -136,17 +134,7 @@ bool FileMonitorImpl::handleEvents()
                 type = FileMonitor::FILE_CHANGED;
             }
 
-            if (type != FileMonitor::FILE_NO_CHANGE)
-            {
-                LOGI(-1, "Handling event %d for \"%s\"", type, m_file);
-
-                std::lock_guard<std::mutex> lock(m_callbackMutex);
-
-                if (m_handler != nullptr)
-                {
-                    m_handler(type);
-                }
-            }
+            HandleEvent(type);
         }
     }
 

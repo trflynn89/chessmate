@@ -82,8 +82,12 @@ protected:
      */
     virtual void Poll(const std::chrono::milliseconds &) = 0;
 
-    std::mutex m_callbackMutex;
-    FileEventCallback m_handler;
+    /**
+     * Trigger the registered callback for a file change.
+     *
+     * @param FileEvent The file change event.
+     */
+    void HandleEvent(FileEvent);
 
     const std::string m_path;
     const std::string m_file;
@@ -97,6 +101,8 @@ private:
     std::atomic_bool m_aKeepRunning;
     std::future<void> m_future;
 
+    std::mutex m_callbackMutex;
+    FileEventCallback m_handler;
 };
 
 }

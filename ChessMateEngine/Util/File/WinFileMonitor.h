@@ -3,6 +3,8 @@
 #include <chrono>
 #include <string>
 
+#include <Windows.h>
+
 #include <Util/File/FileMonitor.h>
 
 namespace Util {
@@ -22,6 +24,13 @@ public:
 protected:
     bool IsValid() const;
     void Poll(const std::chrono::milliseconds &);
+
+private:
+    void handleEvents(PBYTE);
+    void close();
+
+    OVERLAPPED m_overlapped;
+    HANDLE m_monitorHandle;
 };
 
 }

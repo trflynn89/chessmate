@@ -43,8 +43,6 @@ public:
     {
         m_spMonitor->StopMonitor();
         std::remove(GetFullPath().c_str());
-
-        ASSERT_TRUE(m_spMonitor.unique());
     }
 
 protected:
@@ -121,6 +119,7 @@ TEST_F(FileMonitorTest, CreateTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 
     m_stream.open(GetFullPath(), std::ios::out);
+    m_stream.close();
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -139,6 +138,7 @@ TEST_F(FileMonitorTest, DeleteTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 
     m_stream.open(GetFullPath(), std::ios::out);
+    m_stream.close();
     std::remove(GetFullPath().c_str());
 
     std::this_thread::sleep_for(std::chrono::seconds(2));

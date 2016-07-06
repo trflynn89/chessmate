@@ -1,5 +1,7 @@
 #include "FileMonitor.h"
 
+#include <Util/Logging/Logger.h>
+
 namespace Util {
 
 namespace
@@ -59,6 +61,21 @@ void FileMonitor::StopMonitor()
 
     std::lock_guard<std::mutex> lock(m_callbackMutex);
     m_handler = nullptr;
+}
+
+//=============================================================================
+void FileMonitor::HandleEvent(FileEvent type)
+{
+    if (type != FileMonitor::FILE_NO_CHANGE)
+    {
+        std::lock_guard<std::mutex> lock(m_callbackMutex);
+
+        if (m_handler != nullptr)
+        {
+            LOGI(-1, "Handling event %d for \"%s\"", type, m_file);
+            m_handler(type);
+        }
+    }
 }
 
 //=============================================================================
