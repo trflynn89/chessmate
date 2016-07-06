@@ -31,8 +31,6 @@ namespace
         FILE_NOTIFY_CHANGE_DIR_NAME |
         FILE_NOTIFY_CHANGE_LAST_WRITE
     );
-
-    static BYTE s_directoryBuffer[8 << 10];
 }
 
 //=============================================================================
@@ -85,11 +83,17 @@ bool FileMonitorImpl::IsValid() const
 //=============================================================================
 void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
 {
+    static const DWORD buffSize = (8 << 10);
+    PBYTE buff = new BYTE[buffSize];
+
     DWORD bytes = 0;
 
+    std::string errorStr;
+    int error = 0;
+
     BOOL success = ::ReadDirectoryChangesW(
-        m_monitorHandle, &s_directoryBuffer, sizeof(s_directoryBuffer), FALSE,
-        s_changeFlags, &bytes, &m_overlapped, NULL
+        m_monitorHandle, buff, buffSize, FALSE, s_changeFlags, &bytes,
+        &m_overlapped, NULL
     );
 
     if (success == TRUE)
@@ -100,32 +104,35 @@ void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
             m_monitorHandle, &m_overlapped, &bytes, millis, FALSE
         );
 
-        if (success == TRUE)
-        {
-            handleEvents(s_directoryBuffer);
-        }
-        else
-        {
-            ::CancelIoEx(m_monitorHandle, &m_overlapped);
+        errorStr = Util::System::GetLastError(&error);
 
-            int error = 0;
-            std::string errorStr = Util::System::GetLastError(&error);
+        if ((success == FALSE) && (error == WAIT_TIMEOUT))
+        {
+            success = ::CancelIoEx(m_monitorHandle, &m_overlapped);
+            errorStr = Util::System::GetLastError(&error);
 
-            if (error != WAIT_TIMEOUT)
+            if ((success == TRUE) || (error != ERROR_NOT_FOUND))
             {
-                LOGW(-1, "Could not read polled event for \"%s\": %s", m_path, errorStr);
-                close();
+                success = ::GetOverlappedResult(
+                    m_monitorHandle, &m_overlapped, &bytes, TRUE
+                );
+
+                errorStr = Util::System::GetLastError(&error);
             }
         }
     }
-    else
-    {
-        LOGW(-1, "Could not create poller for \"%s\": %s",
-            m_path, Util::System::GetLastError()
-        );
 
+    if (success == TRUE)
+    {
+        handleEvents(buff);
+    }
+    else if ((error != WAIT_TIMEOUT) && (error != ERROR_OPERATION_ABORTED))
+    {
+        LOGW(-1, "Could not check events for \"%s\": %s", m_path, errorStr);
         close();
     }
+
+    delete[] buff;
 }
 
 //=============================================================================
@@ -139,32 +146,38 @@ void FileMonitorImpl::handleEvents(PBYTE pBuffer)
 
         if (fileName.compare(m_file) == 0)
         {
-            FileMonitor::FileEvent type = FileMonitor::FILE_NO_CHANGE;
-
-            switch (info->Action)
-            {
-            case FILE_ACTION_ADDED:
-            case FILE_ACTION_RENAMED_NEW_NAME:
-                type = FileMonitor::FILE_CREATED;
-                break;
-
-            case FILE_ACTION_REMOVED:
-            case FILE_ACTION_RENAMED_OLD_NAME:
-                type = FileMonitor::FILE_DELETED;
-                break;
-
-            case FILE_ACTION_MODIFIED:
-                type = FileMonitor::FILE_CHANGED;
-                break;
-            }
-
-            HandleEvent(type);
+            HandleEvent(convertToEvent(info->Action));
         }
 
         info = reinterpret_cast<PFILE_NOTIFY_INFORMATION>(
             reinterpret_cast<PBYTE >(info) + info->NextEntryOffset
         );
     } while (info->NextEntryOffset > 0);
+}
+
+//=============================================================================
+FileMonitor::FileEvent FileMonitorImpl::convertToEvent(DWORD action)
+{
+    FileMonitor::FileEvent event = FileMonitor::FILE_NO_CHANGE;
+
+    switch (action)
+    {
+    case FILE_ACTION_ADDED:
+    case FILE_ACTION_RENAMED_NEW_NAME:
+        event = FileMonitor::FILE_CREATED;
+        break;
+
+    case FILE_ACTION_REMOVED:
+    case FILE_ACTION_RENAMED_OLD_NAME:
+        event = FileMonitor::FILE_DELETED;
+        break;
+
+    case FILE_ACTION_MODIFIED:
+        event = FileMonitor::FILE_CHANGED;
+        break;
+    }
+
+    return event;
 }
 
 //=============================================================================

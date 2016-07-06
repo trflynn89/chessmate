@@ -125,7 +125,7 @@ TEST_F(FileMonitorTest, CreateTest)
 
     EXPECT_EQ(m_numCreatedFiles, 1);
     EXPECT_EQ(m_numDeletedFiles, 0);
-    //EXPECT_EQ(m_numChangedFiles, 0);
+    EXPECT_EQ(m_numChangedFiles, 0);
     EXPECT_EQ(m_numOtherEvents, 0);
 }
 
@@ -145,7 +145,7 @@ TEST_F(FileMonitorTest, DeleteTest)
 
     EXPECT_EQ(m_numCreatedFiles, 1);
     EXPECT_EQ(m_numDeletedFiles, 1);
-    //EXPECT_EQ(m_numChangedFiles, 0);
+    EXPECT_EQ(m_numChangedFiles, 0);
     EXPECT_EQ(m_numOtherEvents, 0);
 }
 

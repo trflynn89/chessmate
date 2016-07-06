@@ -26,6 +26,7 @@ protected:
 
 private:
     bool handleEvents();
+    FileMonitor::FileEvent convertToEvent(int);
     void close();
 
     int m_monitorDescriptor;

@@ -27,6 +27,7 @@ protected:
 
 private:
     void handleEvents(PBYTE);
+    FileMonitor::FileEvent convertToEvent(DWORD);
     void close();
 
     OVERLAPPED m_overlapped;

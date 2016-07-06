@@ -64,16 +64,16 @@ void FileMonitor::StopMonitor()
 }
 
 //=============================================================================
-void FileMonitor::HandleEvent(FileEvent type)
+void FileMonitor::HandleEvent(FileEvent event)
 {
-    if (type != FileMonitor::FILE_NO_CHANGE)
+    if (event != FileMonitor::FILE_NO_CHANGE)
     {
         std::lock_guard<std::mutex> lock(m_callbackMutex);
 
         if (m_handler != nullptr)
         {
-            LOGI(-1, "Handling event %d for \"%s\"", type, m_file);
-            m_handler(type);
+            LOGI(-1, "Handling event %d for \"%s\"", event, m_file);
+            m_handler(event);
         }
     }
 }
