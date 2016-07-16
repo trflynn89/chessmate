@@ -10,8 +10,7 @@ namespace Util {
 
 //=============================================================================
 IniParser::IniParser(const std::string &path, const std::string &file) :
-    Parser(path, file),
-    m_lineNumber(0)
+    Parser(path, file)
 {
 }
 
@@ -22,7 +21,7 @@ void IniParser::Parse()
     std::ifstream stream(fullPath.c_str(), std::ios::in);
 
     std::string line, section;
-    m_lineNumber = 0;
+    m_line = 0;
 
     std::lock_guard<std::mutex> lock(m_sectionsMutex);
     m_sections.clear();
@@ -30,7 +29,7 @@ void IniParser::Parse()
     while (stream.good() && std::getline(stream, line))
     {
         String::Trim(line);
-        ++m_lineNumber;
+        ++m_line;
 
         if (line.empty() || String::StartsWith(line, ';'))
         {
@@ -43,13 +42,13 @@ void IniParser::Parse()
 
             if (m_sections.find(section) != m_sections.end())
             {
-                throw ParserException(m_file, m_lineNumber,
+                throw ParserException(m_file, m_line,
                     "Section names must be unique"
                 );
             }
             else if (trimValue(section, '\'') || trimValue(section, '\"'))
             {
-                throw ParserException(m_file, m_lineNumber,
+                throw ParserException(m_file, m_line,
                     "Section names must not be quoted"
                 );
             }
@@ -68,7 +67,7 @@ void IniParser::Parse()
 
                 if (trimValue(name, '\'') || trimValue(name, '\"'))
                 {
-                    throw ParserException(m_file, m_lineNumber,
+                    throw ParserException(m_file, m_line,
                         "Value names must not be quoted"
                     );
                 }
@@ -82,7 +81,7 @@ void IniParser::Parse()
                 {
                     if (name.compare(value.first) == 0)
                     {
-                        throw ParserException(m_file, m_lineNumber,
+                        throw ParserException(m_file, m_line,
                             "Value names must be unique within a section"
                         );
                     }
@@ -92,14 +91,14 @@ void IniParser::Parse()
             }
             else
             {
-                throw ParserException(m_file, m_lineNumber,
+                throw ParserException(m_file, m_line,
                     "Require name/value pairs of the form name=value"
                 );
             }
         }
         else
         {
-            throw ParserException(m_file, m_lineNumber,
+            throw ParserException(m_file, m_line,
                 "A [section] must be defined before name=value pairs"
             );
         }
@@ -149,7 +148,7 @@ bool IniParser::trimValue(std::string &str, char start, char end) const
         }
         else
         {
-            throw ParserException(m_file, m_lineNumber, String::Format(
+            throw ParserException(m_file, m_line, String::Format(
                 "Imbalanced characters: \"%c\" and \"%c\"", start, end
             ));
         }

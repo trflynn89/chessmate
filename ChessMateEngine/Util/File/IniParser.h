@@ -130,8 +130,6 @@ private:
 
     mutable std::mutex m_sectionsMutex;
     IniSection m_sections;
-
-    unsigned int m_lineNumber;
 };
 
 //=============================================================================
