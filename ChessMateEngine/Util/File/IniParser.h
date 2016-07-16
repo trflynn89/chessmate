@@ -149,7 +149,7 @@ private:
     IniSection m_sections;
 };
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 T IniParser::GetValue(const std::string &section, const std::string &key, T def) const
 {

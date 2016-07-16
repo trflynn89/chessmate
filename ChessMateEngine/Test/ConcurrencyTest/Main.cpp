@@ -13,7 +13,7 @@ namespace
     typedef int Object;
     typedef Util::ConcurrentQueue<Object> ObjectQueue;
 
-    //=========================================================================
+    //==========================================================================
     void DoQueuePush(
         ObjectQueue &objectQueue,
         const Object &object,
@@ -26,7 +26,7 @@ namespace
         ASSERT_FALSE(objectQueue.IsEmpty());
     }
 
-    //=========================================================================
+    //==========================================================================
     void DoQueuePop(
         ObjectQueue &objectQueue,
         const Object &expectedObject,
@@ -40,7 +40,7 @@ namespace
         ASSERT_EQ(object, expectedObject);
     }
 
-    //=========================================================================
+    //==========================================================================
     unsigned int WriterThread(ObjectQueue &objectQueue)
     {
         unsigned int numWrites = 100;
@@ -56,7 +56,7 @@ namespace
         return numWrites;
     }
 
-    //=========================================================================
+    //==========================================================================
     unsigned int ReaderThread(
         ObjectQueue &objectQueue,
         std::atomic_bool &finishedWrites
@@ -77,7 +77,7 @@ namespace
         return numReads;
     }
 
-    //=========================================================================
+    //==========================================================================
     void RunMultiThreadedTest(unsigned int numWriters, unsigned int numReaders)
     {
         ObjectQueue objectQueue;
@@ -122,7 +122,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 TEST(ConcurrencyTest, EmptyQueueUponCreationTest)
 {
     ObjectQueue objectQueue;
@@ -131,7 +131,7 @@ TEST(ConcurrencyTest, EmptyQueueUponCreationTest)
     ASSERT_EQ(objectQueue.Size(), 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(ConcurrencyTest, PopFromEmptyQueueTest)
 {
     ObjectQueue objectQueue;
@@ -150,7 +150,7 @@ TEST(ConcurrencyTest, PopFromEmptyQueueTest)
     ASSERT_FALSE(objectQueue.Pop(obj1, std::chrono::milliseconds(0)));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(ConcurrencyTest, SingleThreadedTest)
 {
     ObjectQueue objectQueue;
@@ -170,7 +170,7 @@ TEST(ConcurrencyTest, SingleThreadedTest)
     DoQueuePop(objectQueue, obj3, --size);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(ConcurrencyTest, MultiThreadedTest)
 {
     RunMultiThreadedTest(1, 1);

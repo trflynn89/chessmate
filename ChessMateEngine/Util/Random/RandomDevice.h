@@ -63,9 +63,9 @@ void RandomDevice<T, E>::Seed(T seed)
     m_engine.seed(seed);
 }
 
-//=============================================================================
+//==============================================================================
 // Normal distribution
-//=============================================================================
+//==============================================================================
 template <typename T, typename E = std::default_random_engine>
 class NormalDevice : public RandomDevice<T, E>
 {
@@ -94,9 +94,9 @@ T NormalDevice<T, E>::operator()()
     return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
-//=============================================================================
+//==============================================================================
 // Uniform integer distribution
-//=============================================================================
+//==============================================================================
 template <typename T, typename E = std::default_random_engine>
 class UniformIntegerDevice : public RandomDevice<T, E>
 {
@@ -125,9 +125,9 @@ T UniformIntegerDevice<T, E>::operator()()
     return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
-//=============================================================================
+//==============================================================================
 // Uniform real distribution
-//=============================================================================
+//==============================================================================
 template <typename T, typename E = std::default_random_engine>
 class UniformRealDevice : public RandomDevice<T, E>
 {
@@ -156,9 +156,9 @@ T UniformRealDevice<T, E>::operator()()
     return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
-//=============================================================================
+//==============================================================================
 // Bernoulli distribution
-//=============================================================================
+//==============================================================================
 template <typename E = std::default_random_engine>
 class BernoulliDevice : public RandomDevice<bool, E>
 {
@@ -187,9 +187,9 @@ bool BernoulliDevice<E>::operator()()
     return m_distribution(RandomDevice<bool, E>::m_engine);
 }
 
-//=============================================================================
+//==============================================================================
 // Binomial distribution
-//=============================================================================
+//==============================================================================
 template <typename T, typename E = std::default_random_engine>
 class BinomialDevice : public RandomDevice<T, E>
 {
@@ -218,9 +218,9 @@ T BinomialDevice<T, E>::operator()()
     return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
-//=============================================================================
+//==============================================================================
 // Geometric distribution
-//=============================================================================
+//==============================================================================
 template <typename T, typename E = std::default_random_engine>
 class GeometricDevice : public RandomDevice<T, E>
 {
@@ -249,9 +249,9 @@ T GeometricDevice<T, E>::operator()()
     return m_distribution(RandomDevice<T, E>::m_engine);
 }
 
-//=============================================================================
+//==============================================================================
 // Exponential distribution
-//=============================================================================
+//==============================================================================
 template <typename T, typename E = std::default_random_engine>
 class ExponentialDevice : public RandomDevice<T, E>
 {

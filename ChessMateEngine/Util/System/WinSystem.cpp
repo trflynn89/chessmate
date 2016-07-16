@@ -16,7 +16,7 @@ namespace
     static std::atomic<ExitCode> g_aExitCode(Normal);
     static std::atomic_bool g_aKeepRunning(true);
 
-    //=========================================================================
+    //==========================================================================
     void handleSignal(int sig)
     {
         LOGC_NO_LOCK("Received signal %d", sig);
@@ -63,7 +63,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool SystemImpl::MakeDirectory(const std::string &path)
 {
     int ret = SHCreateDirectoryEx(NULL, path.c_str(), NULL);
@@ -75,13 +75,13 @@ bool SystemImpl::MakeDirectory(const std::string &path)
     );
 }
 
-//=============================================================================
+//==============================================================================
 char SystemImpl::GetSeparator()
 {
     return '\\';
 }
 
-//=============================================================================
+//==============================================================================
 std::string SystemImpl::GetTempDirectory()
 {
     TCHAR buff[MAX_PATH];
@@ -95,7 +95,7 @@ std::string SystemImpl::GetTempDirectory()
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 void SystemImpl::PrintBacktrace()
 {
     void *trace[10];
@@ -107,7 +107,7 @@ void SystemImpl::PrintBacktrace()
     }
 }
 
-//=============================================================================
+//==============================================================================
 std::string SystemImpl::LocalTime(const std::string &fmt)
 {
     auto sys = std::chrono::system_clock::now();
@@ -128,7 +128,7 @@ std::string SystemImpl::LocalTime(const std::string &fmt)
     return std::string();
 }
 
-//=============================================================================
+//==============================================================================
 std::string SystemImpl::GetLastError(int *pCode)
 {
     int error = WSAGetLastError();
@@ -158,7 +158,7 @@ std::string SystemImpl::GetLastError(int *pCode)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 void SystemImpl::SetupSignalHandler()
 {
     signal(SIGINT, handleSignal);
@@ -169,20 +169,20 @@ void SystemImpl::SetupSignalHandler()
     signal(SIGSEGV, handleSignal);
 }
 
-//=============================================================================
+//==============================================================================
 void SystemImpl::CleanExit(ExitCode exitCode)
 {
     g_aExitCode.store(exitCode);
     g_aKeepRunning.store(false);
 }
 
-//=============================================================================
+//==============================================================================
 bool SystemImpl::KeepRunning()
 {
     return g_aKeepRunning.load();
 }
 
-//=============================================================================
+//==============================================================================
 ExitCode SystemImpl::GetExitCode()
 {
     return g_aExitCode.load();

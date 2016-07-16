@@ -19,7 +19,7 @@ namespace
     static std::atomic<ExitCode> g_aExitCode(Normal);
     static std::atomic_bool g_aKeepRunning(true);
 
-    //=========================================================================
+    //==========================================================================
     void handleSignal(int sig)
     {
         LOGC_NO_LOCK("Received signal %d", sig);
@@ -68,7 +68,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool SystemImpl::MakeDirectory(const std::string &path)
 {
     static const mode_t mode = S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH;
@@ -98,13 +98,13 @@ bool SystemImpl::MakeDirectory(const std::string &path)
     return ((::mkdir(path.c_str(), mode) == 0) || (errno == EEXIST));
 }
 
-//=============================================================================
+//==============================================================================
 char SystemImpl::GetSeparator()
 {
     return '/';
 }
 
-//=============================================================================
+//==============================================================================
 std::string SystemImpl::GetTempDirectory()
 {
     static const std::string envs[] = { "TMPDIR", "TMP", "TEMP", "TEMPDIR", "" };
@@ -122,7 +122,7 @@ std::string SystemImpl::GetTempDirectory()
     return std::string("/tmp");
 }
 
-//=============================================================================
+//==============================================================================
 void SystemImpl::PrintBacktrace()
 {
     void *trace[10];
@@ -130,7 +130,7 @@ void SystemImpl::PrintBacktrace()
     backtrace_symbols_fd(trace, traceSize, STDERR_FILENO);
 }
 
-//=============================================================================
+//==============================================================================
 std::string SystemImpl::LocalTime(const std::string &fmt)
 {
     auto sys = std::chrono::system_clock::now();
@@ -151,7 +151,7 @@ std::string SystemImpl::LocalTime(const std::string &fmt)
     return std::string();
 }
 
-//=============================================================================
+//==============================================================================
 std::string SystemImpl::GetLastError(int *pCode)
 {
     int error = errno;
@@ -164,7 +164,7 @@ std::string SystemImpl::GetLastError(int *pCode)
     return "(" + std::to_string(error) + ") " + strerror(error);
 }
 
-//=============================================================================
+//==============================================================================
 void SystemImpl::SetupSignalHandler()
 {
     signal(SIGINT, handleSignal);
@@ -177,20 +177,20 @@ void SystemImpl::SetupSignalHandler()
     signal(SIGSEGV, handleSignal);
 }
 
-//=============================================================================
+//==============================================================================
 void SystemImpl::CleanExit(ExitCode exitCode)
 {
     g_aExitCode.store(exitCode);
     g_aKeepRunning.store(false);
 }
 
-//=============================================================================
+//==============================================================================
 bool SystemImpl::KeepRunning()
 {
     return g_aKeepRunning.load();
 }
 
-//=============================================================================
+//==============================================================================
 ExitCode SystemImpl::GetExitCode()
 {
     return g_aExitCode.load();

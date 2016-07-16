@@ -5,7 +5,7 @@
 
 namespace Util {
 
-//=============================================================================
+//==============================================================================
 SocketManager::SocketManager() :
     m_aKeepRunning(true),
     m_newClientCallback(nullptr),
@@ -13,7 +13,7 @@ SocketManager::SocketManager() :
 {
 }
 
-//=============================================================================
+//==============================================================================
 SocketManager::~SocketManager()
 {
     if (m_aKeepRunning.load())
@@ -22,7 +22,7 @@ SocketManager::~SocketManager()
     }
 }
 
-//=============================================================================
+//==============================================================================
 void SocketManager::StartSocketManager()
 {
     const SocketManagerPtr &spThis = shared_from_this();
@@ -31,7 +31,7 @@ void SocketManager::StartSocketManager()
     m_serviceFuture = std::async(std::launch::async, function, spThis);
 }
 
-//=============================================================================
+//==============================================================================
 void SocketManager::StopSocketManager()
 {
     LOGC("Stopping socket manager");
@@ -48,7 +48,7 @@ void SocketManager::StopSocketManager()
     m_aioSockets.clear();
 }
 
-//=============================================================================
+//==============================================================================
 void SocketManager::SetClientCallbacks(NewClientCallback newClient,
     ClosedClientCallback closedClient)
 {
@@ -58,13 +58,13 @@ void SocketManager::SetClientCallbacks(NewClientCallback newClient,
     m_closedClientCallback = closedClient;
 }
 
-//=============================================================================
+//==============================================================================
 void SocketManager::ClearClientCallbacks()
 {
     SetClientCallbacks(nullptr, nullptr);
 }
 
-//=============================================================================
+//==============================================================================
 SocketPtr SocketManager::CreateTcpSocket()
 {
     SocketImplPtr spSocket = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
@@ -77,7 +77,7 @@ SocketPtr SocketManager::CreateTcpSocket()
     return std::dynamic_pointer_cast<Socket>(spSocket);
 }
 
-//=============================================================================
+//==============================================================================
 SocketWPtr SocketManager::CreateAsyncTcpSocket()
 {
     SocketPtr spSocket = CreateTcpSocket();
@@ -98,7 +98,7 @@ SocketWPtr SocketManager::CreateAsyncTcpSocket()
     return spSocket;
 }
 
-//=============================================================================
+//==============================================================================
 SocketPtr SocketManager::CreateUdpSocket()
 {
     SocketImplPtr spSocket = std::make_shared<SocketImpl>(Socket::SOCKET_UDP);
@@ -111,7 +111,7 @@ SocketPtr SocketManager::CreateUdpSocket()
     return std::dynamic_pointer_cast<Socket>(spSocket);
 }
 
-//=============================================================================
+//==============================================================================
 SocketWPtr SocketManager::CreateAsyncUdpSocket()
 {
     SocketPtr spSocket = CreateUdpSocket();

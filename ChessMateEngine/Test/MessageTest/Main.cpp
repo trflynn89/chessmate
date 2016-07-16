@@ -3,7 +3,7 @@
 #include <Game/Message.h>
 #include <Util/Logging/Logger.h>
 
-//=============================================================================
+//==============================================================================
 TEST(MessageTest, ConstructorTest)
 {
     // INVALID_TYPE
@@ -37,7 +37,7 @@ TEST(MessageTest, ConstructorTest)
     ASSERT_EQ(m6.GetData(), "mno");
 }
 
-//=============================================================================
+//==============================================================================
 TEST(MessageTest, ValidityTest)
 {
     // INVALID_TYPE
@@ -86,7 +86,7 @@ TEST(MessageTest, ValidityTest)
     ASSERT_FALSE(m13.IsValid());
 }
 
-//=============================================================================
+//==============================================================================
 TEST(MessageTest, SerializeTest)
 {
     // INVALID_TYPE

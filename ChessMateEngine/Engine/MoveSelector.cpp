@@ -11,7 +11,7 @@ namespace
     static const int s_negInfinity = -32767;
 }
 
-//=============================================================================
+//==============================================================================
 MoveSelector::MoveSelector(
     const Movement::MoveSetPtr &spMoveSet,
     const Game::BitBoardPtr &spBoard,
@@ -24,7 +24,7 @@ MoveSelector::MoveSelector(
 {
 }
 
-//=============================================================================
+//==============================================================================
 Movement::Move MoveSelector::GetBestMove(const Game::value_type &maxDepth) const
 {
     Game::BitBoardPtr spBoard = m_wpBoard.lock();
@@ -52,7 +52,7 @@ Movement::Move MoveSelector::GetBestMove(const Game::value_type &maxDepth) const
     return bestMove;
 }
 
-//=============================================================================
+//==============================================================================
 Game::value_type MoveSelector::maxValue(
     const Game::BitBoardPtr &spBoard,
     const Game::value_type &depth,
@@ -87,7 +87,7 @@ Game::value_type MoveSelector::maxValue(
     return v;
 }
 
-//=============================================================================
+//==============================================================================
 Game::value_type MoveSelector::minValue(
     const Game::BitBoardPtr &spBoard,
     const Game::value_type &depth,
@@ -122,7 +122,7 @@ Game::value_type MoveSelector::minValue(
     return v;
 }
 
-//=============================================================================
+//==============================================================================
 Game::BitBoardPtr MoveSelector::result(
     const Game::BitBoardPtr &spBoard,
     Movement::Move move
@@ -134,7 +134,7 @@ Game::BitBoardPtr MoveSelector::result(
     return std::make_shared<Game::BitBoard>(copy);
 }
 
-//=============================================================================
+//==============================================================================
 bool MoveSelector::reachedEndState(
     const Game::value_type &depth,
     const Game::value_type &score

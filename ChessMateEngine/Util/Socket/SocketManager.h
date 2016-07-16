@@ -150,7 +150,7 @@ protected:
     AsyncRequest::RequestQueue m_completedSends;
 };
 
-//=============================================================================
+//==============================================================================
 template <typename R, typename P>
 bool SocketManager::WaitForCompletedConnect(
     AsyncConnect &connect,
@@ -160,7 +160,7 @@ bool SocketManager::WaitForCompletedConnect(
     return m_completedConnects.Pop(connect, waitTime);
 }
 
-//=============================================================================
+//==============================================================================
 template <typename R, typename P>
 bool SocketManager::WaitForCompletedReceive(
     AsyncRequest &request,
@@ -170,7 +170,7 @@ bool SocketManager::WaitForCompletedReceive(
     return m_completedReceives.Pop(request, waitTime);
 }
 
-//=============================================================================
+//==============================================================================
 template <typename R, typename P>
 bool SocketManager::WaitForCompletedSend(
     AsyncRequest &request,

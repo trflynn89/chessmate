@@ -13,7 +13,7 @@ namespace
     static const int s_defaultNumberOfCores = 1;
 }
 
-//=============================================================================
+//==============================================================================
 GameManager::GameManager(const Util::SocketManagerPtr &spSocketManager) :
     m_wpSocketManager(spSocketManager),
     m_aKeepRunning(true),
@@ -21,7 +21,7 @@ GameManager::GameManager(const Util::SocketManagerPtr &spSocketManager) :
 {
 }
 
-//=============================================================================
+//==============================================================================
 GameManager::~GameManager()
 {
     if (m_aKeepRunning.load())
@@ -30,7 +30,7 @@ GameManager::~GameManager()
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool GameManager::StartGameManager(int acceptPort)
 {
     bool ret = false;
@@ -53,7 +53,7 @@ bool GameManager::StartGameManager(int acceptPort)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::StopGameManager()
 {
     LOGC("Stopping game manager");
@@ -78,14 +78,14 @@ void GameManager::StopGameManager()
     StopAllGames();
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::StartGame(const Util::SocketPtr &spClientSocket)
 {
     std::lock_guard<std::mutex> lock(m_gamesMutex);
     m_pendingMap[spClientSocket->GetSocketId()] = spClientSocket;
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::StopGame(int socketId)
 {
     std::lock_guard<std::mutex> lock(m_gamesMutex);
@@ -95,7 +95,7 @@ void GameManager::StopGame(int socketId)
     m_gamesMap.erase(socketId);
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::StopAllGames()
 {
     std::lock_guard<std::mutex> lock(m_gamesMutex);
@@ -104,7 +104,7 @@ void GameManager::StopAllGames()
     m_gamesMap.clear();
 }
 
-//=============================================================================
+//==============================================================================
 bool GameManager::setSocketCallbacks()
 {
     Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
@@ -122,7 +122,7 @@ bool GameManager::setSocketCallbacks()
     return (spSocketManager.get() != NULL);
 }
 
-//=============================================================================
+//==============================================================================
 bool GameManager::createAcceptSocket(int acceptPort)
 {
     Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
@@ -152,7 +152,7 @@ bool GameManager::createAcceptSocket(int acceptPort)
     return (spSocket && spSocket->IsListening());
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::createMessageReceivers()
 {
     unsigned int numCores = std::thread::hardware_concurrency();
@@ -175,7 +175,7 @@ void GameManager::createMessageReceivers()
     }
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::messageReceiver()
 {
     FutureVector futures;
@@ -195,7 +195,7 @@ void GameManager::messageReceiver()
     }
 }
 
-//=============================================================================
+//==============================================================================
 Util::AsyncRequest GameManager::receiveSingleMessage() const
 {
     Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
@@ -214,7 +214,7 @@ Util::AsyncRequest GameManager::receiveSingleMessage() const
     return request;
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::giveRequestToGame(FutureVector &futures, const Util::AsyncRequest &request)
 {
     ChessGamePtr spGame;
@@ -247,7 +247,7 @@ void GameManager::giveRequestToGame(FutureVector &futures, const Util::AsyncRequ
     }
 }
 
-//=============================================================================
+//==============================================================================
 ChessGamePtr GameManager::createOrFindGame(int socketId, const Message &message)
 {
     std::lock_guard<std::mutex> lock(m_gamesMutex);
@@ -284,7 +284,7 @@ ChessGamePtr GameManager::createOrFindGame(int socketId, const Message &message)
     return m_gamesMap[socketId];
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::handleMessage(const ChessGamePtr spGame, const Message message)
 {
     auto startTime = std::chrono::high_resolution_clock::now();
@@ -308,7 +308,7 @@ void GameManager::handleMessage(const ChessGamePtr spGame, const Message message
     }
 }
 
-//=============================================================================
+//==============================================================================
 void GameManager::deleteFinishedFutures(FutureVector &futures)
 {
     for (auto it = futures.begin(); it != futures.end(); )

@@ -9,7 +9,7 @@ namespace Util
 
 namespace
 {
-    //=========================================================================
+    //==========================================================================
     class FooClass
     {
     public:
@@ -17,7 +17,7 @@ namespace
         bool Foo() const { return true; }
     };
 
-    //=========================================================================
+    //==========================================================================
     class BarClass
     {
     public:
@@ -30,7 +30,7 @@ namespace
         return stream;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T, Util::enable_if_all<Util::if_foo::enabled<T>>...>
     bool callFoo(const T &arg)
     {
@@ -43,7 +43,7 @@ namespace
         return false;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T, Util::enable_if_all<Util::if_string::enabled<T>>...>
     bool isString(const T &)
     {
@@ -56,7 +56,7 @@ namespace
         return false;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T, Util::enable_if_all<Util::if_ostream::enabled<T>>...>
     bool isStreamable(const T &)
     {
@@ -69,7 +69,7 @@ namespace
         return false;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T, Util::enable_if_all<Util::if_hash::enabled<T>>...>
     bool isHashable(const T &)
     {
@@ -82,7 +82,7 @@ namespace
         return false;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T,
         Util::enable_if_all<std::is_pointer<T>, std::is_pod<typename std::remove_pointer<T>::type>>...>
     bool isPodPointer(const T &)
@@ -97,7 +97,7 @@ namespace
         return false;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T,
         Util::enable_if_any<std::is_pointer<T>, std::is_pod<typename std::remove_pointer<T>::type>>...>
     bool isPodOrPointer(const T &)
@@ -113,7 +113,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 namespace std
 {
     template <>
@@ -126,7 +126,7 @@ namespace std
     };
 }
 
-//=============================================================================
+//==============================================================================
 TEST(TraitsTest, FooTest)
 {
     const FooClass fc;
@@ -136,7 +136,7 @@ TEST(TraitsTest, FooTest)
     ASSERT_FALSE(callFoo(bc));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(TraitsTest, StringTest)
 {
     const FooClass fc;
@@ -169,7 +169,7 @@ TEST(TraitsTest, StringTest)
     ASSERT_FALSE(isString(fc));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(TraitsTest, StreamTest)
 {
     const FooClass fc;
@@ -184,7 +184,7 @@ TEST(TraitsTest, StreamTest)
     ASSERT_FALSE(isStreamable(fc));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(TraitsTest, HashTest)
 {
     const FooClass fc;
@@ -199,7 +199,7 @@ TEST(TraitsTest, HashTest)
     ASSERT_FALSE(isHashable(bc));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(TraitsTest, EnableIfAllTest)
 {
     const FooClass fc;
@@ -222,7 +222,7 @@ TEST(TraitsTest, EnableIfAllTest)
     ASSERT_FALSE(isPodPointer(&str));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(TraitsTest, EnableIfAnyTest)
 {
     const FooClass fc;

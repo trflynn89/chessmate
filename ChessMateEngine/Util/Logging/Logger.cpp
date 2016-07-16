@@ -16,11 +16,11 @@ namespace
     static const std::chrono::seconds s_queueWaitTime(1);
 }
 
-//=============================================================================
+//==============================================================================
 LoggerWPtr Logger::s_wpInstance;
 std::mutex Logger::s_consoleMutex;
 
-//=============================================================================
+//==============================================================================
 Logger::Logger(const std::string &filePath, size_t maxFileSize) :
     m_filePath(filePath),
     m_maxFileSize(maxFileSize),
@@ -30,13 +30,13 @@ Logger::Logger(const std::string &filePath, size_t maxFileSize) :
 {
 }
 
-//=============================================================================
+//==============================================================================
 Logger::~Logger()
 {
     StopLogger();
 }
 
-//=============================================================================
+//==============================================================================
 bool Logger::StartLogger()
 {
     if (System::MakeDirectory(m_filePath) && createLogFile())
@@ -51,7 +51,7 @@ bool Logger::StartLogger()
     return m_future.valid();
 }
 
-//=============================================================================
+//==============================================================================
 void Logger::StopLogger()
 {
     LOGC("Stopping logger");
@@ -66,19 +66,19 @@ void Logger::StopLogger()
     }
 }
 
-//=============================================================================
+//==============================================================================
 void Logger::SetInstance(const LoggerPtr &spLogger)
 {
     s_wpInstance = spLogger;
 }
 
-//=============================================================================
+//==============================================================================
 LoggerPtr Logger::GetInstance()
 {
     return s_wpInstance.lock();
 }
 
-//=============================================================================
+//==============================================================================
 void Logger::ConsoleLog(bool acquireLock, const std::string &message)
 {
     std::unique_lock<std::mutex> lock(s_consoleMutex, std::defer_lock);
@@ -92,7 +92,7 @@ void Logger::ConsoleLog(bool acquireLock, const std::string &message)
     std::cout << timeStr << ": " << message << std::endl;
 }
 
-//=============================================================================
+//==============================================================================
 void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
     const char *func, unsigned int line, const std::string &message)
 {
@@ -111,7 +111,7 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
     }
 }
 
-//=============================================================================
+//==============================================================================
 void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     const char *func, unsigned int line, const std::string &message)
 {
@@ -135,7 +135,7 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool Logger::createLogFile()
 {
     std::string randStr = String::GenerateRandomString(10);
@@ -159,7 +159,7 @@ bool Logger::createLogFile()
     return m_logFile.good();
 }
 
-//=============================================================================
+//==============================================================================
 void Logger::ioThread()
 {
     unsigned long long int index = U64(0);

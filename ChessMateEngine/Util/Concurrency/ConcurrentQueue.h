@@ -63,7 +63,7 @@ private:
     std::condition_variable m_pushCondition;
 };
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 void ConcurrentQueue<T>::Pop(T &item)
 {
@@ -78,7 +78,7 @@ void ConcurrentQueue<T>::Pop(T &item)
     m_queue.pop();
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T> template <typename R, typename P>
 bool ConcurrentQueue<T>::Pop(T &item, std::chrono::duration<R, P> waitTime)
 {
@@ -98,7 +98,7 @@ bool ConcurrentQueue<T>::Pop(T &item, std::chrono::duration<R, P> waitTime)
     return itemPopped;
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 void ConcurrentQueue<T>::Push(const T &item)
 {
@@ -110,7 +110,7 @@ void ConcurrentQueue<T>::Push(const T &item)
     m_pushCondition.notify_one();
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 bool ConcurrentQueue<T>::IsEmpty()
 {
@@ -118,7 +118,7 @@ bool ConcurrentQueue<T>::IsEmpty()
     return m_queue.empty();
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 typename ConcurrentQueue<T>::size_type ConcurrentQueue<T>::Size()
 {

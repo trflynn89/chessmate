@@ -9,7 +9,7 @@
 
 namespace Util {
 
-//=============================================================================
+//==============================================================================
 const std::string String::s_alphaNum =
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -19,13 +19,13 @@ const unsigned int String::s_asciiSize = 256;
 
 UniformIntegerDevice<size_t, std::mt19937> String::s_randomDevice(0, String::s_alphaNum.size() - 1);
 
-//=============================================================================
+//==============================================================================
 std::vector<std::string> String::Split(const std::string &input, char delim)
 {
     return Split(input, delim, 0);
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<std::string> String::Split(const std::string &input, char delim, size_t max)
 {
     std::string item;
@@ -52,7 +52,7 @@ std::vector<std::string> String::Split(const std::string &input, char delim, siz
     return elems;
 }
 
-//=============================================================================
+//==============================================================================
 void String::Trim(std::string &str)
 {
     // Remove leading whitespace
@@ -64,7 +64,7 @@ void String::Trim(std::string &str)
         std::not1(std::ptr_fun<int, int>(std::isspace))).base(), str.end());
 }
 
-//=============================================================================
+//==============================================================================
 void String::ReplaceAll(std::string &target, const std::string &search, const std::string &replace)
 {
     size_t pos = target.find(search);
@@ -76,14 +76,14 @@ void String::ReplaceAll(std::string &target, const std::string &search, const st
     }
 }
 
-//=============================================================================
+//==============================================================================
 void String::RemoveAll(std::string &target, const std::string &search)
 {
     static const std::string empty;
     ReplaceAll(target, search, empty);
 }
 
-//=============================================================================
+//==============================================================================
 std::string String::GenerateRandomString(const unsigned int len)
 {
     std::string ret;
@@ -97,7 +97,7 @@ std::string String::GenerateRandomString(const unsigned int len)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 bool String::StartsWith(const std::string &source, const char &search)
 {
     bool ret = false;
@@ -110,7 +110,7 @@ bool String::StartsWith(const std::string &source, const char &search)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 bool String::StartsWith(const std::string &source, const std::string &search)
 {
     bool ret = false;
@@ -126,7 +126,7 @@ bool String::StartsWith(const std::string &source, const std::string &search)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 bool String::EndsWith(const std::string &source, const char &search)
 {
     bool ret = false;
@@ -141,7 +141,7 @@ bool String::EndsWith(const std::string &source, const char &search)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 bool String::EndsWith(const std::string &source, const std::string &search)
 {
     bool ret = false;
@@ -157,7 +157,7 @@ bool String::EndsWith(const std::string &source, const std::string &search)
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 float String::CalculateEntropy(const std::string &source)
 {
     long charCount[s_asciiSize] = { 0 };
@@ -191,14 +191,14 @@ float String::CalculateEntropy(const std::string &source)
     return entropy;
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 std::string String::Convert(const std::string &value)
 {
     return value;
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 bool String::Convert(const std::string &value)
 {
@@ -214,7 +214,7 @@ bool String::Convert(const std::string &value)
     return (result != 0);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 char String::Convert(const std::string &value)
 {
@@ -230,7 +230,7 @@ char String::Convert(const std::string &value)
     return static_cast<char>(result);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 unsigned char String::Convert(const std::string &value)
 {
@@ -246,7 +246,7 @@ unsigned char String::Convert(const std::string &value)
     return static_cast<unsigned char>(result);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 short String::Convert(const std::string &value)
 {
@@ -262,7 +262,7 @@ short String::Convert(const std::string &value)
     return static_cast<short>(result);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 unsigned short String::Convert(const std::string &value)
 {
@@ -278,14 +278,14 @@ unsigned short String::Convert(const std::string &value)
     return static_cast<unsigned short>(result);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 int String::Convert(const std::string &value)
 {
     return std::stoi(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 unsigned int String::Convert(const std::string &value)
 {
@@ -301,56 +301,56 @@ unsigned int String::Convert(const std::string &value)
     return static_cast<unsigned int>(result);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 long String::Convert(const std::string &value)
 {
     return std::stol(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 unsigned long String::Convert(const std::string &value)
 {
     return std::stoul(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 long long String::Convert(const std::string &value)
 {
     return std::stoll(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 unsigned long long String::Convert(const std::string &value)
 {
     return std::stoull(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 float String::Convert(const std::string &value)
 {
     return std::stof(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 double String::Convert(const std::string &value)
 {
     return std::stod(value);
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 long double String::Convert(const std::string &value)
 {
     return std::stold(value);
 }
 
-//=============================================================================
+//==============================================================================
 void String::format(std::ostream &stream, const char *fmt)
 {
     stream << fmt;

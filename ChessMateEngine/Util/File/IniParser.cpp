@@ -8,13 +8,13 @@
 
 namespace Util {
 
-//=============================================================================
+//==============================================================================
 IniParser::IniParser(const std::string &path, const std::string &file) :
     Parser(path, file)
 {
 }
 
-//=============================================================================
+//==============================================================================
 void IniParser::Parse()
 {
     std::string fullPath = String::Join(System::GetSeparator(), m_path, m_file);
@@ -52,14 +52,14 @@ void IniParser::Parse()
     }
 }
 
-//=============================================================================
+//==============================================================================
 size_t IniParser::GetSize() const
 {
     std::lock_guard<std::mutex> lock(m_sectionsMutex);
     return m_sections.size();
 }
 
-//=============================================================================
+//==============================================================================
 ssize_t IniParser::GetSize(const std::string &section) const
 {
     std::lock_guard<std::mutex> lock(m_sectionsMutex);
@@ -75,7 +75,7 @@ ssize_t IniParser::GetSize(const std::string &section) const
     return size;
 }
 
-//=============================================================================
+//==============================================================================
 std::string IniParser::onSection(const std::string &line)
 {
     std::string section = line;
@@ -97,7 +97,7 @@ std::string IniParser::onSection(const std::string &line)
     return section;
 }
 
-//=============================================================================
+//==============================================================================
 void IniParser::onValue(const std::string &section, const std::string &line)
 {
     static const size_t size = 2;
@@ -143,13 +143,13 @@ void IniParser::onValue(const std::string &section, const std::string &line)
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool IniParser::trimValue(std::string &str, char ch) const
 {
     return trimValue(str, ch, ch);
 }
 
-//=============================================================================
+//==============================================================================
 bool IniParser::trimValue(std::string &str, char start, char end) const
 {
     bool startsWithChar = String::StartsWith(str, start);
@@ -172,7 +172,7 @@ bool IniParser::trimValue(std::string &str, char start, char end) const
     return (startsWithChar && endsWithChar);
 }
 
-//=============================================================================
+//==============================================================================
 bool IniParser::getValue(
     const std::string &section,
     const std::string &key,

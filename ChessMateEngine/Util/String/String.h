@@ -252,7 +252,7 @@ private:
 
 };
 
-//=============================================================================
+//==============================================================================
 template <typename ... Args>
 std::string String::Format(const char *fmt, const Args &...args)
 {
@@ -267,7 +267,7 @@ std::string String::Format(const char *fmt, const Args &...args)
     return stream.str();
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T, typename ... Args>
 void String::format(
     std::ostream &stream,
@@ -324,7 +324,7 @@ void String::format(
     }
 }
 
-//=============================================================================
+//==============================================================================
 template <typename ... Args>
 std::string String::Join(const char &separator, const Args &...args)
 {
@@ -334,7 +334,7 @@ std::string String::Join(const char &separator, const Args &...args)
     return stream.str();
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T, typename ... Args>
 void String::join(
     std::ostream &stream,
@@ -349,7 +349,7 @@ void String::join(
     join(stream, separator, args...);
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 void String::join(std::ostream &stream, const char &, const T &value)
 {
@@ -358,7 +358,7 @@ void String::join(std::ostream &stream, const char &, const T &value)
 
 #ifdef BUILD_WINDOWS
 
-//=============================================================================
+//==============================================================================
 template <typename T>
 void String::getValue(std::ostream &stream, const T &value)
 {
@@ -367,14 +367,14 @@ void String::getValue(std::ostream &stream, const T &value)
 
 #else // BUILD_WINDOWS
 
-//=============================================================================
+//==============================================================================
 template <typename T, enable_if_all<if_ostream::enabled<T>>...>
 void String::getValue(std::ostream &stream, const T &value)
 {
     stream << std::boolalpha << value;
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T, enable_if_all<if_ostream::disabled<T>, if_hash::enabled<T>>...>
 void String::getValue(std::ostream &stream, const T &value)
 {
@@ -382,7 +382,7 @@ void String::getValue(std::ostream &stream, const T &value)
     stream << "[0x" << std::hex << hasher(value) << std::dec << ']';
 }
 
-//=============================================================================
+//==============================================================================
 template <typename T, enable_if_all<if_ostream::disabled<T>, if_hash::disabled<T>>...>
 void String::getValue(std::ostream &, const T &)
 {

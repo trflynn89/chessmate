@@ -4,7 +4,7 @@
 
 namespace Game {
 
-//=============================================================================
+//==============================================================================
 BitBoard::BitBoard()
 {
     m_pawn      = 0x00FF00000000FF00;
@@ -39,7 +39,7 @@ BitBoard::BitBoard()
     m_enPassantPosition         = -1;
 }
 
-//=============================================================================
+//==============================================================================
 BitBoard::BitBoard(const BitBoard &board)
 {
     m_pawn      = board.m_pawn;
@@ -77,7 +77,7 @@ BitBoard::BitBoard(const BitBoard &board)
     m_enPassantPosition         = board.m_enPassantPosition;
 }
 
-//=============================================================================
+//==============================================================================
 void BitBoard::MakeMove(Movement::Move &move)
 {
     square_type sRank = move.GetStartRank();
@@ -314,67 +314,67 @@ void BitBoard::MakeMove(Movement::Move &move)
     m_playerInTurn = !m_playerInTurn;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsPawn(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_pawn >> n) & 0x1;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsKnight(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_knight >> n) & 0x1;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsBishop(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_bishop >> n) & 0x1;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsRook(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_rook >> n) & 0x1;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsQueen(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_queen >> n) & 0x1;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsKing(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_king >> n) & 0x1;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsWhite(const square_type &rank, const square_type &file) const
 {
     return (GetOccupant(rank, file) == WHITE);
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsBlack(const square_type &rank, const square_type &file) const
 {
     return (GetOccupant(rank, file) == BLACK);
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsEmpty(const square_type &rank, const square_type &file) const
 {
     return (GetOccupant(rank, file) == NONE);
 }
 
-//=============================================================================
+//==============================================================================
 color_type BitBoard::GetOccupant(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
@@ -391,7 +391,7 @@ color_type BitBoard::GetOccupant(const square_type &rank, const square_type &fil
     return NONE;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsUnderAttack(const square_type &rank, const square_type &file, const color_type &color) const
 {
     square_type n = GET_SQUARE(rank, file);
@@ -408,7 +408,7 @@ bool BitBoard::IsUnderAttack(const square_type &rank, const square_type &file, c
     return false;
 }
 
-//=============================================================================
+//==============================================================================
 void BitBoard::generateAttackedSquares()
 {
     m_attackedByWhite = 0x0;
@@ -784,133 +784,133 @@ void BitBoard::generateAttackedSquares()
     m_attackedByBlack |= (kingB >> I64(9)) & ~m_black;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsWhiteInCheck() const
 {
     return m_whiteInCheck;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsBlackInCheck() const
 {
     return m_blackInCheck;
 }
 
-//=============================================================================
+//==============================================================================
 void BitBoard::SetEndGame(bool endGame)
 {
     m_endGame = endGame;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsEndGame() const
 {
     return m_endGame;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsStalemateViaFiftyMoves() const
 {
     return (m_fiftyMoveCount >= 50);
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::IsStalemateViaRepetition() const
 {
     return (m_repeatedMoveCount >= 3);
 }
 
-//=============================================================================
+//==============================================================================
 color_type BitBoard::GetPlayerInTurn() const
 {
     return m_playerInTurn;
 }
 
-//=============================================================================
+//==============================================================================
 color_type BitBoard::GetEnPassantColor() const
 {
     return m_enPassantColor;
 }
 
-//=============================================================================
+//==============================================================================
 square_type BitBoard::GetEnPassantPosition() const
 {
     return m_enPassantPosition;
 }
 
-//=============================================================================
+//==============================================================================
 square_type BitBoard::GetWhiteKingLocation() const
 {
     return m_whiteKingLocation;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasWhiteMovedKing() const
 {
     return m_whiteMovedKing;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasWhiteMovedQueen() const
 {
     return m_whiteMovedQueen;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasWhiteMovedKingsideRook() const
 {
     return m_whiteMovedKingsideRook;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasWhiteMovedQueensideRook() const
 {
     return m_whiteMovedQueensideRook;
 }
 
-//=============================================================================
+//==============================================================================
 square_type BitBoard::GetBlackKingLocation() const
 {
     return m_blackKingLocation;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasBlackMovedKing() const
 {
     return m_blackMovedKing;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasBlackMovedQueen() const
 {
     return m_blackMovedQueen;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasBlackMovedKingsideRook() const
 {
     return m_blackMovedKingsideRook;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasBlackMovedQueensideRook() const
 {
     return m_blackMovedQueensideRook;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasWhiteCastled() const
 {
     return m_whiteCastled;
 }
 
-//=============================================================================
+//==============================================================================
 bool BitBoard::HasBlackCastled() const
 {
     return m_blackCastled;
 }
 
-//=============================================================================
+//==============================================================================
 void BitBoard::recordEnPassant(
     const square_type &sRank,
     const square_type &sFile,
@@ -928,7 +928,7 @@ void BitBoard::recordEnPassant(
     }
 }
 
-//=============================================================================
+//==============================================================================
 void BitBoard::setCheckFlags()
 {
     // White
@@ -942,7 +942,7 @@ void BitBoard::setCheckFlags()
     m_blackInCheck = IsUnderAttack(rank, file, WHITE);
 }
 
-//=============================================================================
+//==============================================================================
 std::ostream &operator << (std::ostream &stream, const BitBoard &board)
 {
     for (square_type i = NUM_RANKS - 1; i >= 0; --i)

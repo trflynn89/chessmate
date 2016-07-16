@@ -8,7 +8,7 @@
 #include <Util/String/String.h>
 #include <Util/System/System.h>
 
-//=============================================================================
+//==============================================================================
 class FileMonitorTest : public ::testing::Test
 {
 public:
@@ -93,7 +93,7 @@ protected:
     unsigned int m_numOtherEvents;
 };
 
-//=============================================================================
+//==============================================================================
 TEST_F(FileMonitorTest, NoChangeTest)
 {
     EXPECT_EQ(m_numCreatedFiles, 0);
@@ -109,7 +109,7 @@ TEST_F(FileMonitorTest, NoChangeTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(FileMonitorTest, CreateTest)
 {
     EXPECT_EQ(m_numCreatedFiles, 0);
@@ -128,7 +128,7 @@ TEST_F(FileMonitorTest, CreateTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(FileMonitorTest, DeleteTest)
 {
     EXPECT_EQ(m_numCreatedFiles, 0);
@@ -148,7 +148,7 @@ TEST_F(FileMonitorTest, DeleteTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(FileMonitorTest, ChangeTest)
 {
     EXPECT_EQ(m_numCreatedFiles, 0);
@@ -168,7 +168,7 @@ TEST_F(FileMonitorTest, ChangeTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(FileMonitorTest, OtherFileTest)
 {
     EXPECT_EQ(m_numCreatedFiles, 0);

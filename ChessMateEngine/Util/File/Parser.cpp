@@ -5,7 +5,7 @@
 
 namespace Util {
 
-//=============================================================================
+//==============================================================================
 Parser::Parser(const std::string &path, const std::string &file) :
     m_path(path),
     m_file(file),
@@ -13,7 +13,7 @@ Parser::Parser(const std::string &path, const std::string &file) :
 {
 }
 
-//=============================================================================
+//==============================================================================
 ParserException::ParserException(
     const std::string &file,
     int line,
@@ -25,7 +25,7 @@ ParserException::ParserException(
     LOGW(-1, "%s", m_message);
 }
 
-//=============================================================================
+//==============================================================================
 const char *ParserException::what() const noexcept
 {
     return m_message.c_str();

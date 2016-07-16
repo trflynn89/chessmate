@@ -8,7 +8,7 @@
 
 namespace
 {
-    //=========================================================================
+    //==========================================================================
     class Base
     {
     public:
@@ -39,7 +39,7 @@ namespace
         int m_num;
     };
 
-    //=========================================================================
+    //==========================================================================
     class Hashable : public Base
     {
     public:
@@ -48,7 +48,7 @@ namespace
         }
     };
 
-    //=========================================================================
+    //==========================================================================
     class Streamable : public Base
     {
     public:
@@ -65,7 +65,7 @@ namespace
         return stream;
     }
 
-    //=========================================================================
+    //==========================================================================
     class HashableAndStreamable : public Base
     {
     public:
@@ -82,7 +82,7 @@ namespace
         return stream;
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T>
     std::string min_to_string()
     {
@@ -90,7 +90,7 @@ namespace
         return std::to_string(min - 1);
     }
 
-    //=========================================================================
+    //==========================================================================
     template <typename T>
     std::string max_to_string()
     {
@@ -99,7 +99,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 namespace std
 {
     template <>
@@ -121,7 +121,7 @@ namespace std
     };
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, SplitTest)
 {
     static const int numSectors = 10;
@@ -147,7 +147,7 @@ TEST(StringTest, SplitTest)
     }
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, MaxSplitTest)
 {
     static const int numSectors = 10;
@@ -183,7 +183,7 @@ TEST(StringTest, MaxSplitTest)
     }
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, TrimTest)
 {
     std::string str1;
@@ -211,7 +211,7 @@ TEST(StringTest, TrimTest)
     EXPECT_EQ(str7, std::string("a\n \tc"));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, ReplaceAllTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
@@ -223,7 +223,7 @@ TEST(StringTest, ReplaceAllTest)
     ASSERT_EQ(source, result);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, ReplaceAllWithEmptyTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
@@ -235,7 +235,7 @@ TEST(StringTest, ReplaceAllWithEmptyTest)
     ASSERT_EQ(source, result);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, RemoveAllTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
@@ -246,7 +246,7 @@ TEST(StringTest, RemoveAllTest)
     ASSERT_EQ(source, result);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, RemoveAllWithEmptyTest)
 {
     std::string source("To Be Replaced! To Be Replaced!");
@@ -257,7 +257,7 @@ TEST(StringTest, RemoveAllWithEmptyTest)
     ASSERT_EQ(source, result);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, StartsWithTest)
 {
     EXPECT_TRUE(Util::String::StartsWith("", ""));
@@ -275,7 +275,7 @@ TEST(StringTest, StartsWithTest)
     EXPECT_FALSE(Util::String::StartsWith("abc", "abd"));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, EndsWithTest)
 {
     EXPECT_TRUE(Util::String::EndsWith("", ""));
@@ -292,7 +292,7 @@ TEST(StringTest, EndsWithTest)
     EXPECT_FALSE(Util::String::EndsWith("abc", "dbc"));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, GenerateRandomStringTest)
 {
     static const int length = (1 << 20);
@@ -301,7 +301,7 @@ TEST(StringTest, GenerateRandomStringTest)
     ASSERT_EQ(length, random.length());
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, EntropyTest)
 {
     std::string str1 = Util::String::GenerateRandomString(1 << 10);
@@ -322,7 +322,7 @@ TEST(StringTest, EntropyTest)
     EXPECT_GT(ent3, ent4);
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, FormatTest)
 {
     EXPECT_EQ("", Util::String::Format(""));
@@ -335,7 +335,7 @@ TEST(StringTest, FormatTest)
     EXPECT_EQ("test 1 true 2.100000 false 1.230000e+02 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, JoinTest)
 {
     Hashable obj1("hello", 0xdead);
@@ -396,7 +396,7 @@ TEST(StringTest, JoinTest)
 #endif // BUILD_WINDOWS
 }
 
-//=============================================================================
+//==============================================================================
 TEST(StringTest, ConvertTest)
 {
     // BOOL

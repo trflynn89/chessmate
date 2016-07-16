@@ -20,7 +20,7 @@ namespace
     static size_t g_maxLogFileSize = 20 << 20;
     static int g_chessMatePort = 12389;
 
-    //=========================================================================
+    //==========================================================================
     Util::LoggerPtr InitLogger()
     {
         const char sep = Util::System::GetSeparator();
@@ -43,7 +43,7 @@ namespace
         return spLogger;
     }
 
-    //=========================================================================
+    //==========================================================================
     void StopLogger(Util::LoggerPtr &spLogger)
     {
         if (spLogger)
@@ -52,7 +52,7 @@ namespace
         }
     }
 
-    //=========================================================================
+    //==========================================================================
     Util::SocketManagerPtr InitSocketManager()
     {
         auto spSocketManager = std::make_shared<Util::SocketManagerImpl>();
@@ -61,7 +61,7 @@ namespace
         return spSocketManager;
     }
 
-    //=========================================================================
+    //==========================================================================
     void StopSocketManager(Util::SocketManagerPtr &spSocketManager)
     {
         if (spSocketManager)
@@ -70,7 +70,7 @@ namespace
         }
     }
 
-    //=========================================================================
+    //==========================================================================
     Game::GameManagerPtr InitGameManager(const Util::SocketManagerPtr &spSocketManager)
     {
         auto spGameManager = std::make_shared<Game::GameManager>(spSocketManager);
@@ -84,7 +84,7 @@ namespace
         return spGameManager;
     }
 
-    //=========================================================================
+    //==========================================================================
     void StopGameManager(Game::GameManagerPtr &spGameManager)
     {
         if (spGameManager)
@@ -94,7 +94,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 int main()
 {
     LOGC("Starting ChessMateEngine");

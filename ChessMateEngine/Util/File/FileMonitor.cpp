@@ -9,7 +9,7 @@ namespace
     static const std::chrono::milliseconds s_pollTimeout(1000);
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitor::FileMonitor(
     FileEventCallback handler,
     const std::string &path,
@@ -22,7 +22,7 @@ FileMonitor::FileMonitor(
 {
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitor::~FileMonitor()
 {
     if (m_aKeepRunning.load())
@@ -31,7 +31,7 @@ FileMonitor::~FileMonitor()
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool FileMonitor::StartMonitor()
 {
     bool ret = false;
@@ -49,7 +49,7 @@ bool FileMonitor::StartMonitor()
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitor::StopMonitor()
 {
     m_aKeepRunning.store(false);
@@ -63,7 +63,7 @@ void FileMonitor::StopMonitor()
     m_handler = nullptr;
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitor::HandleEvent(FileEvent event) const
 {
     if (event != FileMonitor::FILE_NO_CHANGE)
@@ -78,7 +78,7 @@ void FileMonitor::HandleEvent(FileEvent event) const
     }
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitor::monitorThread()
 {
     while (m_aKeepRunning.load())

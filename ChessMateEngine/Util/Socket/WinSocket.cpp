@@ -38,7 +38,7 @@ namespace
     }
 }
 
-//=============================================================================
+//==============================================================================
 SocketImpl::SocketImpl(int socketType) : Socket(socketType)
 {
     switch (socketType)
@@ -56,19 +56,19 @@ SocketImpl::SocketImpl(int socketType) : Socket(socketType)
     }
 }
 
-//=============================================================================
+//==============================================================================
 SocketImpl::~SocketImpl()
 {
     Close();
 }
 
-//=============================================================================
+//==============================================================================
 int SocketImpl::InAddrAny()
 {
     return INADDR_ANY;
 }
 
-//=============================================================================
+//==============================================================================
 void SocketImpl::Close()
 {
     if (IsValid())
@@ -78,7 +78,7 @@ void SocketImpl::Close()
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketImpl::IsErrorFree()
 {
     int opt = 0;
@@ -92,7 +92,7 @@ bool SocketImpl::IsErrorFree()
     return (opt == 0);
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketImpl::SetAsync()
 {
     unsigned long nonZero = 1;
@@ -107,7 +107,7 @@ bool SocketImpl::SetAsync()
     return m_isAsync;
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketImpl::Bind(int addr, int port) const
 {
     struct sockaddr_in servAddr;
@@ -128,7 +128,7 @@ bool SocketImpl::Bind(int addr, int port) const
     return true;
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketImpl::BindForReuse(int addr, int port) const
 {
     const char opt = 1;
@@ -142,7 +142,7 @@ bool SocketImpl::BindForReuse(int addr, int port) const
     return Bind(addr, port);
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketImpl::Listen()
 {
     if (::listen(m_socketHandle, 100) == SOCKET_ERROR)
@@ -155,7 +155,7 @@ bool SocketImpl::Listen()
     return m_isListening;
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketImpl::Connect(const std::string &hostname, int port)
 {
     struct sockaddr_in server = HostToSockAddr(m_socketHandle, hostname, port);
@@ -177,7 +177,7 @@ bool SocketImpl::Connect(const std::string &hostname, int port)
     return true;
 }
 
-//=============================================================================
+//==============================================================================
 SocketPtr SocketImpl::Accept() const
 {
     SocketImplPtr ret = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
@@ -203,14 +203,14 @@ SocketPtr SocketImpl::Accept() const
     return std::dynamic_pointer_cast<Socket>(ret);
 }
 
-//=============================================================================
+//==============================================================================
 size_t SocketImpl::Send(const std::string &msg) const
 {
     bool wouldBlock = false;
     return Send(msg, wouldBlock);
 }
 
-//=============================================================================
+//==============================================================================
 size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
     static const std::string eom(1, Socket::s_socketEoM);
@@ -266,7 +266,7 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
     return bytesSent;
 }
 
-//=============================================================================
+//==============================================================================
 size_t SocketImpl::SendTo(
     const std::string &msg,
     const std::string &hostname,
@@ -277,7 +277,7 @@ size_t SocketImpl::SendTo(
     return SendTo(msg, hostname, port, wouldBlock);
 }
 
-//=============================================================================
+//==============================================================================
 size_t SocketImpl::SendTo(
     const std::string &msg,
     const std::string &hostname,
@@ -331,14 +331,14 @@ size_t SocketImpl::SendTo(
     return bytesSent;
 }
 
-//=============================================================================
+//==============================================================================
 std::string SocketImpl::Recv() const
 {
     bool wouldBlock = false, isComplete = false;
     return Recv(wouldBlock, isComplete);
 }
 
-//=============================================================================
+//==============================================================================
 std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 {
     std::string ret;
@@ -382,14 +382,14 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
     return ret;
 }
 
-//=============================================================================
+//==============================================================================
 std::string SocketImpl::RecvFrom() const
 {
     bool wouldBlock = false, isComplete = false;
     return RecvFrom(wouldBlock, isComplete);
 }
 
-//=============================================================================
+//==============================================================================
 std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
 {
     std::string ret;

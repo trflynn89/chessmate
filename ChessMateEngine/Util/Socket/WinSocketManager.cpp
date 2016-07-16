@@ -7,10 +7,10 @@
 
 namespace Util {
 
-//=============================================================================
+//==============================================================================
 std::atomic_int SocketManagerImpl::s_socketManagerCount(0);
 
-//=============================================================================
+//==============================================================================
 SocketManagerImpl::SocketManagerImpl() : SocketManager()
 {
     if (s_socketManagerCount.fetch_add(1) == 0)
@@ -25,7 +25,7 @@ SocketManagerImpl::SocketManagerImpl() : SocketManager()
     }
 }
 
-//=============================================================================
+//==============================================================================
 SocketManagerImpl::~SocketManagerImpl()
 {
     if (s_socketManagerCount.fetch_sub(1) == 1)
@@ -34,7 +34,7 @@ SocketManagerImpl::~SocketManagerImpl()
     }
 }
 
-//=============================================================================
+//==============================================================================
 void SocketManagerImpl::AsyncIoThread()
 {
     fd_set readFd, writeFd;
@@ -61,7 +61,7 @@ void SocketManagerImpl::AsyncIoThread()
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool SocketManagerImpl::setReadAndWriteMasks(fd_set *readFd, fd_set *writeFd)
 {
     bool anyMasksSet = false;
@@ -97,7 +97,7 @@ bool SocketManagerImpl::setReadAndWriteMasks(fd_set *readFd, fd_set *writeFd)
     return anyMasksSet;
 }
 
-//=============================================================================
+//==============================================================================
 void SocketManagerImpl::handleSocketIO(fd_set *readFd, fd_set *writeFd)
 {
     std::vector<SocketPtr> newClients;
@@ -163,7 +163,7 @@ void SocketManagerImpl::handleSocketIO(fd_set *readFd, fd_set *writeFd)
     }
 }
 
-//=============================================================================
+//==============================================================================
 SocketPtr SocketManagerImpl::acceptNewClient(const SocketPtr &spSocket)
 {
     SocketPtr spNewClientSocket = spSocket->Accept();

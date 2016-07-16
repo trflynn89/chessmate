@@ -10,7 +10,7 @@
 
 namespace Game {
 
-//=============================================================================
+//==============================================================================
 ChessGamePtr ChessGame::Create(
     const Util::SocketPtr &spClientSocket,
     const Movement::MoveSetPtr &spMoveSet,
@@ -37,7 +37,7 @@ ChessGamePtr ChessGame::Create(
 }
 
 
-//=============================================================================
+//==============================================================================
 ChessGame::ChessGame(
     const Util::SocketPtr &spClientSocket,
     const Movement::MoveSetPtr &spMoveSet,
@@ -59,19 +59,19 @@ ChessGame::ChessGame(
         engineColor, m_maxDepth);
 }
 
-//=============================================================================
+//==============================================================================
 ChessGame::~ChessGame()
 {
     LOGC("Game finished, ID = %d", m_gameId);
 }
 
-//=============================================================================
+//==============================================================================
 int ChessGame::GetGameID() const
 {
     return m_gameId;
 }
 
-//=============================================================================
+//==============================================================================
 bool ChessGame::IsValid() const
 {
     Util::SocketPtr spClientSocket = m_wpClientSocket.lock();
@@ -85,7 +85,7 @@ bool ChessGame::IsValid() const
     return false;
 }
 
-//=============================================================================
+//==============================================================================
 bool ChessGame::MakeMove(Movement::Move &move) const
 {
     Movement::ValidMoveSet vms(m_wpMoveSet, m_spBoard);
@@ -106,7 +106,7 @@ bool ChessGame::MakeMove(Movement::Move &move) const
     return false;
 }
 
-//=============================================================================
+//==============================================================================
 bool ChessGame::ProcessMessage(const Message &msg)
 {
     Message::MessageType type = msg.GetMessageType();
@@ -169,7 +169,7 @@ bool ChessGame::ProcessMessage(const Message &msg)
     return false;
 }
 
-//=============================================================================
+//==============================================================================
 bool ChessGame::sendMessage(const Message &msg) const
 {
     std::string serialized = msg.Serialize();
@@ -186,7 +186,7 @@ bool ChessGame::sendMessage(const Message &msg) const
     return false;
 }
 
-//=============================================================================
+//==============================================================================
 std::string ChessGame::makeMoveAndStalemateMsg(Movement::Move &move) const
 {
     short stalemateStatus = 0;
@@ -215,14 +215,14 @@ std::string ChessGame::makeMoveAndStalemateMsg(Movement::Move &move) const
     return (move.GetPGNString() + " " + stalemateStr);
 }
 
-//=============================================================================
+//==============================================================================
 bool ChessGame::anyValidMoves() const
 {
     Movement::ValidMoveSet vms(m_wpMoveSet, m_spBoard);
     return !vms.GetMyValidMoves().empty();
 }
 
-//=============================================================================
+//==============================================================================
 Movement::Move ChessGame::getBestMove()
 {
     LOGD(m_gameId, "Searching for best move");

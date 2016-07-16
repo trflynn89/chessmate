@@ -25,7 +25,7 @@ namespace
     );
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitorImpl::FileMonitorImpl(
     FileEventCallback handler,
     const std::string &path,
@@ -60,19 +60,19 @@ FileMonitorImpl::FileMonitorImpl(
     }
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitorImpl::~FileMonitorImpl()
 {
     close();
 }
 
-//=============================================================================
+//==============================================================================
 bool FileMonitorImpl::IsValid() const
 {
     return (m_monitorDescriptor != -1);
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
 {
     struct pollfd pollFd;
@@ -98,7 +98,7 @@ void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
     }
 }
 
-//=============================================================================
+//==============================================================================
 bool FileMonitorImpl::handleEvents()
 {
     const struct inotify_event *event;
@@ -143,7 +143,7 @@ bool FileMonitorImpl::handleEvents()
     return true;
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitor::FileEvent FileMonitorImpl::convertToEvent(int mask)
 {
     FileMonitor::FileEvent event = FileMonitor::FILE_NO_CHANGE;
@@ -164,7 +164,7 @@ FileMonitor::FileEvent FileMonitorImpl::convertToEvent(int mask)
     return event;
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitorImpl::close()
 {
     if (m_monitorDescriptor != -1)

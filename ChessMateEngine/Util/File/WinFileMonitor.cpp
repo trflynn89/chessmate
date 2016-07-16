@@ -33,7 +33,7 @@ namespace
     );
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitorImpl::FileMonitorImpl(
     FileEventCallback handler,
     const std::string &path,
@@ -68,19 +68,19 @@ FileMonitorImpl::FileMonitorImpl(
     }
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitorImpl::~FileMonitorImpl()
 {
     close();
 }
 
-//=============================================================================
+//==============================================================================
 bool FileMonitorImpl::IsValid() const
 {
     return (m_overlapped.hEvent != INVALID_HANDLE_VALUE);
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
 {
     static const DWORD buffSize = (8 << 10);
@@ -135,7 +135,7 @@ void FileMonitorImpl::Poll(const std::chrono::milliseconds &timeout)
     delete[] buff;
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitorImpl::handleEvents(PBYTE pBuffer)
 {
     PFILE_NOTIFY_INFORMATION info = reinterpret_cast<PFILE_NOTIFY_INFORMATION>(pBuffer);
@@ -155,7 +155,7 @@ void FileMonitorImpl::handleEvents(PBYTE pBuffer)
     } while (info->NextEntryOffset > 0);
 }
 
-//=============================================================================
+//==============================================================================
 FileMonitor::FileEvent FileMonitorImpl::convertToEvent(DWORD action)
 {
     FileMonitor::FileEvent event = FileMonitor::FILE_NO_CHANGE;
@@ -180,7 +180,7 @@ FileMonitor::FileEvent FileMonitorImpl::convertToEvent(DWORD action)
     return event;
 }
 
-//=============================================================================
+//==============================================================================
 void FileMonitorImpl::close()
 {
     if (m_monitorHandle != INVALID_HANDLE_VALUE)

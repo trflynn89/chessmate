@@ -13,7 +13,7 @@ namespace
     const Game::value_type s_kingValue   = 1;
 }
 
-//=============================================================================
+//==============================================================================
 ValidMoveSet::ValidMoveSet(
     const MoveSetWPtr &wpMoveSet,
     const Game::BitBoardPtr &spBoard
@@ -33,7 +33,7 @@ ValidMoveSet::ValidMoveSet(
     }
 }
 
-//=============================================================================
+//==============================================================================
 void ValidMoveSet::generateValidMoves(
     const MoveSetPtr &spMoveSet,
     const Game::BitBoardPtr &spBoard
@@ -479,31 +479,31 @@ void ValidMoveSet::generateValidMoves(
     m_myValidMoves = newValidMoves;
 }
 
-//=============================================================================
+//==============================================================================
 MoveList ValidMoveSet::GetMyValidMoves() const
 {
     return m_myValidMoves;
 }
 
-//=============================================================================
+//==============================================================================
 MoveList ValidMoveSet::GetOppValidMoves() const
 {
     return m_oppValidMoves;
 }
 
-//=============================================================================
+//==============================================================================
 Game::value_type ValidMoveSet::GetAttackValue(Game::square_type rank, Game::square_type file) const
 {
     return m_attackValue[GET_SQUARE(rank, file)];
 }
 
-//=============================================================================
+//==============================================================================
 Game::value_type ValidMoveSet::GetDefendValue(Game::square_type rank, Game::square_type file) const
 {
     return m_defendValue[GET_SQUARE(rank, file)];
 }
 
-//=============================================================================
+//==============================================================================
 void ValidMoveSet::addSlidingMoveIfValid(
     const Game::BitBoardPtr &spBoard,
     const Game::piece_type &piece,

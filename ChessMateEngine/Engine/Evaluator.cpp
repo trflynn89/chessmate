@@ -84,12 +84,12 @@ namespace
     };
 }
 
-//=============================================================================
+//==============================================================================
 Evaluator::Evaluator(const Game::color_type &engineColor) : m_engineColor(engineColor)
 {
 }
 
-//=============================================================================
+//==============================================================================
 int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMoveSet &vms) const
 {
     Game::value_type remainingPieces = 0;
@@ -219,7 +219,7 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     return ((m_engineColor == Game::WHITE) ? score : -score);
 }
 
-//=============================================================================
+//==============================================================================
 int Evaluator::evaluateSinglePiece(
     const Game::BitBoardPtr &spBoard,
     const Movement::ValidMoveSet &vms,

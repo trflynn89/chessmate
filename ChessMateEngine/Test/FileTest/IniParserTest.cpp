@@ -6,7 +6,7 @@
 #include <Util/String/String.h>
 #include <Util/System/System.h>
 
-//=============================================================================
+//==============================================================================
 class IniParserTest : public ::testing::Test
 {
 public:
@@ -56,7 +56,7 @@ protected:
     std::string m_file;
 };
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, EmptyFileTest)
 {
     const std::string contents;
@@ -66,7 +66,7 @@ TEST_F(IniParserTest, EmptyFileTest)
     EXPECT_EQ(m_spParser->GetSize(), 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, EmptySectionTest)
 {
     const std::string contents("[section]");
@@ -76,7 +76,7 @@ TEST_F(IniParserTest, EmptySectionTest)
     EXPECT_EQ(m_spParser->GetSize(), 0);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, NonEmptySectionTest)
 {
     const std::string contents(
@@ -96,7 +96,7 @@ TEST_F(IniParserTest, NonEmptySectionTest)
     EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "USA");
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, NonExistingTest)
 {
     const std::string contents(
@@ -116,7 +116,7 @@ TEST_F(IniParserTest, NonExistingTest)
     EXPECT_EQ(m_spParser->GetValue<std::string>("bad-section", "address", "def"), "def");
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, NonCovertibleTest)
 {
     const std::string contents(
@@ -133,7 +133,7 @@ TEST_F(IniParserTest, NonCovertibleTest)
     EXPECT_EQ(m_spParser->GetValue<bool>("section", "address", false), false);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, CommentTest)
 {
     const std::string contents(
@@ -151,7 +151,7 @@ TEST_F(IniParserTest, CommentTest)
     EXPECT_EQ(m_spParser->GetSize("other-section"), -1);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, ErrantSpacesTest)
 {
     const std::string contents(
@@ -171,7 +171,7 @@ TEST_F(IniParserTest, ErrantSpacesTest)
     EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "USA");
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, QuotedValueTest)
 {
     const std::string contents(
@@ -191,7 +191,7 @@ TEST_F(IniParserTest, QuotedValueTest)
     EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "\tUSA");
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, MutlipleValueTypeTest)
 {
     const std::string contents(
@@ -230,7 +230,7 @@ TEST_F(IniParserTest, MutlipleValueTypeTest)
     EXPECT_EQ(m_spParser->GetValue<int>("section3", "noage", 0), 1);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, DuplicateSectionTest)
 {
     const std::string contents1(
@@ -254,7 +254,7 @@ TEST_F(IniParserTest, DuplicateSectionTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, DuplicateValueTest)
 {
     const std::string contents(
@@ -267,7 +267,7 @@ TEST_F(IniParserTest, DuplicateValueTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, ImbalancedBraceTest)
 {
     const std::string contents1(
@@ -287,7 +287,7 @@ TEST_F(IniParserTest, ImbalancedBraceTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, ImbalancedQuoteTest)
 {
     const std::string contents1(
@@ -338,7 +338,7 @@ TEST_F(IniParserTest, ImbalancedQuoteTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, MisplacedQuoteTest)
 {
     const std::string contents1(
@@ -390,7 +390,7 @@ TEST_F(IniParserTest, MisplacedQuoteTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, MultipleAssignmentTest)
 {
     const std::string contents1(
@@ -411,7 +411,7 @@ TEST_F(IniParserTest, MultipleAssignmentTest)
     EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "John=Doe");
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, MissingAssignmentTest)
 {
     const std::string contents1(
@@ -431,7 +431,7 @@ TEST_F(IniParserTest, MissingAssignmentTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, EarlyAssignmentTest)
 {
     const std::string contents1(
@@ -459,7 +459,7 @@ TEST_F(IniParserTest, EarlyAssignmentTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(IniParserTest, MultipleParseTest)
 {
     const std::string contents(
