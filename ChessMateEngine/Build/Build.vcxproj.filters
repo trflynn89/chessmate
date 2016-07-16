@@ -129,6 +129,12 @@
     <ClInclude Include="..\Util\File\WinFileMonitor.h">
       <Filter>Util\File</Filter>
     </ClInclude>
+    <ClInclude Include="..\Util\File\IniParser.h">
+      <Filter>Util\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\File\Parser.h">
+      <Filter>Util\File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Util\Logging\Logger.cpp">
@@ -192,6 +198,12 @@
       <Filter>Util\File</Filter>
     </ClCompile>
     <ClCompile Include="..\Util\File\WinFileMonitor.cpp">
+      <Filter>Util\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\File\IniParser.cpp">
+      <Filter>Util\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\File\Parser.cpp">
       <Filter>Util\File</Filter>
     </ClCompile>
   </ItemGroup>

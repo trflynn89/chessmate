@@ -159,6 +159,8 @@
     <ClInclude Include="..\Util\ExitCodes.h" />
     <ClInclude Include="..\Util\File\FileMonitor.h" />
     <ClInclude Include="..\Util\File\FileMonitorImpl.h" />
+    <ClInclude Include="..\Util\File\IniParser.h" />
+    <ClInclude Include="..\Util\File\Parser.h" />
     <ClInclude Include="..\Util\File\WinFileMonitor.h" />
     <ClInclude Include="..\Util\Logging\Log.h" />
     <ClInclude Include="..\Util\Logging\Logger.h" />
@@ -187,6 +189,8 @@
     <ClCompile Include="..\Movement\MoveSet.cpp" />
     <ClCompile Include="..\Movement\ValidMoveSet.cpp" />
     <ClCompile Include="..\Util\File\FileMonitor.cpp" />
+    <ClCompile Include="..\Util\File\IniParser.cpp" />
+    <ClCompile Include="..\Util\File\Parser.cpp" />
     <ClCompile Include="..\Util\File\WinFileMonitor.cpp" />
     <ClCompile Include="..\Util\Logging\Log.cpp" />
     <ClCompile Include="..\Util\Logging\Logger.cpp" />

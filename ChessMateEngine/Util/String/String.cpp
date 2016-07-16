@@ -1,6 +1,7 @@
 #include "String.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <functional>
 #include <cstdlib>
@@ -209,10 +210,10 @@ bool String::Convert(const std::string &value)
 
     if ((result < min) || (result > max))
     {
-        throw std::out_of_range("stou");
+        throw std::out_of_range("bool");
     }
 
-    return static_cast<bool>(result);
+    return (result != 0);
 }
 
 //=============================================================================
@@ -225,7 +226,7 @@ char String::Convert(const std::string &value)
 
     if ((result < min) || (result > max))
     {
-        throw std::out_of_range("stou");
+        throw std::out_of_range("char");
     }
 
     return static_cast<char>(result);
@@ -241,7 +242,7 @@ unsigned char String::Convert(const std::string &value)
 
     if ((result < min) || (result > max))
     {
-        throw std::out_of_range("stou");
+        throw std::out_of_range("uchar");
     }
 
     return static_cast<unsigned char>(result);
@@ -257,7 +258,7 @@ short String::Convert(const std::string &value)
 
     if ((result < min) || (result > max))
     {
-        throw std::out_of_range("stou");
+        throw std::out_of_range("short");
     }
 
     return static_cast<short>(result);
@@ -273,7 +274,7 @@ unsigned short String::Convert(const std::string &value)
 
     if ((result < min) || (result > max))
     {
-        throw std::out_of_range("stou");
+        throw std::out_of_range("ushort");
     }
 
     return static_cast<unsigned short>(result);
@@ -296,7 +297,7 @@ unsigned int String::Convert(const std::string &value)
 
     if ((result < min) || (result > max))
     {
-        throw std::out_of_range("stou");
+        throw std::out_of_range("uint");
     }
 
     return static_cast<unsigned int>(result);
