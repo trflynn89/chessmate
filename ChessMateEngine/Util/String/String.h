@@ -30,6 +30,26 @@ public:
     static std::vector<std::string> Split(const std::string &, char);
 
     /**
+     * Split a string into a vector of strings, up to a maximum size. If the max
+     * size is reached, the rest of the string is appended to the last element
+     * in the vector.
+     *
+     * @param string The string to split.
+     * @param char The delimiter to split the string on.
+     * @param size_t The maximum return vector size. Zero implies unlimited.
+     *
+     * @return A vector containing the split strings.
+     */
+    static std::vector<std::string> Split(const std::string &, char, size_t);
+
+    /**
+     * Remove leading and trailing whitespace from a string.
+     *
+     * @param string The string to trim.
+     */
+    static void Trim(std::string &);
+
+    /**
      * Replace all instances of a substring in a string with another substring.
      *
      * @param string The string container which will be modified.
@@ -47,6 +67,16 @@ public:
     static void RemoveAll(std::string &, const std::string &);
 
     /**
+     * Check if a string begins with a character.
+     *
+     * @param string The string to check.
+     * @param char The beginning to search for.
+     *
+     * @return True if the string begins with the search character.
+     */
+    static bool StartsWith(const std::string &, const char &);
+
+    /**
      * Check if a string begins with another string.
      *
      * @param string The string to check.
@@ -55,6 +85,16 @@ public:
      * @return True if the string begins with the search string.
      */
     static bool StartsWith(const std::string &, const std::string &);
+
+    /**
+     * Check if a string ends with a character.
+     *
+     * @param string The string to check.
+     * @param string The ending to search for.
+     *
+     * @return True if the string ends with the search character.
+     */
+    static bool EndsWith(const std::string &, const char &);
 
     /**
      * Check if a string ends with another string.
@@ -120,6 +160,21 @@ public:
      */
     template <typename ... Args>
     static std::string Join(const char &, const Args &...);
+
+    /**
+     * Convert a string to a basic type, e.g. int or bool.
+     *
+     * @tparam T The desired basic type.
+     *
+     * @param string The string to convert.
+     *
+     * @return The string coverted to the specified type.
+     *
+     * @throws std::invalid_argument Conversion could not be performed.
+     * @throws std::out_of_range Converted value is out of range of result type.
+     */
+    template <typename T>
+    static T Convert(const std::string &);
 
 private:
     /**

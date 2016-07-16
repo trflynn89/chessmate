@@ -1,6 +1,8 @@
 #include "String.h"
 
+#include <algorithm>
 #include <cmath>
+#include <functional>
 #include <cstdlib>
 #include <sstream>
 
@@ -19,19 +21,48 @@ UniformIntegerDevice<size_t, std::mt19937> String::s_randomDevice(0, String::s_a
 //=============================================================================
 std::vector<std::string> String::Split(const std::string &input, char delim)
 {
+    return Split(input, delim, 0);
+}
+
+//=============================================================================
+std::vector<std::string> String::Split(const std::string &input, char delim, size_t max)
+{
     std::string item;
     std::stringstream ss(input);
     std::vector<std::string> elems;
+    size_t numItems = 0;
 
     while (std::getline(ss, item, delim))
     {
+        ++numItems;
+
         if (!item.empty())
         {
-            elems.push_back(item);
+            if ((max > 0) && (numItems > max))
+            {
+                elems.back() += delim;
+                elems.back() += item;
+            }
+            else
+            {
+                elems.push_back(item);
+            }
         }
     }
 
     return elems;
+}
+
+//=============================================================================
+void String::Trim(std::string &str)
+{
+    // Remove leading whitespace
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(),
+        std::not1(std::ptr_fun<int, int>(std::isspace))));
+
+    // Remove trailing whitespace
+    str.erase(std::find_if(str.rbegin(), str.rend(),
+        std::not1(std::ptr_fun<int, int>(std::isspace))).base(), str.end());
 }
 
 //=============================================================================
@@ -68,6 +99,19 @@ std::string String::GenerateRandomString(const unsigned int len)
 }
 
 //=============================================================================
+bool String::StartsWith(const std::string &source, const char &search)
+{
+    bool ret = false;
+
+    if (!source.empty())
+    {
+        ret = (source[0] == search);
+    }
+
+    return ret;
+}
+
+//=============================================================================
 bool String::StartsWith(const std::string &source, const std::string &search)
 {
     bool ret = false;
@@ -78,6 +122,21 @@ bool String::StartsWith(const std::string &source, const std::string &search)
     if (sourceSz >= searchSz)
     {
         ret = (source.compare(0, searchSz, search) == 0);
+    }
+
+    return ret;
+}
+
+//=============================================================================
+bool String::EndsWith(const std::string &source, const char &search)
+{
+    bool ret = false;
+
+    const size_t sourceSz = source.length();
+
+    if (sourceSz > 0)
+    {
+        ret = (source[sourceSz - 1] == search);
     }
 
     return ret;
@@ -131,6 +190,165 @@ float String::CalculateEntropy(const std::string &source)
     }
 
     return entropy;
+}
+
+//=============================================================================
+template <>
+std::string String::Convert(const std::string &value)
+{
+    return value;
+}
+
+//=============================================================================
+template <>
+bool String::Convert(const std::string &value)
+{
+    static const long long min = std::numeric_limits<bool>::min();
+    static const long long max = std::numeric_limits<bool>::max();
+    long long result = std::stoll(value);
+
+    if ((result < min) || (result > max))
+    {
+        throw std::out_of_range("stou");
+    }
+
+    return static_cast<bool>(result);
+}
+
+//=============================================================================
+template <>
+char String::Convert(const std::string &value)
+{
+    static const long long min = std::numeric_limits<char>::min();
+    static const long long max = std::numeric_limits<char>::max();
+    long long result = std::stoll(value);
+
+    if ((result < min) || (result > max))
+    {
+        throw std::out_of_range("stou");
+    }
+
+    return static_cast<char>(result);
+}
+
+//=============================================================================
+template <>
+unsigned char String::Convert(const std::string &value)
+{
+    static const long long min = std::numeric_limits<unsigned char>::min();
+    static const long long max = std::numeric_limits<unsigned char>::max();
+    long long result = std::stoll(value);
+
+    if ((result < min) || (result > max))
+    {
+        throw std::out_of_range("stou");
+    }
+
+    return static_cast<unsigned char>(result);
+}
+
+//=============================================================================
+template <>
+short String::Convert(const std::string &value)
+{
+    static const long long min = std::numeric_limits<short>::min();
+    static const long long max = std::numeric_limits<short>::max();
+    long long result = std::stoll(value);
+
+    if ((result < min) || (result > max))
+    {
+        throw std::out_of_range("stou");
+    }
+
+    return static_cast<short>(result);
+}
+
+//=============================================================================
+template <>
+unsigned short String::Convert(const std::string &value)
+{
+    static const long long min = std::numeric_limits<unsigned short>::min();
+    static const long long max = std::numeric_limits<unsigned short>::max();
+    long long result = std::stoll(value);
+
+    if ((result < min) || (result > max))
+    {
+        throw std::out_of_range("stou");
+    }
+
+    return static_cast<unsigned short>(result);
+}
+
+//=============================================================================
+template <>
+int String::Convert(const std::string &value)
+{
+    return std::stoi(value);
+}
+
+//=============================================================================
+template <>
+unsigned int String::Convert(const std::string &value)
+{
+    static const long long min = std::numeric_limits<unsigned int>::min();
+    static const long long max = std::numeric_limits<unsigned int>::max();
+    long long result = std::stoll(value);
+
+    if ((result < min) || (result > max))
+    {
+        throw std::out_of_range("stou");
+    }
+
+    return static_cast<unsigned int>(result);
+}
+
+//=============================================================================
+template <>
+long String::Convert(const std::string &value)
+{
+    return std::stol(value);
+}
+
+//=============================================================================
+template <>
+unsigned long String::Convert(const std::string &value)
+{
+    return std::stoul(value);
+}
+
+//=============================================================================
+template <>
+long long String::Convert(const std::string &value)
+{
+    return std::stoll(value);
+}
+
+//=============================================================================
+template <>
+unsigned long long String::Convert(const std::string &value)
+{
+    return std::stoull(value);
+}
+
+//=============================================================================
+template <>
+float String::Convert(const std::string &value)
+{
+    return std::stof(value);
+}
+
+//=============================================================================
+template <>
+double String::Convert(const std::string &value)
+{
+    return std::stod(value);
+}
+
+//=============================================================================
+template <>
+long double String::Convert(const std::string &value)
+{
+    return std::stold(value);
 }
 
 //=============================================================================

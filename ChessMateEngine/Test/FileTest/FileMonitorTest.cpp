@@ -30,7 +30,7 @@ public:
     {
         ASSERT_TRUE(Util::System::MakeDirectory(m_path));
 
-        auto callback = std::bind(&FileMonitorTest::handleEvent, this, std::placeholders::_1);
+        auto callback = std::bind(&FileMonitorTest::HandleEvent, this, std::placeholders::_1);
         m_spMonitor = std::make_shared<Util::FileMonitorImpl>(callback, m_path, m_file);
 
         ASSERT_TRUE(m_spMonitor && m_spMonitor->StartMonitor());
@@ -51,7 +51,7 @@ protected:
      *
      * @param FileEvent The type of event that occurred.
      */
-    void handleEvent(Util::FileMonitor::FileEvent eventType)
+    void HandleEvent(Util::FileMonitor::FileEvent eventType)
     {
         switch (eventType)
         {
@@ -83,7 +83,6 @@ protected:
     }
 
     Util::FileMonitorPtr m_spMonitor;
-    std::ofstream m_stream;
 
     std::string m_path;
     std::string m_file;
@@ -118,8 +117,8 @@ TEST_F(FileMonitorTest, CreateTest)
     EXPECT_EQ(m_numChangedFiles, 0);
     EXPECT_EQ(m_numOtherEvents, 0);
 
-    m_stream.open(GetFullPath(), std::ios::out);
-    m_stream.close();
+    std::ofstream stream(GetFullPath(), std::ios::out);
+    stream.close();
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -137,8 +136,8 @@ TEST_F(FileMonitorTest, DeleteTest)
     EXPECT_EQ(m_numChangedFiles, 0);
     EXPECT_EQ(m_numOtherEvents, 0);
 
-    m_stream.open(GetFullPath(), std::ios::out);
-    m_stream.close();
+    std::ofstream stream(GetFullPath(), std::ios::out);
+    stream.close();
     std::remove(GetFullPath().c_str());
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -157,9 +156,9 @@ TEST_F(FileMonitorTest, ChangeTest)
     EXPECT_EQ(m_numChangedFiles, 0);
     EXPECT_EQ(m_numOtherEvents, 0);
 
-    m_stream.open(GetFullPath(), std::ios::out);
-    m_stream << "abcdefghi";
-    m_stream.close();
+    std::ofstream stream(GetFullPath(), std::ios::out);
+    stream << "abcdefghi";
+    stream.close();
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -178,9 +177,9 @@ TEST_F(FileMonitorTest, OtherFileTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 
     std::string file = GetFullPath() + ".diff";
-    m_stream.open(file, std::ios::out);
-    m_stream << "abcdefghi";
-    m_stream.close();
+    std::ofstream stream(file, std::ios::out);
+    stream << "abcdefghi";
+    stream.close();
     std::remove(file.c_str());
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -191,9 +190,9 @@ TEST_F(FileMonitorTest, OtherFileTest)
     EXPECT_EQ(m_numOtherEvents, 0);
 
     file = file.substr(0, file.length() - 6);
-    m_stream.open(file, std::ios::out);
-    m_stream << "abcdefghi";
-    m_stream.close();
+    stream.open(file, std::ios::out);
+    stream << "abcdefghi";
+    stream.close();
     std::remove(file.c_str());
 
     std::this_thread::sleep_for(std::chrono::seconds(2));

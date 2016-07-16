@@ -81,6 +81,22 @@ namespace
         stream << '[' << obj.GetStr() << ' ' << std::hex << obj.GetNum() << std::dec << ']';
         return stream;
     }
+
+    //=========================================================================
+    template <typename T>
+    std::string min_to_string()
+    {
+        long long min = std::numeric_limits<T>::min();
+        return std::to_string(min - 1);
+    }
+
+    //=========================================================================
+    template <typename T>
+    std::string max_to_string()
+    {
+        unsigned long long max = std::numeric_limits<T>::max();
+        return std::to_string(max + 1);
+    }
 }
 
 //=============================================================================
@@ -129,6 +145,70 @@ TEST(StringTest, SplitTest)
     {
         ASSERT_EQ(inputSplit[i], outputSplit[i]);
     }
+}
+
+//=============================================================================
+TEST(StringTest, MaxSplitTest)
+{
+    static const int numSectors = 10;
+    static const int maxSectors = 6;
+    std::vector<std::string> inputSplit(maxSectors);
+
+    std::string input;
+    char delim = ';';
+
+    for (int i = 0; i < numSectors; ++i)
+    {
+        std::string curr = Util::String::GenerateRandomString(10);
+
+        if (i < maxSectors)
+        {
+            inputSplit[i] = curr;
+        }
+        else
+        {
+            inputSplit.back() += delim;
+            inputSplit.back() += curr;
+        }
+
+        input += curr + delim;
+    }
+
+    std::vector<std::string> outputSplit = Util::String::Split(input, delim, maxSectors);
+    ASSERT_EQ(inputSplit.size(), outputSplit.size());
+
+    for (int i = 0; i < maxSectors; ++i)
+    {
+        ASSERT_EQ(inputSplit[i], outputSplit[i]);
+    }
+}
+
+//=============================================================================
+TEST(StringTest, TrimTest)
+{
+    std::string str1;
+    std::string str2("   abc");
+    std::string str3("abc   ");
+    std::string str4("   abc   ");
+    std::string str5(" \n\t\r  abc  \n\t\r ");
+    std::string str6(" \n\t\r  a   c  \n\t\r ");
+    std::string str7(" \n\t\r  a\n \tc  \n\t\r ");
+
+    Util::String::Trim(str1);
+    Util::String::Trim(str2);
+    Util::String::Trim(str3);
+    Util::String::Trim(str4);
+    Util::String::Trim(str5);
+    Util::String::Trim(str6);
+    Util::String::Trim(str7);
+
+    EXPECT_EQ(str1, std::string());
+    EXPECT_EQ(str2, std::string("abc"));
+    EXPECT_EQ(str3, std::string("abc"));
+    EXPECT_EQ(str4, std::string("abc"));
+    EXPECT_EQ(str5, std::string("abc"));
+    EXPECT_EQ(str6, std::string("a   c"));
+    EXPECT_EQ(str7, std::string("a\n \tc"));
 }
 
 //=============================================================================
@@ -182,11 +262,14 @@ TEST(StringTest, StartsWithTest)
 {
     EXPECT_TRUE(Util::String::StartsWith("", ""));
     EXPECT_TRUE(Util::String::StartsWith("a", ""));
+    EXPECT_TRUE(Util::String::StartsWith("abc", 'a'));
     EXPECT_TRUE(Util::String::StartsWith("abc", "a"));
     EXPECT_TRUE(Util::String::StartsWith("abc", "ab"));
     EXPECT_TRUE(Util::String::StartsWith("abc", "abc"));
 
+    EXPECT_FALSE(Util::String::StartsWith("", 'a'));
     EXPECT_FALSE(Util::String::StartsWith("", "a"));
+    EXPECT_FALSE(Util::String::StartsWith("b", 'a'));
     EXPECT_FALSE(Util::String::StartsWith("a", "ab"));
     EXPECT_FALSE(Util::String::StartsWith("ab", "abc"));
     EXPECT_FALSE(Util::String::StartsWith("abc", "abd"));
@@ -197,6 +280,7 @@ TEST(StringTest, EndsWithTest)
 {
     EXPECT_TRUE(Util::String::EndsWith("", ""));
     EXPECT_TRUE(Util::String::EndsWith("a", ""));
+    EXPECT_TRUE(Util::String::EndsWith("abc", 'c'));
     EXPECT_TRUE(Util::String::EndsWith("abc", "c"));
     EXPECT_TRUE(Util::String::EndsWith("abc", "bc"));
     EXPECT_TRUE(Util::String::EndsWith("abc", "abc"));
@@ -204,6 +288,7 @@ TEST(StringTest, EndsWithTest)
     EXPECT_FALSE(Util::String::EndsWith("", "a"));
     EXPECT_FALSE(Util::String::EndsWith("a", "ba"));
     EXPECT_FALSE(Util::String::EndsWith("ab", "a"));
+    EXPECT_FALSE(Util::String::EndsWith("ab", 'a'));
     EXPECT_FALSE(Util::String::EndsWith("abc", "dbc"));
 }
 
@@ -232,22 +317,22 @@ TEST(StringTest, EntropyTest)
     LOGC("E1=%f, E2=%f, E3=%f, E4=%f", ent1, ent2, ent3, ent4);
 
     // Expect entropy to decrease for less random strings
-    ASSERT_GT(ent1, ent2);
-    ASSERT_GT(ent2, ent3);
-    ASSERT_GT(ent3, ent4);
+    EXPECT_GT(ent1, ent2);
+    EXPECT_GT(ent2, ent3);
+    EXPECT_GT(ent3, ent4);
 }
 
 //=============================================================================
 TEST(StringTest, FormatTest)
 {
-    ASSERT_EQ("", Util::String::Format(""));
-    ASSERT_EQ("%", Util::String::Format("%"));
-    ASSERT_EQ("%%", Util::String::Format("%%"));
-    ASSERT_EQ("%d", Util::String::Format("%d"));
-    ASSERT_EQ("This is a test", Util::String::Format("This is a test"));
-    ASSERT_EQ("there are no formatters", Util::String::Format("there are no formatters", 1, 2, 3, 4));
-    ASSERT_EQ("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
-    ASSERT_EQ("test 1 true 2.100000 false 1.230000e+02 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
+    EXPECT_EQ("", Util::String::Format(""));
+    EXPECT_EQ("%", Util::String::Format("%"));
+    EXPECT_EQ("%%", Util::String::Format("%%"));
+    EXPECT_EQ("%d", Util::String::Format("%d"));
+    EXPECT_EQ("This is a test", Util::String::Format("This is a test"));
+    EXPECT_EQ("there are no formatters", Util::String::Format("there are no formatters", 1, 2, 3, 4));
+    EXPECT_EQ("test some string s", Util::String::Format("test %s %c", std::string("some string"), 's'));
+    EXPECT_EQ("test 1 true 2.100000 false 1.230000e+02 0xff", Util::String::Format("test %d %d %f %d %e %x", 1, true, 2.1f, false, 123.0, 255));
 }
 
 //=============================================================================
@@ -262,31 +347,31 @@ TEST(StringTest, JoinTest)
     char arr[] = { 'c', '\0' };
     char chr = 'd';
 
-    ASSERT_EQ("a", Util::String::Join('.', str));
-    ASSERT_EQ("b", Util::String::Join('.', ctr));
-    ASSERT_EQ("c", Util::String::Join('.', arr));
-    ASSERT_EQ("d", Util::String::Join('.', chr));
+    EXPECT_EQ("a", Util::String::Join('.', str));
+    EXPECT_EQ("b", Util::String::Join('.', ctr));
+    EXPECT_EQ("c", Util::String::Join('.', arr));
+    EXPECT_EQ("d", Util::String::Join('.', chr));
 
-    ASSERT_EQ("a,a", Util::String::Join(',', str, str));
-    ASSERT_EQ("a,b", Util::String::Join(',', str, ctr));
-    ASSERT_EQ("a,c", Util::String::Join(',', str, arr));
-    ASSERT_EQ("a,d", Util::String::Join(',', str, chr));
-    ASSERT_EQ("b,a", Util::String::Join(',', ctr, str));
-    ASSERT_EQ("b,b", Util::String::Join(',', ctr, ctr));
-    ASSERT_EQ("b,c", Util::String::Join(',', ctr, arr));
-    ASSERT_EQ("b,d", Util::String::Join(',', ctr, chr));
-    ASSERT_EQ("c,a", Util::String::Join(',', arr, str));
-    ASSERT_EQ("c,b", Util::String::Join(',', arr, ctr));
-    ASSERT_EQ("c,c", Util::String::Join(',', arr, arr));
-    ASSERT_EQ("c,d", Util::String::Join(',', arr, chr));
-    ASSERT_EQ("d,a", Util::String::Join(',', chr, str));
-    ASSERT_EQ("d,b", Util::String::Join(',', chr, ctr));
-    ASSERT_EQ("d,c", Util::String::Join(',', chr, arr));
-    ASSERT_EQ("d,d", Util::String::Join(',', chr, chr));
+    EXPECT_EQ("a,a", Util::String::Join(',', str, str));
+    EXPECT_EQ("a,b", Util::String::Join(',', str, ctr));
+    EXPECT_EQ("a,c", Util::String::Join(',', str, arr));
+    EXPECT_EQ("a,d", Util::String::Join(',', str, chr));
+    EXPECT_EQ("b,a", Util::String::Join(',', ctr, str));
+    EXPECT_EQ("b,b", Util::String::Join(',', ctr, ctr));
+    EXPECT_EQ("b,c", Util::String::Join(',', ctr, arr));
+    EXPECT_EQ("b,d", Util::String::Join(',', ctr, chr));
+    EXPECT_EQ("c,a", Util::String::Join(',', arr, str));
+    EXPECT_EQ("c,b", Util::String::Join(',', arr, ctr));
+    EXPECT_EQ("c,c", Util::String::Join(',', arr, arr));
+    EXPECT_EQ("c,d", Util::String::Join(',', arr, chr));
+    EXPECT_EQ("d,a", Util::String::Join(',', chr, str));
+    EXPECT_EQ("d,b", Util::String::Join(',', chr, ctr));
+    EXPECT_EQ("d,c", Util::String::Join(',', chr, arr));
+    EXPECT_EQ("d,d", Util::String::Join(',', chr, chr));
 
-    ASSERT_EQ("[goodbye beef]", Util::String::Join('.', obj2));
-    ASSERT_EQ("a:[goodbye beef]:c:d", Util::String::Join(':', str, obj2, arr, chr));
-    ASSERT_EQ("a:c:d", Util::String::Join(':', str, arr, chr));
+    EXPECT_EQ("[goodbye beef]", Util::String::Join('.', obj2));
+    EXPECT_EQ("a:[goodbye beef]:c:d", Util::String::Join(':', str, obj2, arr, chr));
+    EXPECT_EQ("a:c:d", Util::String::Join(':', str, arr, chr));
 
 #ifndef BUILD_WINDOWS
 
@@ -295,18 +380,105 @@ TEST(StringTest, JoinTest)
     std::string start("[0x");
     std::string end("]:2:[goodbye beef]:[world f00d]");
 
-    ASSERT_TRUE(Util::String::StartsWith(joined, start));
-    ASSERT_TRUE(Util::String::EndsWith(joined, end));
+    EXPECT_TRUE(Util::String::StartsWith(joined, start));
+    EXPECT_TRUE(Util::String::EndsWith(joined, end));
 
     bool atLeastOneChar = false;
 
     for (size_t i = joined.find(start) + start.length(); i < joined.find(end); ++i)
     {
-        ASSERT_NE(isxdigit(joined[i]), 0);
+        EXPECT_NE(isxdigit(joined[i]), 0);
         atLeastOneChar = true;
     }
 
-    ASSERT_TRUE(atLeastOneChar);
+    EXPECT_TRUE(atLeastOneChar);
 
 #endif // BUILD_WINDOWS
 }
+
+//=============================================================================
+TEST(StringTest, ConvertTest)
+{
+    // BOOL
+    EXPECT_EQ(Util::String::Convert<std::string>("abc"), "abc");
+
+    // STRING
+    EXPECT_EQ(Util::String::Convert<bool>("0"), false);
+    EXPECT_EQ(Util::String::Convert<bool>("1"), true);
+    EXPECT_THROW(Util::String::Convert<bool>("-1"), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<bool>("2"), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<bool>("abc"), std::invalid_argument);
+
+    // CHAR
+    EXPECT_EQ(Util::String::Convert<char>("0"), '\0');
+    EXPECT_EQ(Util::String::Convert<char>("65"), 'A');
+    EXPECT_THROW(Util::String::Convert<char>(min_to_string<char>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<char>(max_to_string<char>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<char>("abc"), std::invalid_argument);
+
+    EXPECT_EQ(Util::String::Convert<unsigned char>("0"), '\0');
+    EXPECT_EQ(Util::String::Convert<unsigned char>("200"), (unsigned char)200);
+    EXPECT_THROW(Util::String::Convert<unsigned char>(min_to_string<unsigned char>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<unsigned char>(max_to_string<unsigned char>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<unsigned char>("abc"), std::invalid_argument);
+
+    // SHORT
+    EXPECT_EQ(Util::String::Convert<short>("-4000"), (short)-4000);
+    EXPECT_EQ(Util::String::Convert<short>("4000"), (short)4000);
+    EXPECT_THROW(Util::String::Convert<short>(min_to_string<short>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<short>(max_to_string<short>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<short>("abc"), std::invalid_argument);
+
+    EXPECT_EQ(Util::String::Convert<unsigned short>("0"), (unsigned short)0);
+    EXPECT_EQ(Util::String::Convert<unsigned short>("4000"), (unsigned short)4000);
+    EXPECT_THROW(Util::String::Convert<unsigned short>(min_to_string<unsigned short>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<unsigned short>(max_to_string<unsigned short>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<unsigned short>("abc"), std::invalid_argument);
+
+    // INT
+    EXPECT_EQ(Util::String::Convert<int>("-4000"), (int)-4000);
+    EXPECT_EQ(Util::String::Convert<int>("4000"), (int)4000);
+    EXPECT_THROW(Util::String::Convert<int>(min_to_string<int>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<int>(max_to_string<int>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<int>("abc"), std::invalid_argument);
+
+    EXPECT_EQ(Util::String::Convert<unsigned int>("0"), (unsigned int)0);
+    EXPECT_EQ(Util::String::Convert<unsigned int>("4000"), (unsigned int)4000);
+    EXPECT_THROW(Util::String::Convert<unsigned int>(min_to_string<unsigned int>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<unsigned int>(max_to_string<unsigned int>()), std::out_of_range);
+    EXPECT_THROW(Util::String::Convert<unsigned int>("abc"), std::invalid_argument);
+
+    // LONG
+    EXPECT_EQ(Util::String::Convert<long>("-4000"), (long)-4000);
+    EXPECT_EQ(Util::String::Convert<long>("4000"), (long)4000);
+    EXPECT_THROW(Util::String::Convert<long>("abc"), std::invalid_argument);
+
+    EXPECT_EQ(Util::String::Convert<unsigned long>("0"), (unsigned long)0);
+    EXPECT_EQ(Util::String::Convert<unsigned long>("4000"), (unsigned long)4000);
+    EXPECT_THROW(Util::String::Convert<unsigned long>("abc"), std::invalid_argument);
+
+    // LONG LONG
+    EXPECT_EQ(Util::String::Convert<long long>("-4000"), (long long)-4000);
+    EXPECT_EQ(Util::String::Convert<long long>("4000"), (long long)4000);
+    EXPECT_THROW(Util::String::Convert<long long>("abc"), std::invalid_argument);
+
+    EXPECT_EQ(Util::String::Convert<unsigned long long>("0"), (unsigned long long)0);
+    EXPECT_EQ(Util::String::Convert<unsigned long long>("4000"), (unsigned long long)4000);
+    EXPECT_THROW(Util::String::Convert<unsigned long long>("abc"), std::invalid_argument);
+
+    // FLOAT
+    EXPECT_EQ(Util::String::Convert<float>("-4000.123f"), -4000.123f);
+    EXPECT_EQ(Util::String::Convert<float>("4000.456f"), 4000.456f);
+    EXPECT_THROW(Util::String::Convert<float>("abc"), std::invalid_argument);
+
+    // DOUBLE
+    EXPECT_EQ(Util::String::Convert<double>("-4000.123"), -4000.123);
+    EXPECT_EQ(Util::String::Convert<double>("4000.456"), 4000.456);
+    EXPECT_THROW(Util::String::Convert<double>("abc"), std::invalid_argument);
+
+    // LONG DOUBLE
+    EXPECT_EQ(Util::String::Convert<long double>("-4000.123L"), -4000.123L);
+    EXPECT_EQ(Util::String::Convert<long double>("4000.456L"), 4000.456L);
+    EXPECT_THROW(Util::String::Convert<long double>("abc"), std::invalid_argument);
+}
+

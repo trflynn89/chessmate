@@ -87,7 +87,7 @@ protected:
      *
      * @param FileEvent The file change event.
      */
-    void HandleEvent(FileEvent);
+    void HandleEvent(FileEvent) const;
 
     const std::string m_path;
     const std::string m_file;
@@ -101,7 +101,7 @@ private:
     std::atomic_bool m_aKeepRunning;
     std::future<void> m_future;
 
-    std::mutex m_callbackMutex;
+    mutable std::mutex m_callbackMutex;
     FileEventCallback m_handler;
 };
 

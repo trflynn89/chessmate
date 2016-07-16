@@ -64,7 +64,7 @@ void FileMonitor::StopMonitor()
 }
 
 //=============================================================================
-void FileMonitor::HandleEvent(FileEvent event)
+void FileMonitor::HandleEvent(FileEvent event) const
 {
     if (event != FileMonitor::FILE_NO_CHANGE)
     {
