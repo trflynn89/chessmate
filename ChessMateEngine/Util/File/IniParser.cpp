@@ -37,69 +37,16 @@ void IniParser::Parse()
         }
         else if (trimValue(line, '[', ']'))
         {
-            section = line;
-            String::Trim(section);
-
-            if (m_sections.find(section) != m_sections.end())
-            {
-                throw ParserException(m_file, m_line,
-                    "Section names must be unique"
-                );
-            }
-            else if (trimValue(section, '\'') || trimValue(section, '\"'))
-            {
-                throw ParserException(m_file, m_line,
-                    "Section names must not be quoted"
-                );
-            }
+            section = onSection(line);
         }
         else if (!section.empty())
         {
-            static const size_t size = 2;
-            std::vector<std::string> nameValue = String::Split(line, '=', size);
-
-            if (nameValue.size() == size)
-            {
-                std::string name(nameValue[0]), value(nameValue[1]);
-
-                String::Trim(name);
-                String::Trim(value);
-
-                if (trimValue(name, '\'') || trimValue(name, '\"'))
-                {
-                    throw ParserException(m_file, m_line,
-                        "Value names must not be quoted"
-                    );
-                }
-
-                trimValue(value, '\'');
-                trimValue(value, '\"');
-
-                IniValueList &list = m_sections[section];
-
-                for (const IniValue &value : list)
-                {
-                    if (name.compare(value.first) == 0)
-                    {
-                        throw ParserException(m_file, m_line,
-                            "Value names must be unique within a section"
-                        );
-                    }
-                }
-
-                list.push_back(IniValue(name, value));
-            }
-            else
-            {
-                throw ParserException(m_file, m_line,
-                    "Require name/value pairs of the form name=value"
-                );
-            }
+            onValue(section, line);
         }
         else
         {
             throw ParserException(m_file, m_line,
-                "A [section] must be defined before name=value pairs"
+                "A section must be defined before name=value pairs"
             );
         }
     }
@@ -126,6 +73,74 @@ ssize_t IniParser::GetSize(const std::string &section) const
     }
 
     return size;
+}
+
+//=============================================================================
+std::string IniParser::onSection(const std::string &line)
+{
+    std::string section = line;
+    String::Trim(section);
+
+    if (m_sections.find(section) != m_sections.end())
+    {
+        throw ParserException(m_file, m_line,
+            "Section names must be unique"
+        );
+    }
+    else if (trimValue(section, '\'') || trimValue(section, '\"'))
+    {
+        throw ParserException(m_file, m_line,
+            "Section names must not be quoted"
+        );
+    }
+
+    return section;
+}
+
+//=============================================================================
+void IniParser::onValue(const std::string &section, const std::string &line)
+{
+    static const size_t size = 2;
+
+    std::vector<std::string> nameValue = String::Split(line, '=', size);
+
+    if (nameValue.size() == size)
+    {
+        std::string name(nameValue[0]), value(nameValue[1]);
+
+        String::Trim(name);
+        String::Trim(value);
+
+        if (trimValue(name, '\'') || trimValue(name, '\"'))
+        {
+            throw ParserException(m_file, m_line,
+                "Value names must not be quoted"
+            );
+        }
+
+        trimValue(value, '\'');
+        trimValue(value, '\"');
+
+        IniValueList &list = m_sections[section];
+
+        for (const IniValue &value : list)
+        {
+            if (name.compare(value.first) == 0)
+            {
+                throw ParserException(m_file, m_line,
+                    "Value names must be unique within a section"
+                );
+            }
+        }
+
+        list.push_back(IniValue(name, value));
+    }
+    else
+    {
+        throw ParserException(m_file, m_line,
+            "Require name/value pairs of the form name=value"
+        );
+    }
 }
 
 //=============================================================================

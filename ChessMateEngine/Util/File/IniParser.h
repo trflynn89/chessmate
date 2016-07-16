@@ -19,7 +19,7 @@ DEFINE_CLASS_PTRS(IniParser);
  * Implementation of the Parser interface for .ini files.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 12, 2016
+ * @version July 16, 2016
  */
 class IniParser : public Parser
 {
@@ -87,6 +87,23 @@ public:
     ssize_t GetSize(const std::string &) const;
 
 private:
+    /**
+     * Parse a line containing a section name.
+     *
+     * @param string Line containing the section.
+     *
+     * @return The parsed section name.
+     */
+    std::string onSection(const std::string &);
+
+    /**
+     * Parse a line containing a name/value pair.
+     *
+     * @param string Section containing the pair.
+     * @param string Line containing the pair.
+     */
+    void onValue(const std::string &, const std::string &);
+
     /**
      * If the given string begins and ends with the given character, remove that
      * character from each end of the string.

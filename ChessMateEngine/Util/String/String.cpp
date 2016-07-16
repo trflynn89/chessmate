@@ -35,11 +35,9 @@ std::vector<std::string> String::Split(const std::string &input, char delim, siz
 
     while (std::getline(ss, item, delim))
     {
-        ++numItems;
-
         if (!item.empty())
         {
-            if ((max > 0) && (numItems > max))
+            if ((max > 0) && (++numItems > max))
             {
                 elems.back() += delim;
                 elems.back() += item;

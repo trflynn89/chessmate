@@ -352,11 +352,21 @@ TEST_F(IniParserTest, MisplacedQuoteTest)
     );
 
     const std::string contents3(
-        "\"[section]\"\n"
+        "[\"section\"]\n"
         "name=John Doe\n"
     );
 
     const std::string contents4(
+        "[\'section\']\n"
+        "name=John Doe\n"
+    );
+
+    const std::string contents5(
+        "\"[section]\"\n"
+        "name=John Doe\n"
+    );
+
+    const std::string contents6(
         "\'[section]\'\n"
         "name=John Doe\n"
     );
@@ -371,6 +381,12 @@ TEST_F(IniParserTest, MisplacedQuoteTest)
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 
     CreateFile(contents4);
+    EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
+
+    CreateFile(contents5);
+    EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
+
+    CreateFile(contents6);
     EXPECT_THROW(m_spParser->Parse(), Util::ParserException);
 }
 

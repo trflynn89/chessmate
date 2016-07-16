@@ -10,7 +10,7 @@ namespace Util {
  * inherit from this class.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 12, 2016
+ * @version July 16, 2016
  */
 class Parser
 {
@@ -41,7 +41,7 @@ protected:
  * Exception to be raised if an error was encountered parsing a file.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 12, 2016
+ * @version July 16, 2016
  */
 class ParserException : public std::exception
 {
