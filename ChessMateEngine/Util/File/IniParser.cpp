@@ -3,7 +3,7 @@
 #include <cstring>
 #include <fstream>
 
-#include <Util/Logging/Logger.h>
+#include <Util/String/String.h>
 #include <Util/System/System.h>
 
 namespace Util {
@@ -23,7 +23,7 @@ void IniParser::Parse()
     std::string line, section;
     m_line = 0;
 
-    std::lock_guard<std::mutex> lock(m_sectionsMutex);
+    std::unique_lock<std::shared_timed_mutex> lock(m_sectionsMutex);
     m_sections.clear();
 
     while (stream.good() && std::getline(stream, line))
@@ -53,19 +53,35 @@ void IniParser::Parse()
 }
 
 //==============================================================================
+Parser::ValueList IniParser::GetValues(const std::string &section) const
+{
+    Parser::ValueList values;
+
+    std::shared_lock<std::shared_timed_mutex> lock(m_sectionsMutex);
+    IniSection::const_iterator it = m_sections.find(section);
+
+    if (it != m_sections.end())
+    {
+        values = it->second;
+    }
+
+    return values;
+}
+
+//==============================================================================
 size_t IniParser::GetSize() const
 {
-    std::lock_guard<std::mutex> lock(m_sectionsMutex);
+    std::shared_lock<std::shared_timed_mutex> lock(m_sectionsMutex);
     return m_sections.size();
 }
 
 //==============================================================================
 ssize_t IniParser::GetSize(const std::string &section) const
 {
-    std::lock_guard<std::mutex> lock(m_sectionsMutex);
-
-    IniSection::const_iterator it = m_sections.find(section);
     ssize_t size = -1;
+
+    std::shared_lock<std::shared_timed_mutex> lock(m_sectionsMutex);
+    IniSection::const_iterator it = m_sections.find(section);
 
     if (it != m_sections.end())
     {
@@ -121,9 +137,9 @@ void IniParser::onValue(const std::string &section, const std::string &line)
         trimValue(value, '\'');
         trimValue(value, '\"');
 
-        IniValueList &list = m_sections[section];
+        Parser::ValueList &list = m_sections[section];
 
-        for (const IniValue &value : list)
+        for (const Parser::Value &value : list)
         {
             if (name.compare(value.first) == 0)
             {
@@ -133,7 +149,7 @@ void IniParser::onValue(const std::string &section, const std::string &line)
             }
         }
 
-        list.push_back(IniValue(name, value));
+        list.push_back(Parser::Value(name, value));
     }
     else
     {
@@ -170,30 +186,6 @@ bool IniParser::trimValue(std::string &str, char start, char end) const
     }
 
     return (startsWithChar && endsWithChar);
-}
-
-//==============================================================================
-bool IniParser::getValue(
-    const std::string &section,
-    const std::string &key,
-    std::string &value
-) const
-{
-    IniSection::const_iterator it = m_sections.find(section);
-
-    if (it != m_sections.end())
-    {
-        for (const IniValue &iniValue : it->second)
-        {
-            if (key.compare(iniValue.first) == 0)
-            {
-                value = iniValue.second;
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
 
 }

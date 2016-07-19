@@ -1,3 +1,4 @@
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -375,23 +376,8 @@ TEST(StringTest, JoinTest)
 
 #ifndef BUILD_WINDOWS
 
-    std::string joined = Util::String::Join(':', obj1, 2, obj2, obj3);
-
-    std::string start("[0x");
-    std::string end("]:2:[goodbye beef]:[world f00d]");
-
-    EXPECT_TRUE(Util::String::StartsWith(joined, start));
-    EXPECT_TRUE(Util::String::EndsWith(joined, end));
-
-    bool atLeastOneChar = false;
-
-    for (size_t i = joined.find(start) + start.length(); i < joined.find(end); ++i)
-    {
-        EXPECT_NE(isxdigit(joined[i]), 0);
-        atLeastOneChar = true;
-    }
-
-    EXPECT_TRUE(atLeastOneChar);
+    std::regex test("(\\[0x[0-9a-fA-F]+\\]:2:\\[goodbye beef\\]:\\[world f00d\\])");
+    ASSERT_TRUE(std::regex_match(Util::String::Join(':', obj1, 2, obj2, obj3), test));
 
 #endif // BUILD_WINDOWS
 }

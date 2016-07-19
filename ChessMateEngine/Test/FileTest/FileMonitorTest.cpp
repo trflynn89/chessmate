@@ -94,12 +94,43 @@ protected:
 };
 
 //==============================================================================
+TEST_F(FileMonitorTest, NonExistingPathTest)
+{
+    m_spMonitor->StopMonitor();
+    m_spMonitor = std::make_shared<Util::FileMonitorImpl>(nullptr, m_path + "foo", m_file);
+    ASSERT_FALSE(m_spMonitor->StartMonitor());
+}
+
+//==============================================================================
 TEST_F(FileMonitorTest, NoChangeTest)
 {
     EXPECT_EQ(m_numCreatedFiles, 0);
     EXPECT_EQ(m_numDeletedFiles, 0);
     EXPECT_EQ(m_numChangedFiles, 0);
     EXPECT_EQ(m_numOtherEvents, 0);
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    EXPECT_EQ(m_numCreatedFiles, 0);
+    EXPECT_EQ(m_numDeletedFiles, 0);
+    EXPECT_EQ(m_numChangedFiles, 0);
+    EXPECT_EQ(m_numOtherEvents, 0);
+}
+
+//==============================================================================
+TEST_F(FileMonitorTest, NullCallbackTest)
+{
+    m_spMonitor->StopMonitor();
+    m_spMonitor = std::make_shared<Util::FileMonitorImpl>(nullptr, m_path, m_file);
+    ASSERT_TRUE(m_spMonitor->StartMonitor());
+
+    EXPECT_EQ(m_numCreatedFiles, 0);
+    EXPECT_EQ(m_numDeletedFiles, 0);
+    EXPECT_EQ(m_numChangedFiles, 0);
+    EXPECT_EQ(m_numOtherEvents, 0);
+
+    std::ofstream stream(GetFullPath(), std::ios::out);
+    stream.close();
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 

@@ -11,23 +11,22 @@ class IniParserTest : public ::testing::Test
 {
 public:
     IniParserTest() :
-        m_spParser(),
         m_path(Util::System::GetTempDirectory()),
-        m_file(Util::String::GenerateRandomString(10) + ".txt")
+        m_file(Util::String::GenerateRandomString(10) + ".txt"),
+        m_spParser(std::make_shared<Util::IniParser>(m_path, m_file))
     {
     }
 
     /**
-     * Create and start the file monitor.
+     * Create the file directory.
      */
     virtual void SetUp()
     {
         ASSERT_TRUE(Util::System::MakeDirectory(m_path));
-        m_spParser = std::make_shared<Util::IniParser>(m_path, m_file);
     }
 
     /**
-     * Stop the file monitor and delete the created file.
+     * Delete the created file.
      */
     virtual void TearDown()
     {
@@ -35,6 +34,11 @@ public:
     }
 
 protected:
+    /**
+     * Create a file with the given contents.
+     *
+     * @param string Contents of the file to create.
+     */
     void CreateFile(const std::string &contents)
     {
         std::ofstream stream(GetFullPath().c_str(), std::ios::out);
@@ -50,11 +54,29 @@ protected:
         return Util::String::Join(sep, m_path, m_file);
     }
 
-    Util::IniParserPtr m_spParser;
-
     std::string m_path;
     std::string m_file;
+
+    Util::IniParserPtr m_spParser;
 };
+
+//==============================================================================
+TEST_F(IniParserTest, NonExistingPathTest)
+{
+    m_spParser = std::make_shared<Util::IniParser>(m_path + "foo", m_file);
+
+    ASSERT_NO_THROW(m_spParser->Parse());
+    EXPECT_EQ(m_spParser->GetSize(), 0);
+}
+
+//==============================================================================
+TEST_F(IniParserTest, NonExistingFileTest)
+{
+    m_spParser = std::make_shared<Util::IniParser>(m_path, m_file + "foo");
+
+    ASSERT_NO_THROW(m_spParser->Parse());
+    EXPECT_EQ(m_spParser->GetSize(), 0);
+}
 
 //==============================================================================
 TEST_F(IniParserTest, EmptyFileTest)
@@ -91,9 +113,6 @@ TEST_F(IniParserTest, NonEmptySectionTest)
 
     EXPECT_EQ(m_spParser->GetSize(), 1);
     EXPECT_EQ(m_spParser->GetSize("section"), 2);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "John Doe");
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "USA");
 }
 
 //==============================================================================
@@ -111,26 +130,6 @@ TEST_F(IniParserTest, NonExistingTest)
 
     EXPECT_EQ(m_spParser->GetSize("bad-section"), -1);
     EXPECT_EQ(m_spParser->GetSize("section-bad"), -1);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "bad-name", "def"), "def");
-    EXPECT_EQ(m_spParser->GetValue<std::string>("bad-section", "address", "def"), "def");
-}
-
-//==============================================================================
-TEST_F(IniParserTest, NonCovertibleTest)
-{
-    const std::string contents(
-        "[section]\n"
-        "name=John Doe\n"
-        "address=USA"
-    );
-
-    CreateFile(contents);
-
-    ASSERT_NO_THROW(m_spParser->Parse());
-
-    EXPECT_EQ(m_spParser->GetValue<int>("section", "name", 12), 12);
-    EXPECT_EQ(m_spParser->GetValue<bool>("section", "address", false), false);
 }
 
 //==============================================================================
@@ -166,9 +165,6 @@ TEST_F(IniParserTest, ErrantSpacesTest)
 
     EXPECT_EQ(m_spParser->GetSize(), 1);
     EXPECT_EQ(m_spParser->GetSize("section"), 2);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "John Doe");
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "USA");
 }
 
 //==============================================================================
@@ -186,13 +182,10 @@ TEST_F(IniParserTest, QuotedValueTest)
 
     EXPECT_EQ(m_spParser->GetSize(), 1);
     EXPECT_EQ(m_spParser->GetSize("section"), 2);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "  John Doe  ");
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "\tUSA");
 }
 
 //==============================================================================
-TEST_F(IniParserTest, MutlipleValueTypeTest)
+TEST_F(IniParserTest, MutlipleSectionTypeTest)
 {
     const std::string contents(
         "[section1]\n"
@@ -214,20 +207,6 @@ TEST_F(IniParserTest, MutlipleValueTypeTest)
     EXPECT_EQ(m_spParser->GetSize("section1"), 2);
     EXPECT_EQ(m_spParser->GetSize("section2"), 2);
     EXPECT_EQ(m_spParser->GetSize("section3"), 2);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section1", "name", "noname"), "John Doe");
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section1", "age", "0"), "26");
-    EXPECT_EQ(m_spParser->GetValue<int>("section1", "age", 0), 26);
-    EXPECT_EQ(m_spParser->GetValue<unsigned int>("section1", "age", 0), 26);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section2", "name", "noname"), "Jane Doe");
-    EXPECT_EQ(m_spParser->GetValue<int>("section2", "age", 0), 30);
-    EXPECT_EQ(m_spParser->GetValue<float>("section2", "age", 0.0f), 30.12f);
-    EXPECT_EQ(m_spParser->GetValue<double>("section2", "age", 0.0), 30.12);
-
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section3", "name", "noname"), "Joe Doe");
-    EXPECT_EQ(m_spParser->GetValue<bool>("section3", "noage", false), true);
-    EXPECT_EQ(m_spParser->GetValue<int>("section3", "noage", 0), 1);
 }
 
 //==============================================================================
@@ -404,11 +383,13 @@ TEST_F(IniParserTest, MultipleAssignmentTest)
 
     CreateFile(contents1);
     ASSERT_NO_THROW(m_spParser->Parse());
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "John=Doe");
+    EXPECT_EQ(m_spParser->GetSize(), 1);
+    EXPECT_EQ(m_spParser->GetSize("section"), 1);
 
     CreateFile(contents2);
     ASSERT_NO_THROW(m_spParser->Parse());
-    EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "John=Doe");
+    EXPECT_EQ(m_spParser->GetSize(), 1);
+    EXPECT_EQ(m_spParser->GetSize("section"), 1);
 }
 
 //==============================================================================
@@ -476,8 +457,5 @@ TEST_F(IniParserTest, MultipleParseTest)
 
         EXPECT_EQ(m_spParser->GetSize(), 1);
         EXPECT_EQ(m_spParser->GetSize("section"), 2);
-
-        EXPECT_EQ(m_spParser->GetValue<std::string>("section", "name", ""), "John Doe");
-        EXPECT_EQ(m_spParser->GetValue<std::string>("section", "address", ""), "USA");
     }
 }

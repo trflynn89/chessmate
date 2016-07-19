@@ -2,19 +2,35 @@
 
 #include <exception>
 #include <string>
+#include <utility>
+#include <vector>
+
+#include <Util/Utilities.h>
 
 namespace Util {
+
+DEFINE_CLASS_PTRS(Parser);
 
 /**
  * Virtual interface to parse a file. Parsers for specific file formats should
  * inherit from this class.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 16, 2016
+ * @version July 18, 2016
  */
 class Parser
 {
 public:
+    /**
+     * A parsed name-value pair.
+     */
+    typedef std::pair<std::string, std::string> Value;
+
+    /**
+     * A list of parsed name-value pairs.
+     */
+    typedef std::vector<Value> ValueList;
+
     /**
      * Constructor.
      *
@@ -29,6 +45,15 @@ public:
      * @throws ParserException Thrown if an error occurs parsing the file.
      */
     virtual void Parse() = 0;
+
+    /**
+     * Get a section's parsed values.
+     *
+     * @param string The name of the section containing the values.
+     *
+     * @return A list of parsed values.
+     */
+    virtual ValueList GetValues(const std::string &) const = 0;
 
 protected:
     const std::string m_path;

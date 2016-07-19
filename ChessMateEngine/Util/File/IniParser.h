@@ -1,15 +1,11 @@
 #pragma once
 
 #include <map>
-#include <mutex>
+#include <shared_mutex>
 #include <string>
-#include <utility>
-#include <vector>
 
 #include <Util/Utilities.h>
 #include <Util/File/Parser.h>
-#include <Util/Logging/Logger.h>
-#include <Util/String/String.h>
 
 namespace Util {
 
@@ -19,24 +15,14 @@ DEFINE_CLASS_PTRS(IniParser);
  * Implementation of the Parser interface for .ini files.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 16, 2016
+ * @version July 18, 2016
  */
 class IniParser : public Parser
 {
     /**
-     * A parsed name-value pair.
-     */
-    typedef std::pair<std::string, std::string> IniValue;
-
-    /**
-     * A list of parsed name-value pairs.
-     */
-    typedef std::vector<IniValue> IniValueList;
-
-    /**
      * A map of parsed section names to that section's list of name-value pairs.
      */
-    typedef std::map<std::string, IniValueList> IniSection;
+    typedef std::map<std::string, Parser::ValueList> IniSection;
 
 public:
     /**
@@ -55,20 +41,13 @@ public:
     virtual void Parse();
 
     /**
-     * Get a value from the parser converted to a basic type, e.g. int or bool.
-     * If the value could not be returned, or could not be converted to the
-     * given type, returns a provided default value.
+     * Get a section's parsed values.
      *
-     * @tparam T The basic return type of the value.
+     * @param string The name of the section containing the values.
      *
-     * @param string The name of the section containing the value.
-     * @param string The name of the value.
-     * @param T Default value to use if the value could not be found or converted.
-     *
-     * @return The converted value or the default value.
+     * @return A list of parsed values.
      */
-    template <typename T>
-    T GetValue(const std::string &, const std::string &, T) const;
+    virtual Parser::ValueList GetValues(const std::string &) const;
 
     /**
      * Get the number of sections that have been parsed.
@@ -134,45 +113,8 @@ private:
      */
     bool trimValue(std::string &, char, char) const;
 
-    /**
-     * Get a value from the parser.
-     *
-     * @param string The name of the section containing the value.
-     * @param string The name of the value.
-     * @param string String to store the parsed value in.
-     *
-     * @return True if the value could be found.
-     */
-    bool getValue(const std::string &, const std::string &, std::string &) const;
-
-    mutable std::mutex m_sectionsMutex;
+    mutable std::shared_timed_mutex m_sectionsMutex;
     IniSection m_sections;
 };
-
-//==============================================================================
-template <typename T>
-T IniParser::GetValue(const std::string &section, const std::string &key, T def) const
-{
-    std::lock_guard<std::mutex> lock(m_sectionsMutex);
-    std::string value;
-
-    if (getValue(section, key, value))
-    {
-        try
-        {
-            return String::Convert<T>(value);
-        }
-        catch (...)
-        {
-            LOGW(-1, "Could not parse: [%s] %s = %s", section, key, value);
-        }
-    }
-    else
-    {
-        LOGW(-1, "Could not find: [%s] %s", section, key);
-    }
-
-    return def;
-}
 
 }

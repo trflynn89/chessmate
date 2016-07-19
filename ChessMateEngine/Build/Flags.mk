@@ -26,8 +26,8 @@ ifeq ($(arch), 32)
 endif
 
 # C and C++ specific flags
-CFLAGS := -std=c11 $(CF_ALL)
-CXXFLAGS := -std=c++11 $(CF_ALL)
+CFLAGS := -std=c14 $(CF_ALL)
+CXXFLAGS := -std=c++14 $(CF_ALL)
 
 # Linker flags
 LDFLAGS :=
