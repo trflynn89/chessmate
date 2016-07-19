@@ -37,6 +37,9 @@
     <Filter Include="Util\File">
       <UniqueIdentifier>{399fab50-c973-4dcb-8c46-8250dabdf719}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util\Configuration">
+      <UniqueIdentifier>{8c7ea4ad-734c-460b-89f7-8f38a06be77d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h">
@@ -135,6 +138,12 @@
     <ClInclude Include="..\Util\File\Parser.h">
       <Filter>Util\File</Filter>
     </ClInclude>
+    <ClInclude Include="..\Util\Configuration\Configuration.h">
+      <Filter>Util\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Configuration\ConfigurationManager.h">
+      <Filter>Util\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Util\Logging\Logger.cpp">
@@ -205,6 +214,12 @@
     </ClCompile>
     <ClCompile Include="..\Util\File\Parser.cpp">
       <Filter>Util\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Configuration\Configuration.cpp">
+      <Filter>Util\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Configuration\ConfigurationManager.cpp">
+      <Filter>Util\Configuration</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
