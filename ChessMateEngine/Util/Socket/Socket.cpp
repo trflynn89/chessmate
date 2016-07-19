@@ -7,12 +7,14 @@
 namespace Util {
 
 //==============================================================================
-const char Socket::s_socketEoM = 0x04;
 std::atomic_int Socket::s_aNumSockets(0);
 
 //==============================================================================
-Socket::Socket(int socketType) :
+Socket::Socket(int socketType, const SocketConfigPtr &spConfig) :
     m_socketType(socketType),
+    m_spConfig(spConfig),
+    m_socketEoM(spConfig->EndOfMessage()),
+    m_packetSize(spConfig->PacketSize()),
     m_socketHandle(0),
     m_clientIp(-1),
     m_clientPort(-1),

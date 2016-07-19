@@ -4,6 +4,7 @@
 
 #include <Util/Utilities.h>
 #include <Util/Socket/Socket.h>
+#include <Util/Socket/SocketConfig.h>
 
 namespace Util {
 
@@ -18,7 +19,7 @@ DEFINE_CLASS_PTRS(SocketImpl);
 class SocketImpl : public Socket
 {
 public:
-    SocketImpl(int);
+    SocketImpl(int, const SocketConfigPtr &);
     ~SocketImpl();
 
     static int InAddrAny();

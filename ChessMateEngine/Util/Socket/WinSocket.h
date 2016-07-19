@@ -18,7 +18,7 @@ DEFINE_CLASS_PTRS(SocketImpl);
 class SocketImpl : public Socket
 {
 public:
-    SocketImpl(int);
+    SocketImpl(int, const SocketConfigPtr &);
     ~SocketImpl();
 
     static int InAddrAny();

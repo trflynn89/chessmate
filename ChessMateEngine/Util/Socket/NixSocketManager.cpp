@@ -17,6 +17,13 @@ SocketManagerImpl::SocketManagerImpl() : SocketManager()
 }
 
 //==============================================================================
+SocketManagerImpl::SocketManagerImpl(ConfigManagerPtr &spConfigManager) :
+    SocketManager(spConfigManager)
+{
+    s_socketManagerCount.fetch_add(1);
+}
+
+//==============================================================================
 SocketManagerImpl::~SocketManagerImpl()
 {
     s_socketManagerCount.fetch_sub(1);
@@ -26,7 +33,7 @@ SocketManagerImpl::~SocketManagerImpl()
 void SocketManagerImpl::AsyncIoThread()
 {
     fd_set readFd, writeFd;
-    struct timeval tv { 0, 10000 }; // 10 milliseconds
+    struct timeval tv { 0, m_spConfig->IoWaitTime().count() };
 
     while (m_aKeepRunning.load())
     {

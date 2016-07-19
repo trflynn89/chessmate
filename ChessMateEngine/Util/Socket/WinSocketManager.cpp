@@ -13,6 +13,13 @@ std::atomic_int SocketManagerImpl::s_socketManagerCount(0);
 //==============================================================================
 SocketManagerImpl::SocketManagerImpl() : SocketManager()
 {
+    s_socketManagerCount.fetch_add(1);
+}
+
+//==============================================================================
+SocketManagerImpl::SocketManagerImpl(ConfigManagerPtr &spConfigManager) :
+    SocketManager(spConfigManager)
+{
     if (s_socketManagerCount.fetch_add(1) == 0)
     {
         WORD version = MAKEWORD(2, 2);
@@ -38,7 +45,7 @@ SocketManagerImpl::~SocketManagerImpl()
 void SocketManagerImpl::AsyncIoThread()
 {
     fd_set readFd, writeFd;
-    struct timeval tv { 0, 10000 }; // 10 milliseconds
+    struct timeval tv { 0, m_spConfig->IoWaitTime().count() };
 
     while (m_aKeepRunning.load())
     {

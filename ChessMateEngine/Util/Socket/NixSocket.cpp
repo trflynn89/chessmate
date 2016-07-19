@@ -15,8 +15,6 @@ namespace Util {
 
 namespace
 {
-    static const size_t s_packetLen = 4096;
-
     struct sockaddr_in HostToSockAddr(
         size_t socketId,
         const std::string &hostname,
@@ -43,7 +41,8 @@ namespace
 }
 
 //==============================================================================
-SocketImpl::SocketImpl(int socketType) : Socket(socketType)
+SocketImpl::SocketImpl(int socketType, const SocketConfigPtr &spConfig) :
+    Socket(socketType, spConfig)
 {
     switch (socketType)
     {
@@ -100,7 +99,7 @@ bool SocketImpl::IsErrorFree()
 //==============================================================================
 bool SocketImpl::SetAsync()
 {
-    int flags = fcntl(m_socketHandle, F_GETFL, 0);
+    int flags = ::fcntl(m_socketHandle, F_GETFL, 0);
 
     if (flags == -1)
     {
@@ -191,7 +190,9 @@ bool SocketImpl::Connect(const std::string &hostname, int port)
 //==============================================================================
 SocketPtr SocketImpl::Accept() const
 {
-    SocketImplPtr ret = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
+    SocketImplPtr ret = std::make_shared<SocketImpl>(
+        Socket::SOCKET_TCP, m_spConfig
+    );
 
     struct sockaddr_in client;
     socklen_t clientLen = sizeof(client);
@@ -224,7 +225,7 @@ size_t SocketImpl::Send(const std::string &msg) const
 //==============================================================================
 size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 {
-    static const std::string eom(1, Socket::s_socketEoM);
+    static const std::string eom(1, m_socketEoM);
     std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
@@ -237,7 +238,7 @@ size_t SocketImpl::Send(const std::string &msg, bool &wouldBlock) const
 
         if (currSent > 0)
         {
-            if (toSend[currSent - 1] == Socket::s_socketEoM)
+            if (toSend[currSent - 1] == m_socketEoM)
             {
                 bytesSent += currSent - 1;
             }
@@ -285,7 +286,7 @@ size_t SocketImpl::SendTo(
     bool &wouldBlock
 ) const
 {
-    static const std::string eom(1, Socket::s_socketEoM);
+    static const std::string eom(1, m_socketEoM);
     std::string toSend = msg + eom;
 
     bool keepSending = !toSend.empty();
@@ -296,13 +297,13 @@ size_t SocketImpl::SendTo(
 
     while (keepSending)
     {
-        size_t toSendSize = std::min(s_packetLen, toSend.length());
+        size_t toSendSize = std::min(m_packetSize, toSend.length());
         ssize_t currSent = ::sendto(m_socketHandle, toSend.c_str(), toSendSize,
             0, (struct sockaddr *)&server, sizeof(server));
 
         if (currSent > 0)
         {
-            if (toSend[currSent - 1] == Socket::s_socketEoM)
+            if (toSend[currSent - 1] == m_socketEoM)
             {
                 bytesSent += currSent - 1;
             }
@@ -349,12 +350,12 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
 
     while (keepReading)
     {
-        char *buff = (char *)calloc(1, s_packetLen * sizeof(char));
-        ssize_t bytesRead = ::recv(m_socketHandle, buff, s_packetLen, 0);
+        char *buff = (char *)calloc(1, m_packetSize * sizeof(char));
+        ssize_t bytesRead = ::recv(m_socketHandle, buff, m_packetSize, 0);
 
         if (bytesRead > 0)
         {
-            if (buff[bytesRead - 1] == Socket::s_socketEoM)
+            if (buff[bytesRead - 1] == m_socketEoM)
             {
                 keepReading = false;
                 isComplete = true;
@@ -405,13 +406,13 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
 
     while (keepReading)
     {
-        char *buff = (char *)calloc(1, s_packetLen * sizeof(char));
-        ssize_t bytesRead = ::recvfrom(m_socketHandle, buff, s_packetLen,
+        char *buff = (char *)calloc(1, m_packetSize * sizeof(char));
+        ssize_t bytesRead = ::recvfrom(m_socketHandle, buff, m_packetSize,
             0, sockAddr, &clientLen);
 
         if (bytesRead > 0)
         {
-            if (buff[bytesRead - 1] == Socket::s_socketEoM)
+            if (buff[bytesRead - 1] == m_socketEoM)
             {
                 keepReading = false;
                 isComplete = true;

@@ -7,6 +7,7 @@
 
 #include <Util/Utilities.h>
 #include <Util/Socket/AsyncStructs.h>
+#include <Util/Socket/SocketConfig.h>
 
 namespace Util {
 
@@ -42,14 +43,9 @@ public:
     };
 
     /**
-     * Signifies the end of a message received over a socket.
-     */
-    static const char s_socketEoM;
-
-    /**
      * Default constructor to initialize all values.
      */
-    Socket(int);
+    Socket(int, const SocketConfigPtr &);
 
     /**
      * INADDR_ANY may be different depending on the OS. This function will
@@ -297,6 +293,15 @@ public:
 protected:
     // Socket type
     int m_socketType;
+
+    // Socket config
+    const SocketConfigPtr &m_spConfig;
+
+    // End of message character
+    const char m_socketEoM;
+
+    // Send/recv packet size
+    const size_t m_packetSize;
 
     // File descriptor for this socket.
     size_t m_socketHandle;

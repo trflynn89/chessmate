@@ -8,8 +8,10 @@
 #include <vector>
 
 #include <Util/Utilities.h>
+#include <Util/Config/ConfigManager.h>
 #include <Util/Socket/AsyncStructs.h>
 #include <Util/Socket/Socket.h>
+#include <Util/Socket/SocketConfig.h>
 
 namespace Util {
 
@@ -25,15 +27,23 @@ typedef std::function<void(int)> ClosedClientCallback;
  * pushed onto queues, which other threads may read from.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version November 11, 2013
+ * @version July 19, 2016
  */
 class SocketManager : public std::enable_shared_from_this<SocketManager>
 {
 public:
     /**
-     * Constructor.
+     * Default constructor. Constructs default socket configuration, meant for
+     * unit tests.
      */
     SocketManager();
+
+    /**
+     * Constructor.
+     *
+     * @param ConfigManagerPtr Reference to the configuration manager.
+     */
+    SocketManager(ConfigManagerPtr &spConfigManager);
 
     /**
      * Default destructor.
@@ -148,6 +158,8 @@ protected:
     AsyncConnect::ConnectQueue m_completedConnects;
     AsyncRequest::RequestQueue m_completedReceives;
     AsyncRequest::RequestQueue m_completedSends;
+
+    SocketConfigPtr m_spConfig;
 };
 
 //==============================================================================

@@ -4,7 +4,8 @@
 
 #include <sys/select.h>
 
-#include "SocketManager.h"
+#include <Util/Config/ConfigManager.h>
+#include <Util/Socket/SocketManager.h>
 
 namespace Util {
 
@@ -18,6 +19,7 @@ class SocketManagerImpl : public SocketManager
 {
 public:
     SocketManagerImpl();
+    SocketManagerImpl(ConfigManagerPtr &);
     ~SocketManagerImpl();
 
 protected:

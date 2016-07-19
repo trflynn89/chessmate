@@ -5,7 +5,7 @@
 
 #include <Game/GameManager.h>
 #include <Util/ExitCodes.h>
-#include <Util/Config/Config.h>
+#include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
@@ -92,10 +92,18 @@ namespace
     }
 
     //==========================================================================
-    Util::SocketManagerPtr InitSocketManager()
+    Util::SocketManagerPtr InitSocketManager(Util::ConfigManagerPtr &spConfigManager)
     {
-        auto spSocketManager = std::make_shared<Util::SocketManagerImpl>();
-        spSocketManager->StartSocketManager();
+        Util::SocketManagerPtr spSocketManager;
+
+        if (spConfigManager)
+        {
+            spSocketManager = std::make_shared<Util::SocketManagerImpl>(
+                spConfigManager
+            );
+
+            spSocketManager->StartSocketManager();
+        }
 
         return spSocketManager;
     }
@@ -112,12 +120,17 @@ namespace
     //==========================================================================
     Game::GameManagerPtr InitGameManager(const Util::SocketManagerPtr &spSocketManager)
     {
-        auto spGameManager = std::make_shared<Game::GameManager>(spSocketManager);
+        Game::GameManagerPtr spGameManager;
 
-        if (!spGameManager->StartGameManager(g_chessMatePort))
+        if (spSocketManager)
         {
-            Util::System::CleanExit(Util::InitFailed);
-            spGameManager.reset();
+            spGameManager = std::make_shared<Game::GameManager>(spSocketManager);
+
+            if (!spGameManager->StartGameManager(g_chessMatePort))
+            {
+                Util::System::CleanExit(Util::InitFailed);
+                spGameManager.reset();
+            }
         }
 
         return spGameManager;
@@ -143,7 +156,7 @@ int main()
 
     Util::ConfigManagerPtr spConfigManager = InitConfigManager();
     Util::LoggerPtr spLogger = InitLogger(spConfigManager);
-    Util::SocketManagerPtr spSocketManager = InitSocketManager();
+    Util::SocketManagerPtr spSocketManager = InitSocketManager(spConfigManager);
     Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);
 
     while (Util::System::KeepRunning())

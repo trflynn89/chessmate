@@ -9,7 +9,17 @@ namespace Util {
 SocketManager::SocketManager() :
     m_aKeepRunning(true),
     m_newClientCallback(nullptr),
-    m_closedClientCallback(nullptr)
+    m_closedClientCallback(nullptr),
+    m_spConfig(std::make_shared<SocketConfig>())
+{
+}
+
+//==============================================================================
+SocketManager::SocketManager(ConfigManagerPtr &spConfigManager) :
+    m_aKeepRunning(true),
+    m_newClientCallback(nullptr),
+    m_closedClientCallback(nullptr),
+    m_spConfig(spConfigManager->CreateConfig<SocketConfig>())
 {
 }
 
@@ -67,7 +77,9 @@ void SocketManager::ClearClientCallbacks()
 //==============================================================================
 SocketPtr SocketManager::CreateTcpSocket()
 {
-    SocketImplPtr spSocket = std::make_shared<SocketImpl>(Socket::SOCKET_TCP);
+    SocketImplPtr spSocket = std::make_shared<SocketImpl>(
+        Socket::SOCKET_TCP, m_spConfig
+    );
 
     if (!spSocket->IsValid())
     {
@@ -101,7 +113,9 @@ SocketWPtr SocketManager::CreateAsyncTcpSocket()
 //==============================================================================
 SocketPtr SocketManager::CreateUdpSocket()
 {
-    SocketImplPtr spSocket = std::make_shared<SocketImpl>(Socket::SOCKET_UDP);
+    SocketImplPtr spSocket = std::make_shared<SocketImpl>(
+        Socket::SOCKET_UDP, m_spConfig
+    );
 
     if (!spSocket->IsValid())
     {
