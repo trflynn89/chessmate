@@ -21,7 +21,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SocketTest", "Test\SocketTe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileTest", "Test\FileTest\FileTest.vcxproj", "{F97E2E09-CE3E-45E9-BD18-89827589BAA7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConfigurationTest", "Test\ConfigurationTest\ConfigurationTest.vcxproj", "{573B39F1-5B22-41C7-882A-CB022CB59E3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConfigTest", "Test\ConfigTest\ConfigTest.vcxproj", "{573B39F1-5B22-41C7-882A-CB022CB59E3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

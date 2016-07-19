@@ -156,8 +156,8 @@
     <ClInclude Include="..\Movement\MoveSet.h" />
     <ClInclude Include="..\Movement\ValidMoveSet.h" />
     <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h" />
-    <ClInclude Include="..\Util\Configuration\Configuration.h" />
-    <ClInclude Include="..\Util\Configuration\ConfigurationManager.h" />
+    <ClInclude Include="..\Util\Config\Config.h" />
+    <ClInclude Include="..\Util\Config\ConfigManager.h" />
     <ClInclude Include="..\Util\ExitCodes.h" />
     <ClInclude Include="..\Util\File\FileMonitor.h" />
     <ClInclude Include="..\Util\File\FileMonitorImpl.h" />
@@ -166,6 +166,7 @@
     <ClInclude Include="..\Util\File\WinFileMonitor.h" />
     <ClInclude Include="..\Util\Logging\Log.h" />
     <ClInclude Include="..\Util\Logging\Logger.h" />
+    <ClInclude Include="..\Util\Logging\LoggerConfig.h" />
     <ClInclude Include="..\Util\Random\RandomDevice.h" />
     <ClInclude Include="..\Util\Socket\AsyncStructs.h" />
     <ClInclude Include="..\Util\Socket\Socket.h" />
@@ -190,14 +191,15 @@
     <ClCompile Include="..\Movement\Move.cpp" />
     <ClCompile Include="..\Movement\MoveSet.cpp" />
     <ClCompile Include="..\Movement\ValidMoveSet.cpp" />
-    <ClCompile Include="..\Util\Configuration\Configuration.cpp" />
-    <ClCompile Include="..\Util\Configuration\ConfigurationManager.cpp" />
+    <ClCompile Include="..\Util\Config\Config.cpp" />
+    <ClCompile Include="..\Util\Config\ConfigManager.cpp" />
     <ClCompile Include="..\Util\File\FileMonitor.cpp" />
     <ClCompile Include="..\Util\File\IniParser.cpp" />
     <ClCompile Include="..\Util\File\Parser.cpp" />
     <ClCompile Include="..\Util\File\WinFileMonitor.cpp" />
     <ClCompile Include="..\Util\Logging\Log.cpp" />
     <ClCompile Include="..\Util\Logging\Logger.cpp" />
+    <ClCompile Include="..\Util\Logging\LoggerConfig.cpp" />
     <ClCompile Include="..\Util\Socket\AsyncStructs.cpp" />
     <ClCompile Include="..\Util\Socket\Socket.cpp" />
     <ClCompile Include="..\Util\Socket\SocketManager.cpp" />

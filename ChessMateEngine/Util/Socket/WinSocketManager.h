@@ -2,7 +2,6 @@
 
 #include <atomic>
 
-#include <Winsock2.h>
 #include <Windows.h>
 
 #include "SocketManager.h"

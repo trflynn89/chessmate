@@ -37,7 +37,7 @@
     <Filter Include="Util\File">
       <UniqueIdentifier>{399fab50-c973-4dcb-8c46-8250dabdf719}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util\Configuration">
+    <Filter Include="Util\Config">
       <UniqueIdentifier>{8c7ea4ad-734c-460b-89f7-8f38a06be77d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -138,11 +138,14 @@
     <ClInclude Include="..\Util\File\Parser.h">
       <Filter>Util\File</Filter>
     </ClInclude>
-    <ClInclude Include="..\Util\Configuration\Configuration.h">
-      <Filter>Util\Configuration</Filter>
+    <ClInclude Include="..\Util\Config\Config.h">
+      <Filter>Util\Config</Filter>
     </ClInclude>
-    <ClInclude Include="..\Util\Configuration\ConfigurationManager.h">
-      <Filter>Util\Configuration</Filter>
+    <ClInclude Include="..\Util\Config\ConfigManager.h">
+      <Filter>Util\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Logging\LoggerConfig.h">
+      <Filter>Util\Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -215,11 +218,14 @@
     <ClCompile Include="..\Util\File\Parser.cpp">
       <Filter>Util\File</Filter>
     </ClCompile>
-    <ClCompile Include="..\Util\Configuration\Configuration.cpp">
-      <Filter>Util\Configuration</Filter>
+    <ClCompile Include="..\Util\Config\Config.cpp">
+      <Filter>Util\Config</Filter>
     </ClCompile>
-    <ClCompile Include="..\Util\Configuration\ConfigurationManager.cpp">
-      <Filter>Util\Configuration</Filter>
+    <ClCompile Include="..\Util\Config\ConfigManager.cpp">
+      <Filter>Util\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Logging\LoggerConfig.cpp">
+      <Filter>Util\Logging</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
