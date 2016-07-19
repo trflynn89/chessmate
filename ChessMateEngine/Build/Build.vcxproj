@@ -170,6 +170,7 @@
     <ClInclude Include="..\Util\Random\RandomDevice.h" />
     <ClInclude Include="..\Util\Socket\AsyncStructs.h" />
     <ClInclude Include="..\Util\Socket\Socket.h" />
+    <ClInclude Include="..\Util\Socket\SocketConfig.h" />
     <ClInclude Include="..\Util\Socket\SocketImpl.h" />
     <ClInclude Include="..\Util\Socket\SocketManager.h" />
     <ClInclude Include="..\Util\Socket\SocketManagerImpl.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="..\Util\Logging\LoggerConfig.cpp" />
     <ClCompile Include="..\Util\Socket\AsyncStructs.cpp" />
     <ClCompile Include="..\Util\Socket\Socket.cpp" />
+    <ClCompile Include="..\Util\Socket\SocketConfig.cpp" />
     <ClCompile Include="..\Util\Socket\SocketManager.cpp" />
     <ClCompile Include="..\Util\Socket\WinSocket.cpp" />
     <ClCompile Include="..\Util\Socket\WinSocketManager.cpp" />

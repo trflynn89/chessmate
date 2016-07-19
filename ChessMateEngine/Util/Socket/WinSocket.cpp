@@ -348,10 +348,12 @@ std::string SocketImpl::Recv(bool &wouldBlock, bool &isComplete) const
     wouldBlock = false;
     isComplete = false;
 
+    const int packetSize = static_cast<int>(m_packetSize);
+
     while (keepReading)
     {
         char *buff = (char *)calloc(1, m_packetSize * sizeof(char));
-        int bytesRead = ::recv(m_socketHandle, buff, m_packetSize, 0);
+        int bytesRead = ::recv(m_socketHandle, buff, packetSize, 0);
 
         if (bytesRead > 0)
         {
@@ -403,11 +405,12 @@ std::string SocketImpl::RecvFrom(bool &wouldBlock, bool &isComplete) const
     int clientLen = sizeof(client);
 
     struct sockaddr *sockAddr = reinterpret_cast<sockaddr *>(&client);
+    const int packetSize = static_cast<int>(m_packetSize);
 
     while (keepReading)
     {
         char *buff = (char *)calloc(1, m_packetSize * sizeof(char));
-        int bytesRead = ::recvfrom(m_socketHandle, buff, m_packetSize,
+        int bytesRead = ::recvfrom(m_socketHandle, buff, packetSize,
             0, sockAddr, &clientLen);
 
         if (bytesRead > 0)

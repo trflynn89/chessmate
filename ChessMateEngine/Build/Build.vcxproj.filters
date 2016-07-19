@@ -147,6 +147,9 @@
     <ClInclude Include="..\Util\Logging\LoggerConfig.h">
       <Filter>Util\Logging</Filter>
     </ClInclude>
+    <ClInclude Include="..\Util\Socket\SocketConfig.h">
+      <Filter>Util\Socket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Util\Logging\Logger.cpp">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="..\Util\Logging\LoggerConfig.cpp">
       <Filter>Util\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Socket\SocketConfig.cpp">
+      <Filter>Util\Socket</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
