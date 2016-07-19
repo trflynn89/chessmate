@@ -1,25 +1,25 @@
-#include "Configuration.h"
+#include "Config.h"
 
 namespace Util {
 
 //==============================================================================
-Configuration::Configuration()
+Config::Config()
 {
 }
 
 //==============================================================================
-Configuration::~Configuration()
+Config::~Config()
 {
 }
 
 //==============================================================================
-std::string Configuration::GetName()
+std::string Config::GetName()
 {
-    return "Configuration";
+    return "Config";
 }
 
 //==============================================================================
-void Configuration::Update(const Parser::ValueList &values)
+void Config::Update(const Parser::ValueList &values)
 {
     std::unique_lock<std::shared_timed_mutex> lock(m_valuesMutex);
     m_values.clear();

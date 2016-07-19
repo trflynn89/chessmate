@@ -41,7 +41,7 @@ $(eval $(call ADD_TEST_TARGET, ConcurrencyTest, Test/ConcurrencyTest))
 $(eval $(call ADD_TEST_TARGET, MovementTest, Test/MovementTest))
 $(eval $(call ADD_TEST_TARGET, TraitsTest, Test/TraitsTest))
 $(eval $(call ADD_TEST_TARGET, FileTest, Test/FileTest))
-$(eval $(call ADD_TEST_TARGET, ConfigurationTest, Test/ConfigurationTest))
+$(eval $(call ADD_TEST_TARGET, ConfigTest, Test/ConfigTest))
 
 ### END define all targets
 

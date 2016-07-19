@@ -1,4 +1,4 @@
-#include "ConfigurationManager.h"
+#include "ConfigManager.h"
 
 #include <functional>
 #include <memory>
@@ -9,8 +9,8 @@
 namespace Util {
 
 //==============================================================================
-ConfigurationManager::ConfigurationManager(
-    ConfigurationFileType fileType,
+ConfigManager::ConfigManager(
+    ConfigFileType fileType,
     const std::string &path,
     const std::string &file
 ) :
@@ -30,19 +30,19 @@ ConfigurationManager::ConfigurationManager(
 }
 
 //==============================================================================
-ConfigurationManager::~ConfigurationManager()
+ConfigManager::~ConfigManager()
 {
-    StopConfigurationManager();
+    StopConfigManager();
 }
 
 //==============================================================================
-bool ConfigurationManager::StartConfigurationManager()
+bool ConfigManager::StartConfigManager()
 {
     if (m_spParser)
     {
-        ConfigurationManagerPtr spThis = shared_from_this();
+        ConfigManagerPtr spThis = shared_from_this();
 
-        static const auto onChange = &ConfigurationManager::onConfigChange;
+        static const auto onChange = &ConfigManager::onConfigChange;
         auto callback = std::bind(onChange, spThis, std::placeholders::_1);
 
         m_spMonitor = std::make_shared<FileMonitorImpl>(callback, m_path, m_file);
@@ -58,7 +58,7 @@ bool ConfigurationManager::StartConfigurationManager()
 }
 
 //==============================================================================
-void ConfigurationManager::StopConfigurationManager()
+void ConfigManager::StopConfigManager()
 {
     if (m_spMonitor)
     {
@@ -67,14 +67,14 @@ void ConfigurationManager::StopConfigurationManager()
 }
 
 //==============================================================================
-size_t ConfigurationManager::GetSize() const
+size_t ConfigManager::GetSize() const
 {
-    std::lock_guard<std::mutex> lock(m_configurationsMutex);
-    return m_configurations.size();
+    std::lock_guard<std::mutex> lock(m_configsMutex);
+    return m_configs.size();
 }
 
 //==============================================================================
-void ConfigurationManager::onConfigChange(FileMonitor::FileEvent)
+void ConfigManager::onConfigChange(FileMonitor::FileEvent)
 {
     try
     {
@@ -86,9 +86,9 @@ void ConfigurationManager::onConfigChange(FileMonitor::FileEvent)
         return;
     }
 
-    std::lock_guard<std::mutex> lock(m_configurationsMutex);
+    std::lock_guard<std::mutex> lock(m_configsMutex);
 
-    for (auto &configuration : m_configurations)
+    for (auto &configuration : m_configs)
     {
         Parser::ValueList values = m_spParser->GetValues(configuration.first);
         configuration.second->Update(values);

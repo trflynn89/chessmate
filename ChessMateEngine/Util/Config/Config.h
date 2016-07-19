@@ -9,7 +9,7 @@
 
 namespace Util {
 
-DEFINE_CLASS_PTRS(Configuration);
+DEFINE_CLASS_PTRS(Config);
 
 #define GET_CONFIGURATION_NAME(clss) "##clss"
 
@@ -23,7 +23,7 @@ DEFINE_CLASS_PTRS(Configuration);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 18, 2016
  */
-class Configuration
+class Config
 {
     /**
      * Map of configuration names to their values. This is just an unfolding of
@@ -37,12 +37,12 @@ public:
     /**
      * Constructor.
      */
-    Configuration();
+    Config();
 
     /**
      * Destructor.
      */
-    virtual ~Configuration();
+    virtual ~Config();
 
     /**
      * Get the name to associate with this configuration.
@@ -76,7 +76,7 @@ private:
 
 //==============================================================================
 template <typename T>
-T Configuration::GetValue(const std::string &name, T def) const
+T Config::GetValue(const std::string &name, T def) const
 {
     std::shared_lock<std::shared_timed_mutex> lock(m_valuesMutex);
     ValueMap::const_iterator it = m_values.find(name);

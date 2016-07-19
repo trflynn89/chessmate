@@ -3,7 +3,7 @@ SRC_DIRS_$(d) := \
     Engine \
     Game \
     Movement \
-    Util/Configuration \
+    Util/Config \
     Util/File \
     Util/Logging \
     Util/Socket \

@@ -1,25 +1,25 @@
-#include "LoggerConfiguration.h"
+#include "LoggerConfig.h"
 
 namespace Util {
 
 //==============================================================================
-LoggerConfiguration::LoggerConfiguration()
+LoggerConfig::LoggerConfig()
 {
 }
 
 //==============================================================================
-LoggerConfiguration::~LoggerConfiguration()
+LoggerConfig::~LoggerConfig()
 {
 }
 
 //==============================================================================
-std::string LoggerConfiguration::GetName()
+std::string LoggerConfig::GetName()
 {
-    return "LoggerConfiguration";
+    return "LoggerConfig";
 }
 
 //==============================================================================
-size_t LoggerConfiguration::MaxLogFileSize() const
+size_t LoggerConfig::MaxLogFileSize() const
 {
     return GetValue<size_t>("max_log_file_size", 20 << 20);
 }

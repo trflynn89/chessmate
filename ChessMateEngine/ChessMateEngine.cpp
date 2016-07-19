@@ -5,7 +5,7 @@
 
 #include <Game/GameManager.h>
 #include <Util/ExitCodes.h>
-#include <Util/Configuration/ConfigurationManager.h>
+#include <Util/Config/Config.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
@@ -27,32 +27,33 @@ namespace
     }
 
     //==========================================================================
-    Util::ConfigurationManagerPtr InitConfigManager()
+    Util::ConfigManagerPtr InitConfigManager()
     {
-        auto spConfigManager = std::make_shared<Util::ConfigurationManager>(
-            Util::ConfigurationManager::CONFIG_TYPE_INI,
+        auto spConfigManager = std::make_shared<Util::ConfigManager>(
+            Util::ConfigManager::CONFIG_TYPE_INI,
             g_chessmateDirectory, "ChessMate.ini"
         );
 
-        if (!spConfigManager->StartConfigurationManager())
+        if (!spConfigManager->StartConfigManager())
         {
             spConfigManager.reset();
+            Util::System::CleanExit(Util::InitFailed);
         }
 
         return spConfigManager;
     }
 
     //==========================================================================
-    void StopConfigManager(Util::ConfigurationManagerPtr &spConfigManager)
+    void StopConfigManager(Util::ConfigManagerPtr &spConfigManager)
     {
         if (spConfigManager)
         {
-            spConfigManager->StopConfigurationManager();
+            spConfigManager->StopConfigManager();
         }
     }
 
     //==========================================================================
-    Util::LoggerPtr InitLogger(Util::ConfigurationManagerPtr &spConfigManager)
+    Util::LoggerPtr InitLogger(Util::ConfigManagerPtr &spConfigManager)
     {
         Util::LoggerPtr spLogger;
 
@@ -135,7 +136,7 @@ int main()
 
     InitChessMateDirectory();
 
-    Util::ConfigurationManagerPtr spConfigManager = InitConfigManager();
+    Util::ConfigManagerPtr spConfigManager = InitConfigManager();
     Util::LoggerPtr spLogger = InitLogger(spConfigManager);
     Util::SocketManagerPtr spSocketManager = InitSocketManager();
     Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);

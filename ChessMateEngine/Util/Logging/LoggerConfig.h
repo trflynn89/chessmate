@@ -2,11 +2,11 @@
 
 #include <string>
 
-#include <Util/Configuration/Configuration.h>
+#include <Util/Config/Config.h>
 
 namespace Util {
 
-DEFINE_CLASS_PTRS(LoggerConfiguration);
+DEFINE_CLASS_PTRS(LoggerConfig);
 
 /**
  * Class to hold configuration values related to the logger.
@@ -14,18 +14,18 @@ DEFINE_CLASS_PTRS(LoggerConfiguration);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 18, 2016
  */
-class LoggerConfiguration : public Configuration
+class LoggerConfig : public Config
 {
 public:
     /**
      * Constructor.
      */
-    LoggerConfiguration();
+    LoggerConfig();
 
     /**
      * Destructor.
      */
-    virtual ~LoggerConfiguration();
+    virtual ~LoggerConfig();
 
     /**
      * Get the name to associate with this configuration.

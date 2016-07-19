@@ -22,10 +22,10 @@ std::mutex Logger::s_consoleMutex;
 
 //==============================================================================
 Logger::Logger(
-    ConfigurationManagerPtr &spConfigManager,
+    ConfigManagerPtr &spConfigManager,
     const std::string &filePath
 ) :
-    m_spLoggerConfig(spConfigManager->CreateConfiguration<LoggerConfiguration>()),
+    m_spLoggerConfig(spConfigManager->CreateConfig<LoggerConfig>()),
     m_filePath(filePath),
     m_fileSize(0),
     m_aKeepRunning(false),
@@ -57,11 +57,12 @@ bool Logger::StartLogger()
 //==============================================================================
 void Logger::StopLogger()
 {
-    LOGC("Stopping logger");
     bool expected = true;
 
     if (m_aKeepRunning.compare_exchange_strong(expected, false))
     {
+        LOGC("Stopping logger");
+
         if (m_future.valid())
         {
             m_future.get();

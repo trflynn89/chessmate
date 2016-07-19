@@ -12,9 +12,9 @@
 
 #include <Util/Utilities.h>
 #include <Util/Concurrency/ConcurrentQueue.h>
-#include <Util/Configuration/ConfigurationManager.h>
+#include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Log.h>
-#include <Util/Logging/LoggerConfiguration.h>
+#include <Util/Logging/LoggerConfig.h>
 #include <Util/String/String.h>
 
 //==============================================================================
@@ -89,10 +89,10 @@ public:
     /**
      * Constructor.
      *
-     * @param ConfigurationManagerPtr Reference to the configuration manager.
+     * @param ConfigManagerPtr Reference to the configuration manager.
      * @param string Path to store the log file.
      */
-    Logger(ConfigurationManagerPtr &, const std::string &);
+    Logger(ConfigManagerPtr &, const std::string &);
 
     /**
      * Destructor - stop the logger if necessary.
@@ -176,7 +176,7 @@ private:
     Util::ConcurrentQueue<Log> m_logQueue;
     std::future<void> m_future;
 
-    LoggerConfigurationPtr m_spLoggerConfig;
+    LoggerConfigPtr m_spLoggerConfig;
 
     const std::string m_filePath;
     size_t m_fileSize;
