@@ -1,8 +1,3 @@
-// TODO: fix evaluator, instrument, faster bit board
-// TODO: add ID to async requests
-// TODO: max pending IO requests
-// TODO: use shared_ptr more liberally
-
 #include <atomic>
 #include <chrono>
 #include <string>
@@ -10,6 +5,7 @@
 
 #include <Game/GameManager.h>
 #include <Util/ExitCodes.h>
+#include <Util/Configuration/ConfigurationManager.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
@@ -17,27 +13,64 @@
 
 namespace
 {
-    static size_t g_maxLogFileSize = 20 << 20;
     static int g_chessMatePort = 12389;
 
+    static std::string g_chessmateDirectory;
+
     //==========================================================================
-    Util::LoggerPtr InitLogger()
+    void InitChessMateDirectory()
     {
         const char sep = Util::System::GetSeparator();
-
         const std::string temp = Util::System::GetTempDirectory();
-        const std::string path = Util::String::Join(sep, temp, "ChessMate");
 
-        auto spLogger = std::make_shared<Util::Logger>(path, g_maxLogFileSize);
+        g_chessmateDirectory = Util::String::Join(sep, temp, "ChessMate");
+    }
 
-        if (spLogger->StartLogger())
+    //==========================================================================
+    Util::ConfigurationManagerPtr InitConfigManager()
+    {
+        auto spConfigManager = std::make_shared<Util::ConfigurationManager>(
+            Util::ConfigurationManager::CONFIG_TYPE_INI,
+            g_chessmateDirectory, "ChessMate.ini"
+        );
+
+        if (!spConfigManager->StartConfigurationManager())
         {
-            Util::Logger::SetInstance(spLogger);
+            spConfigManager.reset();
         }
-        else
+
+        return spConfigManager;
+    }
+
+    //==========================================================================
+    void StopConfigManager(Util::ConfigurationManagerPtr &spConfigManager)
+    {
+        if (spConfigManager)
         {
-            LOGC("Could not start logger, using console instead");
-            spLogger.reset();
+            spConfigManager->StopConfigurationManager();
+        }
+    }
+
+    //==========================================================================
+    Util::LoggerPtr InitLogger(Util::ConfigurationManagerPtr &spConfigManager)
+    {
+        Util::LoggerPtr spLogger;
+
+        if (spConfigManager)
+        {
+            spLogger = std::make_shared<Util::Logger>(
+                spConfigManager, g_chessmateDirectory
+            );
+
+            if (spLogger->StartLogger())
+            {
+                Util::Logger::SetInstance(spLogger);
+            }
+            else
+            {
+                LOGC("Could not start logger, using console instead");
+                spLogger.reset();
+            }
         }
 
         return spLogger;
@@ -100,7 +133,10 @@ int main()
     LOGC("Starting ChessMateEngine");
     Util::System::SetupSignalHandler();
 
-    Util::LoggerPtr spLogger = InitLogger();
+    InitChessMateDirectory();
+
+    Util::ConfigurationManagerPtr spConfigManager = InitConfigManager();
+    Util::LoggerPtr spLogger = InitLogger(spConfigManager);
     Util::SocketManagerPtr spSocketManager = InitSocketManager();
     Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);
 
@@ -113,6 +149,7 @@ int main()
     StopGameManager(spGameManager);
     StopSocketManager(spSocketManager);
     StopLogger(spLogger);
+    StopConfigManager(spConfigManager);
 
     LOGC("Exiting ChessMateEngine");
     return Util::System::GetExitCode();

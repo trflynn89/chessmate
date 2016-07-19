@@ -67,31 +67,6 @@ void ConfigurationManager::StopConfigurationManager()
 }
 
 //==============================================================================
-ConfigurationWPtr ConfigurationManager::CreateConfiguration(
-    const std::string &name
-)
-{
-    ConfigurationPtr spConfiguration;
-
-    std::lock_guard<std::mutex> lock(m_configurationsMutex);
-    ConfigurationMap::const_iterator it = m_configurations.find(name);
-
-    if (it == m_configurations.end())
-    {
-        spConfiguration = std::make_shared<Configuration>();
-        spConfiguration->Update(m_spParser->GetValues(name));
-
-        m_configurations[name] = spConfiguration;
-    }
-    else
-    {
-        spConfiguration = it->second;
-    }
-
-    return spConfiguration;
-}
-
-//==============================================================================
 size_t ConfigurationManager::GetSize() const
 {
     std::lock_guard<std::mutex> lock(m_configurationsMutex);

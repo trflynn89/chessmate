@@ -6,14 +6,19 @@
 #include <Util/Utilities.h>
 #include <Util/File/Parser.h>
 #include <Util/String/String.h>
-#include <Util/Logging/Logger.h>
 
 namespace Util {
 
 DEFINE_CLASS_PTRS(Configuration);
 
+#define GET_CONFIGURATION_NAME(clss) "##clss"
+
 /**
  * Class to hold a set of related configuration values.
+ *
+ * Classes may derive from this class and define helper getter functions for
+ * each of its config values. Any derived class must define a static GetName()
+ * method.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 18, 2016
@@ -38,6 +43,11 @@ public:
      * Destructor.
      */
     virtual ~Configuration();
+
+    /**
+     * Get the name to associate with this configuration.
+     */
+    static std::string GetName();
 
     /**
      * Get a value converted to a basic type, e.g. int or bool. If the value
@@ -79,12 +89,7 @@ T Configuration::GetValue(const std::string &name, T def) const
         }
         catch (...)
         {
-            LOGW(-1, "Could not parse: %s = %s", name, it->second);
         }
-    }
-    else
-    {
-        LOGW(-1, "Could not find: %s", name);
     }
 
     return def;

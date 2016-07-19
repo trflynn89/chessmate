@@ -145,20 +145,17 @@ TEST_F(ConfigurationManagerTest, BadFileTypeTest)
 //==============================================================================
 TEST_F(ConfigurationManagerTest, CreateConfigurationTest)
 {
-    m_spConfigurationManager->CreateConfiguration("test1");
+    m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
     EXPECT_EQ(m_spConfigurationManager->GetSize(), 1);
-
-    m_spConfigurationManager->CreateConfiguration("test2");
-    EXPECT_EQ(m_spConfigurationManager->GetSize(), 2);
 }
 
 //==============================================================================
 TEST_F(ConfigurationManagerTest, DuplicateConfigurationTest)
 {
-    m_spConfigurationManager->CreateConfiguration("test1");
+    m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
     EXPECT_EQ(m_spConfigurationManager->GetSize(), 1);
 
-    m_spConfigurationManager->CreateConfiguration("test1");
+    m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
     EXPECT_EQ(m_spConfigurationManager->GetSize(), 1);
 }
 
@@ -166,7 +163,7 @@ TEST_F(ConfigurationManagerTest, DuplicateConfigurationTest)
 TEST_F(ConfigurationManagerTest, InitialFileFirstTest)
 {
     const std::string contents(
-        "[user]\n"
+        "[" + Util::Configuration::GetName() + "]\n"
         "name=John Doe\n"
         "address=USA"
     );
@@ -174,8 +171,7 @@ TEST_F(ConfigurationManagerTest, InitialFileFirstTest)
     CreateFile(contents);
     std::this_thread::sleep_for(std::chrono::seconds(6));
 
-    auto wpConfiguration = m_spConfigurationManager->CreateConfiguration("user");
-    auto spConfiguration = wpConfiguration.lock();
+    auto spConfiguration = m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "John Doe");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "USA");
@@ -184,11 +180,10 @@ TEST_F(ConfigurationManagerTest, InitialFileFirstTest)
 //==============================================================================
 TEST_F(ConfigurationManagerTest, InitialFileSecondTest)
 {
-    auto wpConfiguration = m_spConfigurationManager->CreateConfiguration("user");
-    auto spConfiguration = wpConfiguration.lock();
+    auto spConfiguration = m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
 
     const std::string contents(
-        "[user]\n"
+        "[" + Util::Configuration::GetName() + "]\n"
         "name=John Doe\n"
         "address=USA"
     );
@@ -203,11 +198,10 @@ TEST_F(ConfigurationManagerTest, InitialFileSecondTest)
 //==============================================================================
 TEST_F(ConfigurationManagerTest, FileChangeTest)
 {
-    auto wpConfiguration = m_spConfigurationManager->CreateConfiguration("user");
-    auto spConfiguration = wpConfiguration.lock();
+    auto spConfiguration = m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
 
     const std::string contents1(
-        "[user]\n"
+        "[" + Util::Configuration::GetName() + "]\n"
         "name=John Doe\n"
         "address=USA"
     );
@@ -220,7 +214,7 @@ TEST_F(ConfigurationManagerTest, FileChangeTest)
     EXPECT_EQ(spConfiguration->GetValue<int>("age", -1), -1);
 
     const std::string contents2(
-        "[user]\n"
+        "[" + Util::Configuration::GetName() + "]\n"
         "name=Jane Doe\n"
         "age=27"
     );
@@ -236,16 +230,15 @@ TEST_F(ConfigurationManagerTest, FileChangeTest)
 //==============================================================================
 TEST_F(ConfigurationManagerTest, DeleteFileTest)
 {
-    auto wpConfiguration = m_spConfigurationManager->CreateConfiguration("user");
-    auto spConfiguration = wpConfiguration.lock();
+    auto spConfiguration = m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
 
-    const std::string contents1(
-        "[user]\n"
+    const std::string contents(
+        "[" + Util::Configuration::GetName() + "]\n"
         "name=John Doe\n"
         "address=USA"
     );
 
-    CreateFile(contents1);
+    CreateFile(contents);
     std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "John Doe");
@@ -261,11 +254,10 @@ TEST_F(ConfigurationManagerTest, DeleteFileTest)
 //==============================================================================
 TEST_F(ConfigurationManagerTest, BadUpdateTest)
 {
-    auto wpConfiguration = m_spConfigurationManager->CreateConfiguration("user");
-    auto spConfiguration = wpConfiguration.lock();
+    auto spConfiguration = m_spConfigurationManager->CreateConfiguration<Util::Configuration>();
 
     const std::string contents(
-        "[user]\n"
+        "[" + Util::Configuration::GetName() + "]\n"
         "name"
     );
 

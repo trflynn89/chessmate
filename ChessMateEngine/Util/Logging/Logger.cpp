@@ -21,9 +21,12 @@ LoggerWPtr Logger::s_wpInstance;
 std::mutex Logger::s_consoleMutex;
 
 //==============================================================================
-Logger::Logger(const std::string &filePath, size_t maxFileSize) :
+Logger::Logger(
+    ConfigurationManagerPtr &spConfigManager,
+    const std::string &filePath
+) :
+    m_spLoggerConfig(spConfigManager->CreateConfiguration<LoggerConfiguration>()),
     m_filePath(filePath),
-    m_maxFileSize(maxFileSize),
     m_fileSize(0),
     m_aKeepRunning(false),
     m_startTime(std::chrono::high_resolution_clock::now())
@@ -175,7 +178,7 @@ void Logger::ioThread()
             m_logFile << logStr << std::flush;
             m_fileSize += logStr.size();
 
-            if (m_fileSize > m_maxFileSize)
+            if (m_fileSize > m_spLoggerConfig->MaxLogFileSize())
             {
                 createLogFile();
             }

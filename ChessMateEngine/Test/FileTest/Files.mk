@@ -1,5 +1,6 @@
 # Define the directories to include and compile
 SRC_DIRS_$(d) := \
+    Util/Configuration \
     Util/File \
     Util/Logging \
     Util/String \

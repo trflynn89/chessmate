@@ -9,6 +9,7 @@
 #include <Util/Configuration/Configuration.h>
 #include <Util/File/FileMonitorImpl.h>
 #include <Util/File/Parser.h>
+#include <Util/Traits/TypeTraits.h>
 
 namespace Util {
 
@@ -67,14 +68,21 @@ public:
     void StopConfigurationManager();
 
     /**
-     * Create a configuration object, or if one with the given name exists,
-     * fetch it.
+     * Create a configuration object, or if one with the given type's name
+     * exists, fetch it.
      *
-     * @param string The name to associate with the configuration.
+     * @tparam T Configuration type (must derive from or be Util::Configuration).
      *
-     * @return A weak reference to the created/found configuration.
+     * @return A reference to the created/found configuration.
      */
-    ConfigurationWPtr CreateConfiguration(const std::string &);
+    template <typename T, enable_if_all<std::is_base_of<Configuration, T>>...>
+    std::shared_ptr<T> CreateConfiguration();
+
+    /**
+     * Given type is not a configuration, raise compile error.
+     */
+    template <typename T, enable_if_none<std::is_base_of<Configuration, T>>...>
+    std::shared_ptr<T> CreateConfiguration();
 
     /**
      * Get the number of configuration objects currently created.
@@ -98,5 +106,38 @@ private:
     mutable std::mutex m_configurationsMutex;
     ConfigurationMap m_configurations;
 };
+
+//==============================================================================
+template <typename T, enable_if_all<std::is_base_of<Configuration, T>>...>
+std::shared_ptr<T> ConfigurationManager::CreateConfiguration()
+{
+    std::shared_ptr<T> spConfiguration;
+    std::string name(T::GetName());
+
+    std::lock_guard<std::mutex> lock(m_configurationsMutex);
+    ConfigurationMap::const_iterator it = m_configurations.find(name);
+
+    if (it == m_configurations.end())
+    {
+        spConfiguration = std::make_shared<T>();
+        spConfiguration->Update(m_spParser->GetValues(name));
+
+        m_configurations[name] = spConfiguration;
+    }
+    else
+    {
+        spConfiguration = std::static_pointer_cast<T>(it->second);
+    }
+
+    return spConfiguration;
+}
+
+//==============================================================================
+template <typename T, enable_if_none<std::is_base_of<Configuration, T>>...>
+std::shared_ptr<T> ConfigurationManager::CreateConfiguration()
+{
+    static_assert(std::is_base_of<Configuration, T>::value,
+        "Given type is not a configuration type");
+}
 
 }
