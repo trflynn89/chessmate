@@ -45,7 +45,7 @@ public:
     char EndOfMessage() const;
 
     /**
-     *
+     * Size of packet to use for send/receive operations.
      */
     size_t PacketSize() const;
 };

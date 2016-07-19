@@ -22,7 +22,7 @@ std::string SocketConfig::GetName()
 std::chrono::microseconds SocketConfig::IoWaitTime() const
 {
     return std::chrono::microseconds(
-        GetValue<std::chrono::microseconds::rep>("queue_wait_time", I64(10000))
+        GetValue<std::chrono::microseconds::rep>("io_wait_time", I64(10000))
     );
 }
 

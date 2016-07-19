@@ -7,17 +7,15 @@
 
 namespace Game {
 
-namespace
-{
-    static const std::chrono::seconds s_queueWaitTime(1);
-    static const int s_defaultNumberOfCores = 1;
-}
-
 //==============================================================================
-GameManager::GameManager(const Util::SocketManagerPtr &spSocketManager) :
+GameManager::GameManager(
+    Util::ConfigManagerPtr &spConfigManager,
+    const Util::SocketManagerPtr &spSocketManager
+) :
     m_wpSocketManager(spSocketManager),
     m_aKeepRunning(true),
-    m_spMoveSet(std::make_shared<Movement::MoveSet>())
+    m_spMoveSet(std::make_shared<Movement::MoveSet>()),
+    m_spConfig(spConfigManager->CreateConfig<GameConfig>())
 {
 }
 
@@ -159,7 +157,7 @@ void GameManager::createMessageReceivers()
 
     if (numCores == 0)
     {
-        numCores = s_defaultNumberOfCores;
+        numCores = m_spConfig->DefaultWorkerCount();
     }
 
     LOGI(-1, "Creating %u message receivers", numCores);
@@ -204,7 +202,7 @@ Util::AsyncRequest GameManager::receiveSingleMessage() const
     // TODO what to do if the socket manager is gone? Stop game manager?
     if (spSocketManager)
     {
-        spSocketManager->WaitForCompletedReceive(request, s_queueWaitTime);
+        spSocketManager->WaitForCompletedReceive(request, m_spConfig->QueueWaitTime());
     }
     else
     {
@@ -265,7 +263,10 @@ ChessGamePtr GameManager::createOrFindGame(int socketId, const Message &message)
 
         if (spSocket)
         {
-            ChessGamePtr spGame = ChessGame::Create(spSocket, m_spMoveSet, message);
+            ChessGamePtr spGame = ChessGame::Create(
+                m_spConfig, spSocket, m_spMoveSet, message
+            );
+
             m_gamesMap[socketId] = spGame;
         }
         else

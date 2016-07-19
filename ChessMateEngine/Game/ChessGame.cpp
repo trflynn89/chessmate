@@ -12,6 +12,7 @@ namespace Game {
 
 //==============================================================================
 ChessGamePtr ChessGame::Create(
+    const GameConfigPtr &spConfig,
     const Util::SocketPtr &spClientSocket,
     const Movement::MoveSetPtr &spMoveSet,
     const Message &msg
@@ -30,7 +31,7 @@ ChessGamePtr ChessGame::Create(
     value_type difficulty = std::stoi(arr[1]);
 
     ChessGamePtr spGame = std::make_shared<ChessGame>(
-        spClientSocket, spMoveSet, engineColor, difficulty
+        spConfig, spClientSocket, spMoveSet, engineColor, difficulty
     );
 
     return spGame;
@@ -39,16 +40,18 @@ ChessGamePtr ChessGame::Create(
 
 //==============================================================================
 ChessGame::ChessGame(
+    const GameConfigPtr &spConfig,
     const Util::SocketPtr &spClientSocket,
     const Movement::MoveSetPtr &spMoveSet,
     const color_type &engineColor,
     const value_type &difficulty
 ) :
+    m_spConfig(spConfig),
     m_gameId(spClientSocket->GetSocketId()),
     m_wpClientSocket(spClientSocket),
     m_wpMoveSet(spMoveSet),
     m_maxDepth(2 * difficulty + 1),
-    m_checkMaxDepth(true),
+    m_checkMaxDepth(m_spConfig->IncreaseEndGameDifficulty()),
     m_spBoard(std::make_shared<Game::BitBoard>()),
     m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
@@ -234,8 +237,8 @@ Movement::Move ChessGame::getBestMove()
     // Increment max search depth in end game
     if (m_checkMaxDepth && m_spBoard->IsEndGame())
     {
+        m_maxDepth += m_spConfig->EndGameDifficultyIncrease();
         m_checkMaxDepth = false;
-        m_maxDepth += 2;
     }
 
     return m;

@@ -9,8 +9,10 @@
 #include <vector>
 
 #include <Game/ChessGame.h>
+#include <Game/GameConfig.h>
 #include <Game/Message.h>
 #include <Movement/MoveSet.h>
+#include <Util/Config/ConfigManager.h>
 #include <Util/Socket/Socket.h>
 #include <Util/Socket/SocketManager.h>
 
@@ -25,7 +27,7 @@ DEFINE_CLASS_PTRS(GameManager);
  * to the manager, and for stopping any game(s).
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version September 9, 2014
+ * @version July 19, 2016
  */
 class GameManager : public std::enable_shared_from_this<GameManager>
 {
@@ -41,10 +43,6 @@ public:
     typedef std::map<int, Util::SocketWPtr> PendingMap;
 
     /**
-     * POD type for the size of a games map.
-     */
-
-    /**
      * Vector of futures for void return values.
      */
     typedef std::vector<std::future<void>> FutureVector;
@@ -52,9 +50,10 @@ public:
     /**
      * Constructor, stores a weak reference to the socket manager.
      *
+     * @param ConfigManagerPtr Reference to the configuration manager.
      * @param SocketManagerPtr Reference to the socket manager.
      */
-    GameManager(const Util::SocketManagerPtr &);
+    GameManager(Util::ConfigManagerPtr &, const Util::SocketManagerPtr &);
 
     /**
      * Destructor. Stop all games if they have not been already.
@@ -182,6 +181,8 @@ private:
     std::atomic_bool m_aKeepRunning;
 
     Movement::MoveSetPtr m_spMoveSet;
+
+    GameConfigPtr m_spConfig;
 };
 
 }

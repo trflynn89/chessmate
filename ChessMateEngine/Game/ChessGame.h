@@ -4,6 +4,7 @@
 
 #include <Engine/MoveSelector.h>
 #include <Game/BitBoard.h>
+#include <Game/GameConfig.h>
 #include <Game/Message.h>
 #include <Movement/Move.h>
 #include <Movement/MoveSet.h>
@@ -36,6 +37,7 @@ public:
      * Create a ChessGame instance from the initialization message received
      * from the game client.
      *
+     * @param GameConfigPtr The game configuration.
      * @param SocketPtr The game client's socket.
      * @param MoveSetPtr The list of possible moves.
      * @param Message The START_GAME message containing the client's settings.
@@ -43,6 +45,7 @@ public:
      * @return A shared pointer around the created ChessGame instance.
      */
     static ChessGamePtr Create(
+        const GameConfigPtr &,
         const Util::SocketPtr &,
         const Movement::MoveSetPtr &,
         const Message &
@@ -51,12 +54,14 @@ public:
     /**
      * Constructor to set the game's client socket.
      *
+     * @param GameConfigPtr The game configuration.
      * @param SocketPtr The game client's socket.
      * @param MoveSetPtr The list of possible moves.
      * @param color_type The color of the engine.
      * @param value_type The difficulty of the engine.
      */
     ChessGame(
+        const GameConfigPtr &,
         const Util::SocketPtr &,
         const Movement::MoveSetPtr &,
         const color_type &,
@@ -132,6 +137,8 @@ private:
      * @return The best move calculated by the engine.
      */
     Movement::Move getBestMove();
+
+    const GameConfigPtr m_spConfig;
 
     int m_gameId;
 

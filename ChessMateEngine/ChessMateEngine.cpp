@@ -118,13 +118,18 @@ namespace
     }
 
     //==========================================================================
-    Game::GameManagerPtr InitGameManager(const Util::SocketManagerPtr &spSocketManager)
+    Game::GameManagerPtr InitGameManager(
+        Util::ConfigManagerPtr &spConfigManager,
+        const Util::SocketManagerPtr &spSocketManager
+    )
     {
         Game::GameManagerPtr spGameManager;
 
-        if (spSocketManager)
+        if (spConfigManager && spSocketManager)
         {
-            spGameManager = std::make_shared<Game::GameManager>(spSocketManager);
+            spGameManager = std::make_shared<Game::GameManager>(
+                spConfigManager, spSocketManager
+            );
 
             if (!spGameManager->StartGameManager(g_chessMatePort))
             {
@@ -157,7 +162,7 @@ int main()
     Util::ConfigManagerPtr spConfigManager = InitConfigManager();
     Util::LoggerPtr spLogger = InitLogger(spConfigManager);
     Util::SocketManagerPtr spSocketManager = InitSocketManager(spConfigManager);
-    Game::GameManagerPtr spGameManager = InitGameManager(spSocketManager);
+    Game::GameManagerPtr spGameManager = InitGameManager(spConfigManager, spSocketManager);
 
     while (Util::System::KeepRunning())
     {
