@@ -150,6 +150,7 @@
     <ClInclude Include="..\Game\BitBoard.h" />
     <ClInclude Include="..\Game\BoardTypes.h" />
     <ClInclude Include="..\Game\ChessGame.h" />
+    <ClInclude Include="..\Game\GameConfig.h" />
     <ClInclude Include="..\Game\GameManager.h" />
     <ClInclude Include="..\Game\Message.h" />
     <ClInclude Include="..\Movement\Move.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="..\Engine\MoveSelector.cpp" />
     <ClCompile Include="..\Game\BitBoard.cpp" />
     <ClCompile Include="..\Game\ChessGame.cpp" />
+    <ClCompile Include="..\Game\GameConfig.cpp" />
     <ClCompile Include="..\Game\GameManager.cpp" />
     <ClCompile Include="..\Game\Message.cpp" />
     <ClCompile Include="..\Movement\Move.cpp" />
