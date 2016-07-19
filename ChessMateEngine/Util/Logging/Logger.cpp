@@ -11,11 +11,6 @@
 
 namespace Util {
 
-namespace
-{
-    static const std::chrono::seconds s_queueWaitTime(1);
-}
-
 //==============================================================================
 LoggerWPtr Logger::s_wpInstance;
 std::mutex Logger::s_consoleMutex;
@@ -25,7 +20,7 @@ Logger::Logger(
     ConfigManagerPtr &spConfigManager,
     const std::string &filePath
 ) :
-    m_spLoggerConfig(spConfigManager->CreateConfig<LoggerConfig>()),
+    m_spConfig(spConfigManager->CreateConfig<LoggerConfig>()),
     m_filePath(filePath),
     m_fileSize(0),
     m_aKeepRunning(false),
@@ -124,7 +119,7 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
 
     if ((level >= LOG_DEBUG) && (level < NUM_LEVELS))
     {
-        Log log;
+        Log log(m_spConfig, message);
 
         log.m_level = level;
         log.m_time = logTime.count();
@@ -133,7 +128,6 @@ void Logger::addLog(LogLevel level, ssize_t gameId, const char *file,
 
         snprintf(log.m_file, sizeof(log.m_file), "%s", file);
         snprintf(log.m_function, sizeof(log.m_function), "%s", func);
-        snprintf(log.m_message, sizeof(log.m_message), "%s", message.c_str());
 
         m_logQueue.Push(log);
     }
@@ -172,14 +166,14 @@ void Logger::ioThread()
     {
         Log log;
 
-        if (m_logQueue.Pop(log, s_queueWaitTime) && m_logFile.good())
+        if (m_logQueue.Pop(log, m_spConfig->QueueWaitTime()) && m_logFile.good())
         {
             const std::string logStr = String::Format("%u\t%s", index++, log);
 
             m_logFile << logStr << std::flush;
             m_fileSize += logStr.size();
 
-            if (m_fileSize > m_spLoggerConfig->MaxLogFileSize())
+            if (m_fileSize > m_spConfig->MaxLogFileSize())
             {
                 createLogFile();
             }

@@ -21,7 +21,20 @@ std::string LoggerConfig::GetName()
 //==============================================================================
 size_t LoggerConfig::MaxLogFileSize() const
 {
-    return GetValue<size_t>("max_log_file_size", 20 << 20);
+    return GetValue<size_t>("max_log_file_size", U64(20 << 20));
+}
+
+//==============================================================================
+size_t LoggerConfig::MaxMessageSize() const
+{
+    return GetValue<size_t>("max_message_size", U64(256));
+}
+
+//==============================================================================
+std::chrono::seconds LoggerConfig::QueueWaitTime() const
+{
+    auto value = GetValue<std::chrono::seconds::rep>("queue_wait_time", I64(1));
+    return std::chrono::seconds(value);
 }
 
 }

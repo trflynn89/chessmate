@@ -1,7 +1,9 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 
+#include <Util/Utilities.h>
 #include <Util/Config/Config.h>
 
 namespace Util {
@@ -36,6 +38,16 @@ public:
      * @return Max log file size (in bytes) before rotating the log file.
      */
     size_t MaxLogFileSize() const;
+
+    /**
+     * @return Max message size (in bytes) per log.
+     */
+    size_t MaxMessageSize() const;
+
+    /**
+     * @return Sleep time for logger IO thread.
+     */
+    std::chrono::seconds QueueWaitTime() const;
 };
 
 }

@@ -81,7 +81,7 @@ DEFINE_CLASS_PTRS(Logger);
  * inside, e.g., a signal handler.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version May 21, 2016
+ * @version July 18, 2016
  */
 class Logger : public std::enable_shared_from_this<Logger>
 {
@@ -176,7 +176,7 @@ private:
     Util::ConcurrentQueue<Log> m_logQueue;
     std::future<void> m_future;
 
-    LoggerConfigPtr m_spLoggerConfig;
+    LoggerConfigPtr m_spConfig;
 
     const std::string m_filePath;
     size_t m_fileSize;

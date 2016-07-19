@@ -2,8 +2,10 @@
 
 #include <climits>
 #include <iostream>
+#include <string>
 
 #include <Util/Utilities.h>
+#include <Util/Logging/LoggerConfig.h>
 
 /**
  * Enumeration to define the level of a log.
@@ -37,17 +39,35 @@ namespace Util {
  * 7. The message being logged.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version December 19, 2012
+ * @version July 18, 2016
  */
 struct Log
 {
+    /**
+     * Default constructor.
+     */
+    Log()
+    {
+    }
+
+    /**
+     * Constructor. Initialize with a message.
+     *
+     * @param LoggerConfigPtr Reference to the logger config.
+     * @param string Message to store.
+     */
+    Log(const LoggerConfigPtr &spConfig, const std::string &message) :
+        m_message(message, 0, spConfig->MaxMessageSize())
+    {
+    }
+
     LogLevel m_level = NUM_LEVELS;
     double m_time = -1.0;
     ssize_t m_gameId = -1;
     char m_file[100];
     char m_function[100];
     unsigned int m_line = -1;
-    char m_message[MAX_MESSAGE_SIZE + 1];
+    std::string m_message;
 
     friend std::ostream &operator << (std::ostream &stream, const Log &log);
 };
