@@ -49,16 +49,16 @@ public:
     /**
      * @return True if the queue is empty, false otherwise.
      */
-    bool IsEmpty();
+    bool IsEmpty() const;
 
     /**
      * @return The number of items in the queue.
      */
-    size_type Size();
+    size_type Size() const;
 
 private:
+    mutable std::mutex m_queueMutex;
     std::queue<T> m_queue;
-    std::mutex m_queueMutex;
 
     std::condition_variable m_pushCondition;
 };
@@ -112,7 +112,7 @@ void ConcurrentQueue<T>::Push(const T &item)
 
 //==============================================================================
 template <typename T>
-bool ConcurrentQueue<T>::IsEmpty()
+bool ConcurrentQueue<T>::IsEmpty() const
 {
     std::unique_lock<std::mutex> lock(m_queueMutex);
     return m_queue.empty();
@@ -120,7 +120,7 @@ bool ConcurrentQueue<T>::IsEmpty()
 
 //==============================================================================
 template <typename T>
-typename ConcurrentQueue<T>::size_type ConcurrentQueue<T>::Size()
+typename ConcurrentQueue<T>::size_type ConcurrentQueue<T>::Size() const
 {
     std::unique_lock<std::mutex> lock(m_queueMutex);
     return m_queue.size();

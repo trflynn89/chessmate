@@ -10,6 +10,7 @@
 #include <thread>
 
 #include <Util/Utilities.h>
+#include <Util/Concurrency/ConcurrentQueue.h>
 
 namespace Util {
 
@@ -87,7 +88,7 @@ protected:
      *
      * @param FileEvent The file change event.
      */
-    void HandleEvent(FileEvent) const;
+    void HandleEvent(FileEvent);
 
     const std::string m_path;
     const std::string m_file;
@@ -103,6 +104,8 @@ private:
 
     mutable std::mutex m_callbackMutex;
     FileEventCallback m_handler;
+
+    ConcurrentQueue<FileEvent> m_eventQueue;
 };
 
 }

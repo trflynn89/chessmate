@@ -172,7 +172,7 @@ TEST_F(ConfigurationManagerTest, InitialFileFirstTest)
     );
 
     CreateFile(contents);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     auto wpConfiguration = m_spConfigurationManager->CreateConfiguration("user");
     auto spConfiguration = wpConfiguration.lock();
@@ -194,7 +194,7 @@ TEST_F(ConfigurationManagerTest, InitialFileSecondTest)
     );
 
     CreateFile(contents);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "John Doe");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "USA");
@@ -213,7 +213,7 @@ TEST_F(ConfigurationManagerTest, FileChangeTest)
     );
 
     CreateFile(contents1);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "John Doe");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "USA");
@@ -226,7 +226,7 @@ TEST_F(ConfigurationManagerTest, FileChangeTest)
     );
 
     CreateFile(contents2);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "Jane Doe");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "");
@@ -246,13 +246,13 @@ TEST_F(ConfigurationManagerTest, DeleteFileTest)
     );
 
     CreateFile(contents1);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "John Doe");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "USA");
 
     std::remove(GetFullPath().c_str());
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "");
@@ -270,7 +270,7 @@ TEST_F(ConfigurationManagerTest, BadUpdateTest)
     );
 
     CreateFile(contents);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     EXPECT_EQ(spConfiguration->GetValue<std::string>("name", ""), "");
     EXPECT_EQ(spConfiguration->GetValue<std::string>("address", ""), "");
