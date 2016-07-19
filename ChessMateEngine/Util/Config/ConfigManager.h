@@ -89,7 +89,7 @@ public:
      *
      * @return The number of configurations.
      */
-    size_t GetSize() const;
+    ConfigMap::size_type GetSize() const;
 
 private:
     /**

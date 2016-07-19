@@ -69,16 +69,16 @@ Parser::ValueList IniParser::GetValues(const std::string &section) const
 }
 
 //==============================================================================
-size_t IniParser::GetSize() const
+IniParser::IniSection::size_type IniParser::GetSize() const
 {
     std::shared_lock<std::shared_timed_mutex> lock(m_sectionsMutex);
     return m_sections.size();
 }
 
 //==============================================================================
-ssize_t IniParser::GetSize(const std::string &section) const
+Parser::ValueList::size_type IniParser::GetSize(const std::string &section) const
 {
-    ssize_t size = -1;
+    Parser::ValueList::size_type size = 0;
 
     std::shared_lock<std::shared_timed_mutex> lock(m_sectionsMutex);
     IniSection::const_iterator it = m_sections.find(section);

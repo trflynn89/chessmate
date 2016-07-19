@@ -54,16 +54,16 @@ public:
      *
      * @return The number of parsed sections.
      */
-    size_t GetSize() const;
+    IniSection::size_type GetSize() const;
 
     /**
      * Get the number of name/value pairs that have been parsed for a section.
      *
      * @param string The name of the section to count.
      *
-     * @return The number of parsed values, or -1 if the section doesn't exist.
+     * @return The number of parsed values.
      */
-    ssize_t GetSize(const std::string &) const;
+    Parser::ValueList::size_type GetSize(const std::string &) const;
 
 private:
     /**

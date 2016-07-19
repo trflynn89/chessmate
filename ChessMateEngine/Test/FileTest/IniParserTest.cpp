@@ -128,8 +128,9 @@ TEST_F(IniParserTest, NonExistingTest)
 
     ASSERT_NO_THROW(m_spParser->Parse());
 
-    EXPECT_EQ(m_spParser->GetSize("bad-section"), -1);
-    EXPECT_EQ(m_spParser->GetSize("section-bad"), -1);
+    EXPECT_EQ(m_spParser->GetSize("section"), 2);
+    EXPECT_EQ(m_spParser->GetSize("bad-section"), 0);
+    EXPECT_EQ(m_spParser->GetSize("section-bad"), 0);
 }
 
 //==============================================================================
@@ -147,7 +148,8 @@ TEST_F(IniParserTest, CommentTest)
     ASSERT_NO_THROW(m_spParser->Parse());
 
     EXPECT_EQ(m_spParser->GetSize(), 1);
-    EXPECT_EQ(m_spParser->GetSize("other-section"), -1);
+    EXPECT_EQ(m_spParser->GetSize("section"), 1);
+    EXPECT_EQ(m_spParser->GetSize("other-section"), 0);
 }
 
 //==============================================================================

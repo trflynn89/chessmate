@@ -67,7 +67,7 @@ void ConfigManager::StopConfigManager()
 }
 
 //==============================================================================
-size_t ConfigManager::GetSize() const
+ConfigManager::ConfigMap::size_type ConfigManager::GetSize() const
 {
     std::lock_guard<std::mutex> lock(m_configsMutex);
     return m_configs.size();

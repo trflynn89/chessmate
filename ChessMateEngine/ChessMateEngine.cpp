@@ -24,6 +24,11 @@ namespace
         const std::string temp = Util::System::GetTempDirectory();
 
         g_chessmateDirectory = Util::String::Join(sep, temp, "ChessMate");
+
+        if (!Util::System::MakeDirectory(g_chessmateDirectory))
+        {
+            g_chessmateDirectory = temp;
+        }
     }
 
     //==========================================================================
@@ -36,8 +41,8 @@ namespace
 
         if (!spConfigManager->StartConfigManager())
         {
-            spConfigManager.reset();
             Util::System::CleanExit(Util::InitFailed);
+            spConfigManager.reset();
         }
 
         return spConfigManager;
@@ -111,8 +116,8 @@ namespace
 
         if (!spGameManager->StartGameManager(g_chessMatePort))
         {
-            spGameManager.reset();
             Util::System::CleanExit(Util::InitFailed);
+            spGameManager.reset();
         }
 
         return spGameManager;

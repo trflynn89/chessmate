@@ -33,8 +33,9 @@ size_t LoggerConfig::MaxMessageSize() const
 //==============================================================================
 std::chrono::seconds LoggerConfig::QueueWaitTime() const
 {
-    auto value = GetValue<std::chrono::seconds::rep>("queue_wait_time", I64(1));
-    return std::chrono::seconds(value);
+    return std::chrono::seconds(
+        GetValue<std::chrono::seconds::rep>("queue_wait_time", I64(1))
+    );
 }
 
 }
