@@ -29,8 +29,9 @@ GameManager::~GameManager()
 }
 
 //==============================================================================
-bool GameManager::StartGameManager(int acceptPort)
+bool GameManager::StartGameManager()
 {
+    const int acceptPort = m_spConfig->AcceptPort();
     bool ret = false;
 
     if (setSocketCallbacks() && createAcceptSocket(acceptPort))

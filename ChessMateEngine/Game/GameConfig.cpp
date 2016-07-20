@@ -19,6 +19,12 @@ std::string GameConfig::GetName()
 }
 
 //==============================================================================
+int GameConfig::AcceptPort() const
+{
+    return GetValue<int>("accept_port", 12389);
+}
+
+//==============================================================================
 unsigned int GameConfig::DefaultWorkerCount() const
 {
     return GetValue<unsigned int>("default_worker_count", 1);

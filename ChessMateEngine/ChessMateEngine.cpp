@@ -13,8 +13,6 @@
 
 namespace
 {
-    static int g_chessMatePort = 12389;
-
     static std::string g_chessmateDirectory;
 
     //==========================================================================
@@ -131,7 +129,7 @@ namespace
                 spConfigManager, spSocketManager
             );
 
-            if (!spGameManager->StartGameManager(g_chessMatePort))
+            if (!spGameManager->StartGameManager())
             {
                 Util::System::CleanExit(Util::InitFailed);
                 spGameManager.reset();

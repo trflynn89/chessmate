@@ -65,11 +65,9 @@ public:
      * game clients, and set the socket manager callbacks for when a client
      * connects or disconnects.
      *
-     * @param int The port to listen on.
-     *
      * @return True if initialization of successful, false otherwise.
      */
-    bool StartGameManager(int);
+    bool StartGameManager();
 
     /**
      * Stop the game manager. Stop all ongoing games, stop the worker threads,

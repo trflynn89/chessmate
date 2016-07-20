@@ -36,6 +36,11 @@ public:
     static std::string GetName();
 
     /**
+     * @return Port used to listen for new game connections.
+     */
+    int AcceptPort() const;
+
+    /**
      * @return Number of worker threads, used if could not find number of cores.
      */
     unsigned int DefaultWorkerCount() const;
