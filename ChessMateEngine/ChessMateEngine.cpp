@@ -29,14 +29,15 @@ ChessMateEngine::ChessMateEngine() : Runner("ChessMateEngine", 0)
 //==============================================================================
 Util::ExitCode ChessMateEngine::RunUntilExit()
 {
-    Start();
-
-    while (Util::System::KeepRunning())
+    if (Start())
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+        while (Util::System::KeepRunning())
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
 
-    Stop();
+        Stop();
+    }
 
     return Util::System::GetExitCode();
 }
