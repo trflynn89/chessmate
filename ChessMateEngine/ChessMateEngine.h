@@ -37,13 +37,6 @@ public:
      */
     ChessMateEngine();
 
-    /**
-     * Run the ChessMate engine until signaled to stop.
-     *
-     * @return Exit code that main() should return.
-     */
-    Util::ExitCode RunUntilExit();
-
 protected:
     /**
      * Start the ChessMate engine. Initialize all subsystems.

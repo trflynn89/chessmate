@@ -27,22 +27,6 @@ ChessMateEngine::ChessMateEngine() : Runner("ChessMateEngine", 0)
 }
 
 //==============================================================================
-Util::ExitCode ChessMateEngine::RunUntilExit()
-{
-    if (Start())
-    {
-        while (Util::System::KeepRunning())
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-
-        Stop();
-    }
-
-    return Util::System::GetExitCode();
-}
-
-//==============================================================================
 bool ChessMateEngine::StartRunner()
 {
     bool ret = (
@@ -130,5 +114,16 @@ bool ChessMateEngine::initGameManager()
 int main()
 {
     ChessMateEnginePtr spEngine(std::make_shared<ChessMateEngine>());
-    return spEngine->RunUntilExit();
+
+    if (spEngine && spEngine->Start())
+    {
+        while (Util::System::KeepRunning())
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        spEngine->Stop();
+    }
+
+    return Util::System::GetExitCode();
 }
