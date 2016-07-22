@@ -179,6 +179,7 @@ private:
 
     Util::SocketManagerWPtr m_wpSocketManager;
 
+    std::mutex m_runningFuturesMutex;
     std::vector<std::future<void>> m_runningFutures;
 
     Movement::MoveSetPtr m_spMoveSet;
