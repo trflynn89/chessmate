@@ -4,6 +4,7 @@
 
 #include <ChessMateEngine.h>
 #include <Game/GameManager.h>
+#include <Util/ExitCodes.h>
 #include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/SocketManagerImpl.h>
