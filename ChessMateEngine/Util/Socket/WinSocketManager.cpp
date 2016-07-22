@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <vector>
 
+#include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Logger.h>
+#include <Util/Socket/SocketImpl.h>
 
 namespace Util {
 
@@ -51,30 +53,29 @@ SocketManagerImpl::~SocketManagerImpl()
 }
 
 //==============================================================================
-void SocketManagerImpl::AsyncIoThread()
+bool SocketManagerImpl::DoWork()
 {
     fd_set readFd, writeFd;
     struct timeval tv { 0, static_cast<long>(m_spConfig->IoWaitTime().count()) };
 
-    while (m_aKeepRunning.load())
+    bool anyMasksSet = false;
     {
-        bool anyMasksSet = false;
+        std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
+        anyMasksSet = setReadAndWriteMasks(&readFd, &writeFd);
+    }
+
+    if (anyMasksSet)
+    {
+        // First argument of ::select() is ignored in Windows
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms740141(v=vs.85).aspx
+        if (::select(0, &readFd, &writeFd, NULL, &tv) > 0)
         {
             std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
-            anyMasksSet = setReadAndWriteMasks(&readFd, &writeFd);
-        }
-
-        if (anyMasksSet)
-        {
-            // First argument of ::select() is ignored in Windows
-            // https://msdn.microsoft.com/en-us/library/windows/desktop/ms740141(v=vs.85).aspx
-            if (::select(0, &readFd, &writeFd, NULL, &tv) > 0)
-            {
-                std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
-                handleSocketIO(&readFd, &writeFd);
-            }
+            handleSocketIO(&readFd, &writeFd);
         }
     }
+
+    return true;
 }
 
 //==============================================================================

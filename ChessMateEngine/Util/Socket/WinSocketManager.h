@@ -4,26 +4,27 @@
 
 #include <Windows.h>
 
-#include <Util/Config/ConfigManager.h>
 #include <Util/Socket/SocketManager.h>
 
 namespace Util {
+
+DEFINE_CLASS_PTRS(ConfigManager);
 
 /**
  * Windows implementation of the SocketManager interface.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version December 12, 2012
+ * @version July 21, 2016
  */
 class SocketManagerImpl : public SocketManager
 {
 public:
     SocketManagerImpl();
-    SocketManagerImpl(ConfigManagerPtr &spConfigManager);
+    SocketManagerImpl(ConfigManagerPtr &);
     virtual ~SocketManagerImpl();
 
 protected:
-    void AsyncIoThread();
+    virtual bool DoWork();
 
 private:
     bool setReadAndWriteMasks(fd_set *, fd_set *);

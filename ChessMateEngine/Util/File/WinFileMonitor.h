@@ -13,16 +13,16 @@ namespace Util {
  * Windows implementation of the FileMonitor interface.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 5, 2016
+ * @version July 21, 2016
  */
 class FileMonitorImpl : public FileMonitor
 {
 public:
     FileMonitorImpl(FileEventCallback, const std::string &, const std::string &);
     virtual ~FileMonitorImpl();
+    bool IsValid() const;
 
 protected:
-    bool IsValid() const;
     void Poll(const std::chrono::milliseconds &);
 
 private:

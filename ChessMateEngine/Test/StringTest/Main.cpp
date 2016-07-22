@@ -1,3 +1,5 @@
+#define NOMINMAX
+
 #include <regex>
 #include <string>
 #include <vector>

@@ -12,7 +12,7 @@ namespace Util {
  * Linux implementation of the FileMonitor interface.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 4, 2016
+ * @version July 21, 2016
  */
 class FileMonitorImpl : public FileMonitor
 {

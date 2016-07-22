@@ -180,6 +180,8 @@
     <ClInclude Include="..\Util\String\String.h" />
     <ClInclude Include="..\Util\System\System.h" />
     <ClInclude Include="..\Util\System\WinSystem.h" />
+    <ClInclude Include="..\Util\Task\Runner.h" />
+    <ClInclude Include="..\Util\Task\TaskConfig.h" />
     <ClInclude Include="..\Util\Traits\TypeTraits.h" />
     <ClInclude Include="..\Util\Utilities.h" />
   </ItemGroup>
@@ -212,6 +214,8 @@
     <ClCompile Include="..\Util\String\String.cpp" />
     <ClCompile Include="..\Util\System\System.cpp" />
     <ClCompile Include="..\Util\System\WinSystem.cpp" />
+    <ClCompile Include="..\Util\Task\Runner.cpp" />
+    <ClCompile Include="..\Util\Task\TaskConfig.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

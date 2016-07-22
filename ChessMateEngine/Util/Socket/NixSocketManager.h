@@ -14,7 +14,7 @@ DEFINE_CLASS_PTRS(ConfigManager);
  * Linux implementation of the SocketManager interface.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version February 2, 2016
+ * @version July 21, 2016
  */
 class SocketManagerImpl : public SocketManager
 {

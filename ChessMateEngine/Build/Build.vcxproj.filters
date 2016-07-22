@@ -40,6 +40,9 @@
     <Filter Include="Util\Config">
       <UniqueIdentifier>{8c7ea4ad-734c-460b-89f7-8f38a06be77d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util\Task">
+      <UniqueIdentifier>{759c4237-854f-43b3-8be1-6305b5caf939}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Util\Concurrency\ConcurrentQueue.h">
@@ -153,6 +156,12 @@
     <ClInclude Include="..\Game\GameConfig.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="..\Util\Task\Runner.h">
+      <Filter>Util\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Task\TaskConfig.h">
+      <Filter>Util\Task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Util\Logging\Logger.cpp">
@@ -238,6 +247,12 @@
     </ClCompile>
     <ClCompile Include="..\Game\GameConfig.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Task\Runner.cpp">
+      <Filter>Util\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Task\TaskConfig.cpp">
+      <Filter>Util\Task</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
