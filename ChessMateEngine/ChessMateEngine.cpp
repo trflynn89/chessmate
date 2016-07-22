@@ -1,178 +1,133 @@
 #include <atomic>
 #include <chrono>
-#include <string>
 #include <thread>
 
+#include <ChessMateEngine.h>
 #include <Game/GameManager.h>
-#include <Util/ExitCodes.h>
 #include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Logger.h>
-#include <Util/Socket/SocketManager.h>
 #include <Util/Socket/SocketManagerImpl.h>
 #include <Util/System/System.h>
+#include <Util/Task/Runner.h>
 
-namespace
+//==============================================================================
+ChessMateEngine::ChessMateEngine() : Runner("ChessMateEngine", 0)
 {
-    static std::string g_chessmateDirectory;
+    Util::System::SetupSignalHandler();
 
-    //==========================================================================
-    void InitChessMateDirectory()
+    const char sep = Util::System::GetSeparator();
+    const std::string temp = Util::System::GetTempDirectory();
+
+    m_chessMateDirectory = Util::String::Join(sep, temp, "ChessMate");
+
+    if (!Util::System::MakeDirectory(m_chessMateDirectory))
     {
-        const char sep = Util::System::GetSeparator();
-        const std::string temp = Util::System::GetTempDirectory();
+        m_chessMateDirectory = temp;
+    }
+}
 
-        g_chessmateDirectory = Util::String::Join(sep, temp, "ChessMate");
+//==============================================================================
+Util::ExitCode ChessMateEngine::RunUntilExit()
+{
+    Start();
 
-        if (!Util::System::MakeDirectory(g_chessmateDirectory))
-        {
-            g_chessmateDirectory = temp;
-        }
+    while (Util::System::KeepRunning())
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    //==========================================================================
-    Util::ConfigManagerPtr InitConfigManager()
+    Stop();
+
+    return Util::System::GetExitCode();
+}
+
+//==============================================================================
+bool ChessMateEngine::StartRunner()
+{
+    bool ret = (
+        initConfigManager() &&
+        initLogger() &&
+        initSocketManager() &&
+        initGameManager()
+    );
+
+    if (!ret)
     {
-        auto spConfigManager = std::make_shared<Util::ConfigManager>(
-            Util::ConfigManager::CONFIG_TYPE_INI,
-            g_chessmateDirectory, "ChessMate.ini"
-        );
-
-        if (!spConfigManager->Start())
-        {
-            Util::System::CleanExit(Util::InitFailed);
-            spConfigManager.reset();
-        }
-
-        return spConfigManager;
+        Util::System::CleanExit(Util::InitFailed);
     }
 
-    //==========================================================================
-    void StopConfigManager(Util::ConfigManagerPtr &spConfigManager)
+    return ret;
+}
+
+//==============================================================================
+void ChessMateEngine::StopRunner()
+{
+    stopRunner(m_spGameManager);
+    stopRunner(m_spSocketManager);
+    stopRunner(m_spLogger);
+    stopRunner(m_spConfigManager);
+}
+
+//==============================================================================
+bool ChessMateEngine::DoWork()
+{
+    return false;
+}
+
+//==============================================================================
+bool ChessMateEngine::initConfigManager()
+{
+    m_spConfigManager = std::make_shared<Util::ConfigManager>(
+        Util::ConfigManager::CONFIG_TYPE_INI,
+        m_chessMateDirectory, "ChessMate.ini"
+    );
+
+    return m_spConfigManager->Start();
+}
+
+//==============================================================================
+bool ChessMateEngine::initLogger()
+{
+    m_spLogger = std::make_shared<Util::Logger>(
+        m_spConfigManager, m_chessMateDirectory
+    );
+
+    if (m_spLogger->Start())
     {
-        if (spConfigManager)
-        {
-            spConfigManager->Stop();
-        }
+        Util::Logger::SetInstance(m_spLogger);
+    }
+    else
+    {
+        LOGC("Could not start logger, using console instead");
+        m_spLogger.reset();
     }
 
-    //==========================================================================
-    Util::LoggerPtr InitLogger(Util::ConfigManagerPtr &spConfigManager)
-    {
-        Util::LoggerPtr spLogger;
+    return true;
+}
 
-        if (spConfigManager)
-        {
-            spLogger = std::make_shared<Util::Logger>(
-                spConfigManager, g_chessmateDirectory
-            );
+//==============================================================================
+bool ChessMateEngine::initSocketManager()
+{
+    m_spSocketManager = std::make_shared<Util::SocketManagerImpl>(
+        m_spConfigManager
+    );
 
-            if (spLogger->StartLogger())
-            {
-                Util::Logger::SetInstance(spLogger);
-            }
-            else
-            {
-                LOGC("Could not start logger, using console instead");
-                spLogger.reset();
-            }
-        }
+    return m_spSocketManager->Start();
+}
 
-        return spLogger;
-    }
+//==============================================================================
+bool ChessMateEngine::initGameManager()
+{
+    m_spGameManager = std::make_shared<Game::GameManager>(
+        m_spConfigManager, m_spSocketManager
+    );
 
-    //==========================================================================
-    void StopLogger(Util::LoggerPtr &spLogger)
-    {
-        if (spLogger)
-        {
-            spLogger->StopLogger();
-        }
-    }
-
-    //==========================================================================
-    Util::SocketManagerPtr InitSocketManager(Util::ConfigManagerPtr &spConfigManager)
-    {
-        Util::SocketManagerPtr spSocketManager;
-
-        if (spConfigManager)
-        {
-            spSocketManager = std::make_shared<Util::SocketManagerImpl>(
-                spConfigManager
-            );
-
-            spSocketManager->Start();
-        }
-
-        return spSocketManager;
-    }
-
-    //==========================================================================
-    void StopSocketManager(Util::SocketManagerPtr &spSocketManager)
-    {
-        if (spSocketManager)
-        {
-            spSocketManager->Stop();
-        }
-    }
-
-    //==========================================================================
-    Game::GameManagerPtr InitGameManager(
-        Util::ConfigManagerPtr &spConfigManager,
-        const Util::SocketManagerPtr &spSocketManager
-    )
-    {
-        Game::GameManagerPtr spGameManager;
-
-        if (spConfigManager && spSocketManager)
-        {
-            spGameManager = std::make_shared<Game::GameManager>(
-                spConfigManager, spSocketManager
-            );
-
-            if (!spGameManager->Start())
-            {
-                Util::System::CleanExit(Util::InitFailed);
-                spGameManager.reset();
-            }
-        }
-
-        return spGameManager;
-    }
-
-    //==========================================================================
-    void StopGameManager(Game::GameManagerPtr &spGameManager)
-    {
-        if (spGameManager)
-        {
-            spGameManager->Stop();
-        }
-    }
+    return m_spGameManager->Start();
 }
 
 //==============================================================================
 int main()
 {
-    LOGC("Starting ChessMateEngine");
-    Util::System::SetupSignalHandler();
-
-    InitChessMateDirectory();
-
-    Util::ConfigManagerPtr spConfigManager = InitConfigManager();
-    Util::LoggerPtr spLogger = InitLogger(spConfigManager);
-    Util::SocketManagerPtr spSocketManager = InitSocketManager(spConfigManager);
-    Game::GameManagerPtr spGameManager = InitGameManager(spConfigManager, spSocketManager);
-
-    while (Util::System::KeepRunning())
-    {
-        // TODO perform system monitoring, provide CLI
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-
-    StopGameManager(spGameManager);
-    StopSocketManager(spSocketManager);
-    StopLogger(spLogger);
-    StopConfigManager(spConfigManager);
-
-    LOGC("Exiting ChessMateEngine");
-    return Util::System::GetExitCode();
+    ChessMateEnginePtr spEngine(std::make_shared<ChessMateEngine>());
+    return spEngine->RunUntilExit();
 }

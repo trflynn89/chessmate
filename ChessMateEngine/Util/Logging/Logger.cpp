@@ -6,6 +6,9 @@
 
 #include "Logger.h"
 
+#include <Util/Concurrency/ConcurrentQueue.h>
+#include <Util/Config/ConfigManager.h>
+#include <Util/Logging/LoggerConfig.h>
 #include <Util/String/String.h>
 #include <Util/System/System.h>
 
@@ -20,10 +23,11 @@ Logger::Logger(
     ConfigManagerPtr &spConfigManager,
     const std::string &filePath
 ) :
+    Runner("Logger", 1),
     m_spConfig(spConfigManager->CreateConfig<LoggerConfig>()),
     m_filePath(filePath),
     m_fileSize(0),
-    m_aKeepRunning(false),
+    m_index(0),
     m_startTime(std::chrono::high_resolution_clock::now())
 {
 }
@@ -31,38 +35,6 @@ Logger::Logger(
 //==============================================================================
 Logger::~Logger()
 {
-    StopLogger();
-}
-
-//==============================================================================
-bool Logger::StartLogger()
-{
-    if (System::MakeDirectory(m_filePath) && createLogFile())
-    {
-        const LoggerPtr &spThis = shared_from_this();
-        auto function = &Logger::ioThread;
-
-        m_aKeepRunning.store(true);
-        m_future = std::async(std::launch::async, function, spThis);
-    }
-
-    return m_future.valid();
-}
-
-//==============================================================================
-void Logger::StopLogger()
-{
-    bool expected = true;
-
-    if (m_aKeepRunning.compare_exchange_strong(expected, false))
-    {
-        LOGC("Stopping logger");
-
-        if (m_future.valid())
-        {
-            m_future.get();
-        }
-    }
 }
 
 //==============================================================================
@@ -97,7 +69,7 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
 {
     LoggerPtr spLogger = GetInstance();
 
-    if (spLogger && spLogger->m_aKeepRunning.load())
+    if (spLogger)
     {
         spLogger->addLog(level, gameId, file, func, line, message);
     }
@@ -108,6 +80,38 @@ void Logger::AddLog(LogLevel level, ssize_t gameId, const char *file,
 
         ConsoleLog(true, console);
     }
+}
+
+//==============================================================================
+bool Logger::StartRunner()
+{
+    return createLogFile();
+}
+
+//==============================================================================
+void Logger::StopRunner()
+{
+}
+
+//==============================================================================
+bool Logger::DoWork()
+{
+    Log log;
+
+    if (m_logQueue.Pop(log, m_spConfig->QueueWaitTime()) && m_logFile.good())
+    {
+        const std::string logStr = String::Format("%u\t%s", m_index++, log);
+
+        m_logFile << logStr << std::flush;
+        m_fileSize += logStr.size();
+
+        if (m_fileSize > m_spConfig->MaxLogFileSize())
+        {
+            createLogFile();
+        }
+    }
+
+    return m_logFile.good();
 }
 
 //==============================================================================
@@ -155,33 +159,6 @@ bool Logger::createLogFile()
     m_fileSize = 0;
 
     return m_logFile.good();
-}
-
-//==============================================================================
-void Logger::ioThread()
-{
-    unsigned long long int index = U64(0);
-
-    while (m_aKeepRunning.load() && m_logFile.good())
-    {
-        Log log;
-
-        if (m_logQueue.Pop(log, m_spConfig->QueueWaitTime()) && m_logFile.good())
-        {
-            const std::string logStr = String::Format("%u\t%s", index++, log);
-
-            m_logFile << logStr << std::flush;
-            m_fileSize += logStr.size();
-
-            if (m_fileSize > m_spConfig->MaxLogFileSize())
-            {
-                createLogFile();
-            }
-        }
-    }
-
-    // Clear in case log file was in a bad state before StopLogger() was called
-    m_aKeepRunning.store(false);
 }
 
 }

@@ -1,21 +1,18 @@
 #pragma once
 
-#include <atomic>
 #include <chrono>
+#include <cstdarg>
 #include <fstream>
-#include <future>
 #include <memory>
 #include <mutex>
-#include <stdarg.h>
 #include <string>
 #include <vector>
 
 #include <Util/Utilities.h>
 #include <Util/Concurrency/ConcurrentQueue.h>
-#include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Log.h>
-#include <Util/Logging/LoggerConfig.h>
 #include <Util/String/String.h>
+#include <Util/Task/Runner.h>
 
 //==============================================================================
 #define LOG(lvl, gameId, fmt)                                                 \
@@ -61,7 +58,9 @@
 
 namespace Util {
 
+DEFINE_CLASS_PTRS(ConfigManager);
 DEFINE_CLASS_PTRS(Logger);
+DEFINE_CLASS_PTRS(LoggerConfig);
 
 /**
  * Provides thread safe instrumentation. There are 4 levels of instrumentation:
@@ -81,9 +80,9 @@ DEFINE_CLASS_PTRS(Logger);
  * inside, e.g., a signal handler.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 18, 2016
+ * @version July 21, 2016
  */
-class Logger : public std::enable_shared_from_this<Logger>
+class Logger : public Runner
 {
 public:
     /**
@@ -95,21 +94,9 @@ public:
     Logger(ConfigManagerPtr &, const std::string &);
 
     /**
-     * Destructor - stop the logger if necessary.
+     * Destructor.
      */
-    ~Logger();
-
-    /**
-     * Start the logger. Create a thread to perform all IO operations.
-     *
-     * @return True if the logger was started successfully.
-     */
-    bool StartLogger();
-
-    /**
-     * Stop the logger. Signal for the IO thread to stop.
-     */
-    void StopLogger();
+    virtual ~Logger();
 
     /**
      * Set the logger instance so that the LOG* macros function.
@@ -143,6 +130,25 @@ public:
      */
     static void AddLog(LogLevel, ssize_t, const char *, const char *, unsigned int, const std::string &);
 
+protected:
+    /**
+     * Start the logger. Create the logger's log file on disk.
+     *
+     * @return True if the log file could be created.
+     */
+    virtual bool StartRunner();
+
+    /**
+     * Stop the logger.
+     */
+    virtual void StopRunner();
+
+    /**
+     * Perform any IO operations. Wait for a log item to be available and write
+     * it to disk.
+     */
+    virtual bool DoWork();
+
 private:
     /**
      * Add a log to this logger instance.
@@ -163,12 +169,6 @@ private:
      */
     bool createLogFile();
 
-    /**
-     * Thread to perform all IO operations. Wait for a log item to be available
-     * and write it to disk.
-     */
-    void ioThread();
-
     static LoggerWPtr s_wpInstance;
     static std::mutex s_consoleMutex;
 
@@ -181,7 +181,7 @@ private:
     const std::string m_filePath;
     size_t m_fileSize;
 
-    std::atomic_bool m_aKeepRunning;
+    size_t m_index;
 
     const std::chrono::high_resolution_clock::time_point m_startTime;
 };
