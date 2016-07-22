@@ -3,4 +3,7 @@
   <ItemGroup>
     <ClCompile Include="ChessMateEngine.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChessMateEngine.h" />
+  </ItemGroup>
 </Project>
