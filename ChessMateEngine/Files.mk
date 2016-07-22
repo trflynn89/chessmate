@@ -8,7 +8,8 @@ SRC_DIRS_$(d) := \
     Util/Logging \
     Util/Socket \
     Util/String \
-    Util/System
+    Util/System \
+    Util/Task
 
 # Define libraries to link
 LDLIBS_$(d) := -lpthread

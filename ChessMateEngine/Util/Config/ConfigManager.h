@@ -4,12 +4,13 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <type_traits>
 
 #include <Util/Utilities.h>
 #include <Util/Config/Config.h>
 #include <Util/File/FileMonitorImpl.h>
 #include <Util/File/Parser.h>
-#include <Util/Traits/TypeTraits.h>
+#include <Util/Task/Runner.h>
 
 namespace Util {
 
@@ -19,9 +20,9 @@ DEFINE_CLASS_PTRS(ConfigManager);
  * Class to create and manage a set of configurations.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 18, 2016
+ * @version July 21, 2016
  */
-class ConfigManager : public std::enable_shared_from_this<ConfigManager>
+class ConfigManager : public Runner
 {
     /**
      * Map of configuration group names to configuration objects.
@@ -56,18 +57,6 @@ public:
     virtual ~ConfigManager();
 
     /**
-     * Start the configuration manager and underlying objects.
-     *
-     * @return True if the monitor could be started.
-     */
-    bool StartConfigManager();
-
-    /**
-     * Stop the configuration manager and underlying objects.
-     */
-    void StopConfigManager();
-
-    /**
      * Create a configuration object, or if one with the given type's name
      * exists, fetch it.
      *
@@ -75,13 +64,7 @@ public:
      *
      * @return A reference to the created/found configuration.
      */
-    template <typename T, enable_if_all<std::is_base_of<Config, T>>...>
-    std::shared_ptr<T> CreateConfig();
-
-    /**
-     * Given type is not a configuration, raise compile error.
-     */
-    template <typename T, enable_if_none<std::is_base_of<Config, T>>...>
+    template <typename T>
     std::shared_ptr<T> CreateConfig();
 
     /**
@@ -90,6 +73,24 @@ public:
      * @return The number of configurations.
      */
     ConfigMap::size_type GetSize() const;
+
+protected:
+    /**
+     * Start the configuration manager and underlying objects.
+     *
+     * @return True if the monitor could be started.
+     */
+    virtual bool StartRunner();
+
+    /**
+     * Stop the configuration manager and underlying objects.
+     */
+    virtual void StopRunner();
+
+    /**
+     * @return False - no workers are used, thus this should not be called.
+     */
+    bool DoWork();
 
 private:
     /**
@@ -108,9 +109,12 @@ private:
 };
 
 //==============================================================================
-template <typename T, enable_if_all<std::is_base_of<Config, T>>...>
+template <typename T>
 std::shared_ptr<T> ConfigManager::CreateConfig()
 {
+    static_assert(std::is_base_of<Config, T>::value,
+        "Given type is not a configuration type");
+
     std::shared_ptr<T> spConfig;
     std::string name(T::GetName());
 
@@ -130,14 +134,6 @@ std::shared_ptr<T> ConfigManager::CreateConfig()
     }
 
     return spConfig;
-}
-
-//==============================================================================
-template <typename T, enable_if_none<std::is_base_of<Config, T>>...>
-std::shared_ptr<T> ConfigManager::CreateConfig()
-{
-    static_assert(std::is_base_of<Config, T>::value,
-        "Given type is not a configuration type");
 }
 
 }

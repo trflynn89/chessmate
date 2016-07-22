@@ -3,7 +3,13 @@
 
 #include "GameManager.h"
 
+#include <Game/ChessGame.h>
+#include <Game/Message.h>
+#include <Movement/MoveSet.h>
 #include <Util/Logging/Logger.h>
+#include <Util/Config/ConfigManager.h>
+#include <Util/Socket/Socket.h>
+#include <Util/Socket/SocketManager.h>
 
 namespace Game {
 
@@ -12,8 +18,8 @@ GameManager::GameManager(
     Util::ConfigManagerPtr &spConfigManager,
     const Util::SocketManagerPtr &spSocketManager
 ) :
+    Runner(spConfigManager, "GameManager"),
     m_wpSocketManager(spSocketManager),
-    m_aKeepRunning(true),
     m_spMoveSet(std::make_shared<Movement::MoveSet>()),
     m_spConfig(spConfigManager->CreateConfig<GameConfig>())
 {
@@ -22,59 +28,6 @@ GameManager::GameManager(
 //==============================================================================
 GameManager::~GameManager()
 {
-    if (m_aKeepRunning.load())
-    {
-        StopGameManager();
-    }
-}
-
-//==============================================================================
-bool GameManager::StartGameManager()
-{
-    const int acceptPort = m_spConfig->AcceptPort();
-    bool ret = false;
-
-    if (setSocketCallbacks() && createAcceptSocket(acceptPort))
-    {
-        createMessageReceivers();
-
-        LOGI(-1, "Accepting games on port %d", acceptPort);
-        LOGC("Accepting games on port %d", acceptPort);
-
-        ret = true;
-    }
-    else
-    {
-        LOGE(-1, "Could not start game manager on port %d", acceptPort);
-        LOGC("Could not start game manager on port %d", acceptPort);
-    }
-
-    return ret;
-}
-
-//==============================================================================
-void GameManager::StopGameManager()
-{
-    LOGC("Stopping game manager");
-
-    Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
-
-    if (spSocketManager)
-    {
-        spSocketManager->ClearClientCallbacks();
-    }
-
-    m_aKeepRunning.store(false);
-
-    for (auto &future : m_workerFutures)
-    {
-        if (future.valid())
-        {
-            future.get();
-        }
-    }
-
-    StopAllGames();
 }
 
 //==============================================================================
@@ -104,13 +57,73 @@ void GameManager::StopAllGames()
 }
 
 //==============================================================================
+bool GameManager::StartRunner()
+{
+    const int acceptPort = m_spConfig->AcceptPort();
+    bool ret = false;
+
+    if (setSocketCallbacks() && createAcceptSocket(acceptPort))
+    {
+        LOGI(-1, "Accepting games on port %d", acceptPort);
+        LOGC("Accepting games on port %d", acceptPort);
+
+        ret = true;
+    }
+    else
+    {
+        LOGE(-1, "Could not start game manager on port %d", acceptPort);
+        LOGC("Could not start game manager on port %d", acceptPort);
+    }
+
+    return ret;
+}
+
+//==============================================================================
+void GameManager::StopRunner()
+{
+    LOGC("Stopping game manager");
+
+    Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+
+    if (spSocketManager)
+    {
+        spSocketManager->ClearClientCallbacks();
+    }
+
+    for (auto &future : m_runningFutures)
+    {
+        if (future.valid())
+        {
+            future.get();
+        }
+    }
+
+    StopAllGames();
+}
+
+//==============================================================================
+bool GameManager::DoWork()
+{
+    Util::AsyncRequest request;
+    bool healthy = receiveSingleMessage(request);
+
+    if (healthy)
+    {
+        giveRequestToGame(request);
+    }
+
+    deleteFinishedFutures();
+    return healthy;
+}
+
+//==============================================================================
 bool GameManager::setSocketCallbacks()
 {
     Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
 
     if (spSocketManager)
     {
-        const GameManagerPtr &spThis = shared_from_this();
+        const GameManagerPtr &spThis = SharedFromThis<GameManager>();
 
         auto newClient = std::bind(&GameManager::StartGame, spThis, std::placeholders::_1);
         auto closedClient = std::bind(&GameManager::StopGame, spThis, std::placeholders::_1);
@@ -152,55 +165,10 @@ bool GameManager::createAcceptSocket(int acceptPort)
 }
 
 //==============================================================================
-void GameManager::createMessageReceivers()
-{
-    unsigned int numCores = std::thread::hardware_concurrency();
-
-    if (numCores == 0)
-    {
-        numCores = m_spConfig->DefaultWorkerCount();
-    }
-
-    LOGI(-1, "Creating %u message receivers", numCores);
-
-    for (unsigned int i = 0; i < numCores; ++i)
-    {
-        const GameManagerPtr &spThis = shared_from_this();
-        auto function = &GameManager::messageReceiver;
-
-        m_workerFutures.push_back(
-            std::async(std::launch::async, function, spThis)
-        );
-    }
-}
-
-//==============================================================================
-void GameManager::messageReceiver()
-{
-    FutureVector futures;
-
-    while (m_aKeepRunning.load())
-    {
-        Util::AsyncRequest request = receiveSingleMessage();
-
-        // The receiver may have been signaled to stop while waiting for a
-        // request, so check if we should actually process the message
-        if (m_aKeepRunning.load())
-        {
-            giveRequestToGame(futures, request);
-        }
-
-        deleteFinishedFutures(futures);
-    }
-}
-
-//==============================================================================
-Util::AsyncRequest GameManager::receiveSingleMessage() const
+bool GameManager::receiveSingleMessage(Util::AsyncRequest &request) const
 {
     Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
-    Util::AsyncRequest request;
 
-    // TODO what to do if the socket manager is gone? Stop game manager?
     if (spSocketManager)
     {
         spSocketManager->WaitForCompletedReceive(request, m_spConfig->QueueWaitTime());
@@ -208,13 +176,14 @@ Util::AsyncRequest GameManager::receiveSingleMessage() const
     else
     {
         LOGE(-1, "No socket manager");
+        return false;
     }
 
-    return request;
+    return true;
 }
 
 //==============================================================================
-void GameManager::giveRequestToGame(FutureVector &futures, const Util::AsyncRequest &request)
+void GameManager::giveRequestToGame(const Util::AsyncRequest &request)
 {
     ChessGamePtr spGame;
     Message message;
@@ -238,11 +207,11 @@ void GameManager::giveRequestToGame(FutureVector &futures, const Util::AsyncRequ
     {
         LOGD(spGame->GetGameID(), "Handling message type: %d", message.GetMessageType());
 
-        const GameManagerPtr &spThis = shared_from_this();
+        const GameManagerPtr &spThis = SharedFromThis<GameManager>();
         auto function = &GameManager::handleMessage;
 
         auto future = std::async(std::launch::async, function, spThis, spGame, message);
-        futures.push_back(std::move(future));
+        m_runningFutures.push_back(std::move(future));
     }
 }
 
@@ -311,15 +280,15 @@ void GameManager::handleMessage(const ChessGamePtr spGame, const Message message
 }
 
 //==============================================================================
-void GameManager::deleteFinishedFutures(FutureVector &futures)
+void GameManager::deleteFinishedFutures()
 {
-    for (auto it = futures.begin(); it != futures.end(); )
+    for (auto it = m_runningFutures.begin(); it != m_runningFutures.end(); )
     {
         std::future_status status = it->wait_for(std::chrono::seconds::zero());
 
         if (status == std::future_status::ready)
         {
-            it = futures.erase(it);
+            it = m_runningFutures.erase(it);
         }
         else
         {

@@ -19,9 +19,9 @@ class FileMonitorImpl : public FileMonitor
 public:
     FileMonitorImpl(FileEventCallback, const std::string &, const std::string &);
     virtual ~FileMonitorImpl();
+    bool IsValid() const;
 
 protected:
-    bool IsValid() const;
     void Poll(const std::chrono::milliseconds &);
 
 private:

@@ -33,7 +33,7 @@ public:
         auto callback = std::bind(&FileMonitorTest::HandleEvent, this, std::placeholders::_1);
         m_spMonitor = std::make_shared<Util::FileMonitorImpl>(callback, m_path, m_file);
 
-        ASSERT_TRUE(m_spMonitor && m_spMonitor->StartMonitor());
+        ASSERT_TRUE(m_spMonitor && m_spMonitor->Start());
     }
 
     /**
@@ -41,7 +41,7 @@ public:
      */
     virtual void TearDown()
     {
-        m_spMonitor->StopMonitor();
+        m_spMonitor->Stop();
         std::remove(GetFullPath().c_str());
     }
 
@@ -96,9 +96,9 @@ protected:
 //==============================================================================
 TEST_F(FileMonitorTest, NonExistingPathTest)
 {
-    m_spMonitor->StopMonitor();
+    m_spMonitor->Stop();
     m_spMonitor = std::make_shared<Util::FileMonitorImpl>(nullptr, m_path + "foo", m_file);
-    ASSERT_FALSE(m_spMonitor->StartMonitor());
+    ASSERT_FALSE(m_spMonitor->Start());
 }
 
 //==============================================================================
@@ -120,9 +120,9 @@ TEST_F(FileMonitorTest, NoChangeTest)
 //==============================================================================
 TEST_F(FileMonitorTest, NullCallbackTest)
 {
-    m_spMonitor->StopMonitor();
+    m_spMonitor->Stop();
     m_spMonitor = std::make_shared<Util::FileMonitorImpl>(nullptr, m_path, m_file);
-    ASSERT_TRUE(m_spMonitor->StartMonitor());
+    ASSERT_TRUE(m_spMonitor->Start());
 
     EXPECT_EQ(m_numCreatedFiles, 0);
     EXPECT_EQ(m_numDeletedFiles, 0);

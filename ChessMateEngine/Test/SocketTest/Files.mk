@@ -6,6 +6,7 @@ SRC_DIRS_$(d) := \
     Util/Socket \
     Util/String \
     Util/System \
+    Util/Task \
     Test/GoogleTest
 
 # Define libraries to link

@@ -4,10 +4,11 @@
 
 #include <sys/select.h>
 
-#include <Util/Config/ConfigManager.h>
 #include <Util/Socket/SocketManager.h>
 
 namespace Util {
+
+DEFINE_CLASS_PTRS(ConfigManager);
 
 /**
  * Linux implementation of the SocketManager interface.
@@ -20,10 +21,10 @@ class SocketManagerImpl : public SocketManager
 public:
     SocketManagerImpl();
     SocketManagerImpl(ConfigManagerPtr &);
-    ~SocketManagerImpl();
+    virtual ~SocketManagerImpl();
 
 protected:
-    void AsyncIoThread();
+    virtual bool DoWork();
 
 private:
     ssize_t setReadAndWriteMasks(fd_set *, fd_set *);

@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <vector>
 
+#include <Util/Config/ConfigManager.h>
 #include <Util/Logging/Logger.h>
+#include <Util/Socket/SocketImpl.h>
 
 namespace Util {
 
@@ -30,28 +32,27 @@ SocketManagerImpl::~SocketManagerImpl()
 }
 
 //==============================================================================
-void SocketManagerImpl::AsyncIoThread()
+bool SocketManagerImpl::DoWork()
 {
     fd_set readFd, writeFd;
     struct timeval tv { 0, m_spConfig->IoWaitTime().count() };
 
-    while (m_aKeepRunning.load())
+    ssize_t maxFd = -1;
     {
-        ssize_t maxFd = -1;
+        std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
+        maxFd = setReadAndWriteMasks(&readFd, &writeFd);
+    }
+
+    if (maxFd > 0)
+    {
+        if (::select(maxFd + 1, &readFd, &writeFd, NULL, &tv) > 0)
         {
             std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
-            maxFd = setReadAndWriteMasks(&readFd, &writeFd);
-        }
-
-        if (maxFd > 0)
-        {
-            if (::select(maxFd + 1, &readFd, &writeFd, NULL, &tv) > 0)
-            {
-                std::lock_guard<std::mutex> lock(m_aioSocketsMutex);
-                handleSocketIO(&readFd, &writeFd);
-            }
+            handleSocketIO(&readFd, &writeFd);
         }
     }
+
+    return true;
 }
 
 //==============================================================================

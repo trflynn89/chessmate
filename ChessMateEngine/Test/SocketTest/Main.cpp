@@ -9,6 +9,7 @@
 #include <Util/Concurrency/ConcurrentQueue.h>
 #include <Util/Logging/Logger.h>
 #include <Util/Socket/AsyncStructs.h>
+#include <Util/Socket/SocketImpl.h>
 #include <Util/Socket/SocketManagerImpl.h>
 #include <Util/String/String.h>
 
@@ -34,8 +35,8 @@ protected:
      */
     void SetUp()
     {
-        m_spServerSocketManager->StartSocketManager();
-        m_spClientSocketManager->StartSocketManager();
+        m_spServerSocketManager->Start();
+        m_spClientSocketManager->Start();
     }
 
     /**
@@ -43,8 +44,8 @@ protected:
      */
     void TearDown()
     {
-        m_spClientSocketManager->StopSocketManager();
-        m_spServerSocketManager->StopSocketManager();
+        m_spClientSocketManager->Stop();
+        m_spServerSocketManager->Stop();
     }
 
     /**

@@ -37,7 +37,7 @@ namespace
             g_chessmateDirectory, "ChessMate.ini"
         );
 
-        if (!spConfigManager->StartConfigManager())
+        if (!spConfigManager->Start())
         {
             Util::System::CleanExit(Util::InitFailed);
             spConfigManager.reset();
@@ -51,7 +51,7 @@ namespace
     {
         if (spConfigManager)
         {
-            spConfigManager->StopConfigManager();
+            spConfigManager->Stop();
         }
     }
 
@@ -100,7 +100,7 @@ namespace
                 spConfigManager
             );
 
-            spSocketManager->StartSocketManager();
+            spSocketManager->Start();
         }
 
         return spSocketManager;
@@ -111,7 +111,7 @@ namespace
     {
         if (spSocketManager)
         {
-            spSocketManager->StopSocketManager();
+            spSocketManager->Stop();
         }
     }
 
@@ -129,7 +129,7 @@ namespace
                 spConfigManager, spSocketManager
             );
 
-            if (!spGameManager->StartGameManager())
+            if (!spGameManager->Start())
             {
                 Util::System::CleanExit(Util::InitFailed);
                 spGameManager.reset();
@@ -144,7 +144,7 @@ namespace
     {
         if (spGameManager)
         {
-            spGameManager->StopGameManager();
+            spGameManager->Stop();
         }
     }
 }

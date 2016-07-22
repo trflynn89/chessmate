@@ -5,6 +5,7 @@ SRC_DIRS_$(d) := \
     Util/Logging \
     Util/String \
     Util/System \
+    Util/Task \
     Test/GoogleTest
 
 # Define libraries to link

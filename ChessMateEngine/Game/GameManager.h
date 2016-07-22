@@ -1,6 +1,5 @@
 #pragma once
 
-#include <atomic>
 #include <future>
 #include <map>
 #include <memory>
@@ -8,17 +7,31 @@
 #include <thread>
 #include <vector>
 
-#include <Game/ChessGame.h>
-#include <Game/GameConfig.h>
-#include <Game/Message.h>
-#include <Movement/MoveSet.h>
-#include <Util/Config/ConfigManager.h>
-#include <Util/Socket/Socket.h>
-#include <Util/Socket/SocketManager.h>
+#include <Util/Utilities.h>
+#include <Util/Task/Runner.h>
+
+namespace Movement {
+
+DEFINE_CLASS_PTRS(MoveSet);
+
+}
+
+namespace Util {
+
+DEFINE_CLASS_PTRS(AsyncRequest);
+DEFINE_CLASS_PTRS(ConfigManager);
+DEFINE_CLASS_PTRS(Socket);
+DEFINE_CLASS_PTRS(SocketManager);
+
+}
 
 namespace Game {
 
+DEFINE_CLASS_PTRS(ChessGame);
+DEFINE_CLASS_PTRS(GameConfig);
 DEFINE_CLASS_PTRS(GameManager);
+DEFINE_CLASS_PTRS(Message);
+DEFINE_CLASS_PTRS(MoveSet);
 
 /**
  * Manager class to own and control all chess game instances.
@@ -27,9 +40,9 @@ DEFINE_CLASS_PTRS(GameManager);
  * to the manager, and for stopping any game(s).
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 19, 2016
+ * @version July 21, 2016
  */
-class GameManager : public std::enable_shared_from_this<GameManager>
+class GameManager : public Util::Runner
 {
 public:
     /**
@@ -37,15 +50,10 @@ public:
      */
     typedef std::map<int, ChessGamePtr> GamesMap;
 
-    /*!
+    /**
      * Map of clients awaiting game initialization.
      */
     typedef std::map<int, Util::SocketWPtr> PendingMap;
-
-    /**
-     * Vector of futures for void return values.
-     */
-    typedef std::vector<std::future<void>> FutureVector;
 
     /**
      * Constructor, stores a weak reference to the socket manager.
@@ -59,21 +67,6 @@ public:
      * Destructor. Stop all games if they have not been already.
      */
     ~GameManager();
-
-    /**
-     * Intialize the game manager. Create a socket to be used for accepting new
-     * game clients, and set the socket manager callbacks for when a client
-     * connects or disconnects.
-     *
-     * @return True if initialization of successful, false otherwise.
-     */
-    bool StartGameManager();
-
-    /**
-     * Stop the game manager. Stop all ongoing games, stop the worker threads,
-     * and clear the callbacks for client connects/disconnects.
-     */
-    void StopGameManager();
 
     /**
      * Create and start new game. The game will hold a weak reference to the
@@ -95,6 +88,29 @@ public:
      */
     void StopAllGames();
 
+protected:
+    /**
+     * Intialize the game manager. Create a socket to be used for accepting new
+     * game clients, and set the socket manager callbacks for when a client
+     * connects or disconnects.
+     *
+     * @return True if initialization of successful, false otherwise.
+     */
+    virtual bool StartRunner();
+
+    /**
+     * Stop the game manager. Stop all ongoing games and clear the callbacks for
+     * client connects/disconnects.
+     */
+    virtual void StopRunner();
+
+    /**
+     * Process any data received by the socket manager.
+     *
+     * @return True if the game manager is healthy.
+     */
+    virtual bool DoWork();
+
 private:
     /**
      * Set the socket manager callbacks for when a new client connects or an
@@ -114,31 +130,21 @@ private:
     bool createAcceptSocket(int);
 
     /**
-     * Create the game manager's IO worker threads.
-     */
-    void createMessageReceivers();
-
-    /**
-     * IO worker thread function to process data received by the socket
-     * manager.
-     */
-    void messageReceiver();
-
-    /**
      * Wait for a short time for a message to be available.
      *
-     * @return AsyncRequest The completed receive if found, an invalid receive.
+     * @param AsyncRequest Reference to request object to store a receive.
+     *
+     * @return True if the socket manager could be queried for a request.
      */
-    Util::AsyncRequest receiveSingleMessage() const;
+    bool receiveSingleMessage(Util::AsyncRequest &) const;
 
     /**
      * Find a game associated with an AsyncRequest and launch an async task to
      * process the message in the request.
      *
-     * @param FutureVector Vector to push the new task's future onto.
      * @param AsyncRequest The request to process.
      */
-    void giveRequestToGame(FutureVector &, const Util::AsyncRequest &);
+    void giveRequestToGame(const Util::AsyncRequest &);
 
     /**
      * Depending on the given message type, either create a chess game or find
@@ -164,10 +170,8 @@ private:
 
     /**
      * Remove any completed futures from the vector of futures.
-     *
-     * @param FutureVector Vector to check for finished futures.
      */
-    void deleteFinishedFutures(FutureVector &);
+    void deleteFinishedFutures();
 
     GamesMap m_gamesMap;
     PendingMap m_pendingMap;
@@ -175,8 +179,7 @@ private:
 
     Util::SocketManagerWPtr m_wpSocketManager;
 
-    FutureVector m_workerFutures;
-    std::atomic_bool m_aKeepRunning;
+    std::vector<std::future<void>> m_runningFutures;
 
     Movement::MoveSetPtr m_spMoveSet;
 

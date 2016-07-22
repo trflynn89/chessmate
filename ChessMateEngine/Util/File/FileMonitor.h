@@ -1,16 +1,14 @@
 #pragma once
 
-#include <atomic>
 #include <chrono>
 #include <functional>
-#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 
 #include <Util/Utilities.h>
 #include <Util/Concurrency/ConcurrentQueue.h>
+#include <Util/Task/Runner.h>
 
 namespace Util {
 
@@ -21,9 +19,9 @@ DEFINE_CLASS_PTRS(FileMonitor);
  * independent - OS dependent implementations should inherit from this class.
  *
  * @author Timothy Flynn (trflynn89@gmail.com)
- * @version July 4, 2016
+ * @version July 21, 2016
  */
-class FileMonitor : public std::enable_shared_from_this<FileMonitor>
+class FileMonitor : public Runner
 {
 public:
     /**
@@ -57,24 +55,29 @@ public:
     virtual ~FileMonitor();
 
     /**
-     * Start the file monitor thread.
-     *
-     * @return True if the monitor could be started.
-     */
-    bool StartMonitor();
-
-    /**
-     * Stop the file monitor thread.
-     */
-    void StopMonitor();
-
-protected:
-    /**
      * Check if the monitor implementation is in a good state.
      *
      * @return True if the monitor is healthy.
      */
     virtual bool IsValid() const = 0;
+
+protected:
+    /**
+     * @return True if the monitor is in a good state.
+     */
+    virtual bool StartRunner();
+
+    /**
+     * Clear the monitor callback.
+     */
+    virtual void StopRunner();
+
+    /**
+     * Poll the monitored file for changes.
+     *
+     * @return True if the monitor is in a good state.
+     */
+    virtual bool DoWork();
 
     /**
      * Poll for any file changes.
@@ -94,18 +97,12 @@ protected:
     const std::string m_file;
 
 private:
-    /**
-     * Thread in which the file is polled and callbacks are triggered.
-     */
-    void monitorThread();
-
-    std::atomic_bool m_aKeepRunning;
-    std::future<void> m_future;
-
     mutable std::mutex m_callbackMutex;
     FileEventCallback m_handler;
 
     ConcurrentQueue<FileEvent> m_eventQueue;
+
+    size_t m_interval;
 };
 
 }

@@ -2,20 +2,19 @@
 
 #include <atomic>
 #include <chrono>
-#include <future>
 #include <memory>
 #include <mutex>
 #include <vector>
 
 #include <Util/Utilities.h>
-#include <Util/Config/ConfigManager.h>
 #include <Util/Socket/AsyncStructs.h>
-#include <Util/Socket/Socket.h>
-#include <Util/Socket/SocketConfig.h>
+#include <Util/Task/Runner.h>
 
 namespace Util {
 
+DEFINE_CLASS_PTRS(ConfigManager);
 DEFINE_CLASS_PTRS(Socket);
+DEFINE_CLASS_PTRS(SocketConfig);
 DEFINE_CLASS_PTRS(SocketManager);
 
 typedef std::function<void(SocketPtr)> NewClientCallback;
@@ -29,7 +28,7 @@ typedef std::function<void(int)> ClosedClientCallback;
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 19, 2016
  */
-class SocketManager : public std::enable_shared_from_this<SocketManager>
+class SocketManager : public Runner
 {
 public:
     /**
@@ -43,23 +42,12 @@ public:
      *
      * @param ConfigManagerPtr Reference to the configuration manager.
      */
-    SocketManager(ConfigManagerPtr &spConfigManager);
+    SocketManager(ConfigManagerPtr &);
 
     /**
      * Default destructor.
      */
     virtual ~SocketManager();
-
-    /**
-     * Start the thread which monitors asynchronous socket IO.
-     */
-    void StartSocketManager();
-
-    /**
-     * Stop the socket manager. Stop the asynchronous IO thread and close all
-     * sockets.
-     */
-    void StopSocketManager();
 
     /**
      * Set callbacks for when a client connects or disconnects.
@@ -139,18 +127,23 @@ public:
 
 protected:
     /**
-     * Thread to monitor asynchronous sockets. Virtual to allow subclasses to
-     * override this thread's behavior.
+     * @return True.
      */
-    virtual void AsyncIoThread() = 0;
+    virtual bool StartRunner();
 
-    std::atomic_bool m_aKeepRunning;
+    /**
+     * Stop the socket manager and close all sockets.
+     */
+    virtual void StopRunner();
+
+    /**
+     * Check monitored for healthy and available IO.
+     */
+    virtual bool DoWork() = 0;
 
     std::mutex m_callbackMutex;
     NewClientCallback m_newClientCallback;
     ClosedClientCallback m_closedClientCallback;
-
-    std::future<void> m_serviceFuture;
 
     std::vector<SocketPtr> m_aioSockets;
     std::mutex m_aioSocketsMutex;

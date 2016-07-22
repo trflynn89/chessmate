@@ -11,8 +11,6 @@ namespace Util {
 
 DEFINE_CLASS_PTRS(Config);
 
-#define GET_CONFIGURATION_NAME(clss) "##clss"
-
 /**
  * Class to hold a set of related configuration values.
  *

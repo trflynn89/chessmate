@@ -90,7 +90,7 @@ public:
     virtual void SetUp()
     {
         ASSERT_TRUE(Util::System::MakeDirectory(m_path));
-        ASSERT_TRUE(m_spConfigManager->StartConfigManager());
+        ASSERT_TRUE(m_spConfigManager->Start());
     }
 
     /**
@@ -98,7 +98,7 @@ public:
      */
     virtual void TearDown()
     {
-        m_spConfigManager->StopConfigManager();
+        m_spConfigManager->Stop();
         std::remove(GetFullPath().c_str());
     }
 
@@ -132,13 +132,13 @@ protected:
 //==============================================================================
 TEST_F(ConfigManagerTest, BadFileTypeTest)
 {
-    m_spConfigManager->StopConfigManager();
+    m_spConfigManager->Stop();
 
     m_spConfigManager = std::make_shared<Util::ConfigManager>(
         (Util::ConfigManager::ConfigFileType)-1, m_path, m_file
     );
 
-    EXPECT_FALSE(m_spConfigManager->StartConfigManager());
+    EXPECT_FALSE(m_spConfigManager->Start());
 }
 
 //==============================================================================

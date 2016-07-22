@@ -25,12 +25,6 @@ int GameConfig::AcceptPort() const
 }
 
 //==============================================================================
-unsigned int GameConfig::DefaultWorkerCount() const
-{
-    return GetValue<unsigned int>("default_worker_count", 1);
-}
-
-//==============================================================================
 std::chrono::seconds GameConfig::QueueWaitTime() const
 {
     return std::chrono::seconds(

@@ -41,11 +41,6 @@ public:
     int AcceptPort() const;
 
     /**
-     * @return Number of worker threads, used if could not find number of cores.
-     */
-    unsigned int DefaultWorkerCount() const;
-
-    /**
      * @return Sleep time for logger IO thread.
      */
     std::chrono::seconds QueueWaitTime() const;

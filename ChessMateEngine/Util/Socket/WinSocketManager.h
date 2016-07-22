@@ -20,7 +20,7 @@ class SocketManagerImpl : public SocketManager
 public:
     SocketManagerImpl();
     SocketManagerImpl(ConfigManagerPtr &spConfigManager);
-    ~SocketManagerImpl();
+    virtual ~SocketManagerImpl();
 
 protected:
     void AsyncIoThread();

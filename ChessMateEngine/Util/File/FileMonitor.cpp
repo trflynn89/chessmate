@@ -15,52 +15,64 @@ FileMonitor::FileMonitor(
     const std::string &path,
     const std::string &file
 ) :
+    Runner("FileMonitor", 1),
     m_path(path),
     m_file(file),
-    m_aKeepRunning(true),
-    m_handler(handler)
+    m_handler(handler),
+    m_interval(0)
 {
 }
 
 //==============================================================================
 FileMonitor::~FileMonitor()
 {
-    if (m_aKeepRunning.load())
-    {
-        StopMonitor();
-    }
 }
 
 //==============================================================================
-bool FileMonitor::StartMonitor()
+bool FileMonitor::StartRunner()
 {
-    bool ret = false;
+    return IsValid();
+}
+
+//==============================================================================
+void FileMonitor::StopRunner()
+{
+    std::lock_guard<std::mutex> lock(m_callbackMutex);
+    m_handler = nullptr;
+}
+
+//==============================================================================
+bool FileMonitor::DoWork()
+{
+    static const size_t updateInterval = 5;
 
     if (IsValid())
     {
-        const FileMonitorPtr &spThis = shared_from_this();
-        auto function = &FileMonitor::monitorThread;
+        Poll(s_pollTimeout);
 
-        m_future = std::async(std::launch::async, function, spThis);
+        if ((++m_interval % updateInterval) == 0)
+        {
+            FileEvent event = FileMonitor::FILE_NO_CHANGE;
 
-        ret = m_future.valid();
+            while (!m_eventQueue.IsEmpty())
+            {
+                m_eventQueue.Pop(event);
+            }
+
+            if (event != FileMonitor::FILE_NO_CHANGE)
+            {
+                std::lock_guard<std::mutex> lock(m_callbackMutex);
+
+                if (m_handler != nullptr)
+                {
+                    LOGI(-1, "Handling event %d for \"%s\"", event, m_file);
+                    m_handler(event);
+                }
+            }
+        }
     }
 
-    return ret;
-}
-
-//==============================================================================
-void FileMonitor::StopMonitor()
-{
-    m_aKeepRunning.store(false);
-
-    if (m_future.valid())
-    {
-        m_future.get();
-    }
-
-    std::lock_guard<std::mutex> lock(m_callbackMutex);
-    m_handler = nullptr;
+    return IsValid();
 }
 
 //==============================================================================
@@ -69,46 +81,6 @@ void FileMonitor::HandleEvent(FileEvent event)
     if (event != FileMonitor::FILE_NO_CHANGE)
     {
         m_eventQueue.Push(event);
-    }
-}
-
-//==============================================================================
-void FileMonitor::monitorThread()
-{
-    static const size_t updateInterval = 5;
-    size_t interval = 0;
-
-    while (m_aKeepRunning.load())
-    {
-        if (IsValid())
-        {
-            Poll(s_pollTimeout);
-
-            if ((++interval % updateInterval) == 0)
-            {
-                FileEvent event = FileMonitor::FILE_NO_CHANGE;
-
-                while (!m_eventQueue.IsEmpty())
-                {
-                    m_eventQueue.Pop(event);
-                }
-
-                if (event != FileMonitor::FILE_NO_CHANGE)
-                {
-                    std::lock_guard<std::mutex> lock(m_callbackMutex);
-
-                    if (m_handler != nullptr)
-                    {
-                        LOGI(-1, "Handling event %d for \"%s\"", event, m_file);
-                        m_handler(event);
-                    }
-                }
-            }
-        }
-        else
-        {
-            m_aKeepRunning.store(false);
-        }
     }
 }
 

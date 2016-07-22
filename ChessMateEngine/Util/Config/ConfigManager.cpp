@@ -14,6 +14,7 @@ ConfigManager::ConfigManager(
     const std::string &path,
     const std::string &file
 ) :
+    Runner("ConfigManager", 0),
     m_path(path),
     m_file(file)
 {
@@ -32,38 +33,6 @@ ConfigManager::ConfigManager(
 //==============================================================================
 ConfigManager::~ConfigManager()
 {
-    StopConfigManager();
-}
-
-//==============================================================================
-bool ConfigManager::StartConfigManager()
-{
-    if (m_spParser)
-    {
-        ConfigManagerPtr spThis = shared_from_this();
-
-        static const auto onChange = &ConfigManager::onConfigChange;
-        auto callback = std::bind(onChange, spThis, std::placeholders::_1);
-
-        m_spMonitor = std::make_shared<FileMonitorImpl>(callback, m_path, m_file);
-
-        if (m_spMonitor->StartMonitor())
-        {
-            onConfigChange(FileMonitor::FILE_NO_CHANGE);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-//==============================================================================
-void ConfigManager::StopConfigManager()
-{
-    if (m_spMonitor)
-    {
-        m_spMonitor->StopMonitor();
-    }
 }
 
 //==============================================================================
@@ -71,6 +40,42 @@ ConfigManager::ConfigMap::size_type ConfigManager::GetSize() const
 {
     std::lock_guard<std::mutex> lock(m_configsMutex);
     return m_configs.size();
+}
+
+//==============================================================================
+bool ConfigManager::StartRunner()
+{
+    if (m_spParser)
+    {
+        ConfigManagerPtr spThis = SharedFromThis<ConfigManager>();
+
+        static const auto onChange = &ConfigManager::onConfigChange;
+        auto callback = std::bind(onChange, spThis, std::placeholders::_1);
+
+        m_spMonitor = std::make_shared<FileMonitorImpl>(callback, m_path, m_file);
+
+        if (m_spMonitor->Start())
+        {
+            onConfigChange(FileMonitor::FILE_NO_CHANGE);
+        }
+    }
+
+    return (m_spMonitor && m_spMonitor->IsValid());
+}
+
+//==============================================================================
+void ConfigManager::StopRunner()
+{
+    if (m_spMonitor)
+    {
+        m_spMonitor->Stop();
+    }
+}
+
+//==============================================================================
+bool ConfigManager::DoWork()
+{
+    return false;
 }
 
 //==============================================================================
