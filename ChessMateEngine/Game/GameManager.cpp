@@ -90,6 +90,10 @@ void GameManager::StopRunner()
         spSocketManager->ClearClientCallbacks();
     }
 
+    StopAllGames();
+
+    std::lock_guard<std::mutex> lock(m_runningFuturesMutex);
+
     for (auto &future : m_runningFutures)
     {
         if (future.valid())
@@ -97,8 +101,6 @@ void GameManager::StopRunner()
             future.get();
         }
     }
-
-    StopAllGames();
 }
 
 //==============================================================================
@@ -211,6 +213,8 @@ void GameManager::giveRequestToGame(const Util::AsyncRequest &request)
         auto function = &GameManager::handleMessage;
 
         auto future = std::async(std::launch::async, function, spThis, spGame, message);
+
+        std::lock_guard<std::mutex> lock(m_runningFuturesMutex);
         m_runningFutures.push_back(std::move(future));
     }
 }
@@ -282,17 +286,22 @@ void GameManager::handleMessage(const ChessGamePtr spGame, const Message message
 //==============================================================================
 void GameManager::deleteFinishedFutures()
 {
-    static const std::chrono::seconds noWait(0);
+    static const std::chrono::seconds noWait = std::chrono::seconds::zero();
 
-    for (auto it = m_runningFutures.begin(); it != m_runningFutures.end(); )
+    std::unique_lock<std::mutex> lock(m_runningFuturesMutex, std::try_to_lock);
+
+    if (lock.owns_lock())
     {
-        if (it->wait_for(noWait) == std::future_status::ready)
+        for (auto it = m_runningFutures.begin(); it != m_runningFutures.end(); )
         {
-            it = m_runningFutures.erase(it);
-        }
-        else
-        {
-            ++it;
+            if (it->wait_for(noWait) == std::future_status::ready)
+            {
+                it = m_runningFutures.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
         }
     }
 }
