@@ -282,11 +282,11 @@ void GameManager::handleMessage(const ChessGamePtr spGame, const Message message
 //==============================================================================
 void GameManager::deleteFinishedFutures()
 {
+    static const std::chrono::seconds noWait(0);
+
     for (auto it = m_runningFutures.begin(); it != m_runningFutures.end(); )
     {
-        std::future_status status = it->wait_for(std::chrono::seconds::zero());
-
-        if (status == std::future_status::ready)
+        if (it->wait_for(noWait) == std::future_status::ready)
         {
             it = m_runningFutures.erase(it);
         }

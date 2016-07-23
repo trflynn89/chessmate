@@ -36,9 +36,24 @@ ConfigManager::~ConfigManager()
 }
 
 //==============================================================================
-ConfigManager::ConfigMap::size_type ConfigManager::GetSize() const
+ConfigManager::ConfigMap::size_type ConfigManager::GetSize()
 {
     std::lock_guard<std::mutex> lock(m_configsMutex);
+
+    for (auto it = m_configs.begin(); it != m_configs.end(); )
+    {
+        ConfigPtr spConfig = it->second.lock();
+
+        if (spConfig)
+        {
+            ++it;
+        }
+        else
+        {
+            it = m_configs.erase(it);
+        }
+    }
+
     return m_configs.size();
 }
 
@@ -93,10 +108,21 @@ void ConfigManager::onConfigChange(FileMonitor::FileEvent)
 
     std::lock_guard<std::mutex> lock(m_configsMutex);
 
-    for (auto &configuration : m_configs)
+    for (auto it = m_configs.begin(); it != m_configs.end(); )
     {
-        Parser::ValueList values = m_spParser->GetValues(configuration.first);
-        configuration.second->Update(values);
+        ConfigPtr spConfig = it->second.lock();
+
+        if (spConfig)
+        {
+            Parser::ValueList values = m_spParser->GetValues(it->first);
+            spConfig->Update(values);
+
+            ++it;
+        }
+        else
+        {
+            it = m_configs.erase(it);
+        }
     }
 }
 

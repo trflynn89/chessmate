@@ -142,7 +142,7 @@ std::string SystemImpl::GetLastError(int *pCode)
 
     if (str == NULL)
     {
-         ret = std::to_string(error);
+        ret = std::to_string(error);
     }
     else
     {

@@ -144,18 +144,31 @@ TEST_F(ConfigManagerTest, BadFileTypeTest)
 //==============================================================================
 TEST_F(ConfigManagerTest, CreateConfigTest)
 {
-    m_spConfigManager->CreateConfig<Util::Config>();
+    auto spConfig = m_spConfigManager->CreateConfig<Util::Config>();
     EXPECT_EQ(m_spConfigManager->GetSize(), 1);
 }
 
 //==============================================================================
 TEST_F(ConfigManagerTest, DuplicateConfigTest)
 {
-    m_spConfigManager->CreateConfig<Util::Config>();
+    auto spConfig1 = m_spConfigManager->CreateConfig<Util::Config>();
     EXPECT_EQ(m_spConfigManager->GetSize(), 1);
 
-    m_spConfigManager->CreateConfig<Util::Config>();
+    auto spConfig2 = m_spConfigManager->CreateConfig<Util::Config>();
     EXPECT_EQ(m_spConfigManager->GetSize(), 1);
+}
+
+//==============================================================================
+TEST_F(ConfigManagerTest, DeletedConfigTest)
+{
+    EXPECT_EQ(m_spConfigManager->GetSize(), 0);
+
+    {
+        auto spConfig = m_spConfigManager->CreateConfig<Util::Config>();
+        EXPECT_EQ(m_spConfigManager->GetSize(), 1);
+    }
+
+    EXPECT_EQ(m_spConfigManager->GetSize(), 0);
 }
 
 //==============================================================================

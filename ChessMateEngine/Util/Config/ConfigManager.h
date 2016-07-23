@@ -27,7 +27,7 @@ class ConfigManager : public Runner
     /**
      * Map of configuration group names to configuration objects.
      */
-    typedef std::map<std::string, ConfigPtr> ConfigMap;
+    typedef std::map<std::string, ConfigWPtr> ConfigMap;
 
 public:
     /**
@@ -68,11 +68,12 @@ public:
     std::shared_ptr<T> CreateConfig();
 
     /**
-     * Get the number of configuration objects currently created.
+     * Get the number of configuration objects currently created. Erases any
+     * expired configuration objects.
      *
      * @return The number of configurations.
      */
-    ConfigMap::size_type GetSize() const;
+    ConfigMap::size_type GetSize();
 
 protected:
     /**
@@ -124,15 +125,24 @@ std::shared_ptr<T> ConfigManager::CreateConfig()
     if (it == m_configs.end())
     {
         spConfig = std::make_shared<T>();
-        spConfig->Update(m_spParser->GetValues(name));
-
         m_configs[name] = spConfig;
     }
     else
     {
-        spConfig = std::static_pointer_cast<T>(it->second);
+        ConfigPtr spBaseConfig = it->second.lock();
+
+        if (spBaseConfig)
+        {
+            spConfig = std::static_pointer_cast<T>(spBaseConfig);
+        }
+        else
+        {
+            spConfig = std::make_shared<T>();
+            m_configs[name] = spConfig;
+        }
     }
 
+    spConfig->Update(m_spParser->GetValues(name));
     return spConfig;
 }
 
