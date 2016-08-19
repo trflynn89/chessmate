@@ -3,20 +3,21 @@
 
 #include "GameManager.h"
 
+#include <fly/logging/logger.h>
+#include <fly/config/config_manager.h>
+#include <fly/socket/socket.h>
+#include <fly/socket/socket_manager.h>
+
 #include <Game/ChessGame.h>
 #include <Game/Message.h>
 #include <Movement/MoveSet.h>
-#include <Util/Logging/Logger.h>
-#include <Util/Config/ConfigManager.h>
-#include <Util/Socket/Socket.h>
-#include <Util/Socket/SocketManager.h>
 
 namespace Game {
 
 //==============================================================================
 GameManager::GameManager(
-    Util::ConfigManagerPtr &spConfigManager,
-    const Util::SocketManagerPtr &spSocketManager
+    fly::ConfigManagerPtr &spConfigManager,
+    const fly::SocketManagerPtr &spSocketManager
 ) :
     Runner(spConfigManager, "GameManager"),
     m_wpSocketManager(spSocketManager),
@@ -31,7 +32,7 @@ GameManager::~GameManager()
 }
 
 //==============================================================================
-void GameManager::StartGame(const Util::SocketPtr &spClientSocket)
+void GameManager::StartGame(const fly::SocketPtr &spClientSocket)
 {
     std::lock_guard<std::mutex> lock(m_gamesMutex);
     m_pendingMap[spClientSocket->GetSocketId()] = spClientSocket;
@@ -83,7 +84,7 @@ void GameManager::StopRunner()
 {
     LOGC("Stopping game manager");
 
-    Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+    fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
 
     if (spSocketManager)
     {
@@ -106,7 +107,7 @@ void GameManager::StopRunner()
 //==============================================================================
 bool GameManager::DoWork()
 {
-    Util::AsyncRequest request;
+    fly::AsyncRequest request;
     bool healthy = receiveSingleMessage(request);
 
     if (healthy)
@@ -121,7 +122,7 @@ bool GameManager::DoWork()
 //==============================================================================
 bool GameManager::setSocketCallbacks()
 {
-    Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+    fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
 
     if (spSocketManager)
     {
@@ -139,18 +140,18 @@ bool GameManager::setSocketCallbacks()
 //==============================================================================
 bool GameManager::createAcceptSocket(int acceptPort)
 {
-    Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
-    Util::SocketPtr spSocket;
+    fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+    fly::SocketPtr spSocket;
 
     if (spSocketManager)
     {
-        Util::SocketWPtr wpSocket = spSocketManager->CreateAsyncTcpSocket();
+        fly::SocketWPtr wpSocket = spSocketManager->CreateAsyncTcpSocket();
         spSocket = wpSocket.lock();
     }
 
     if (spSocket)
     {
-        if (!spSocket->BindForReuse(Util::Socket::InAddrAny(), acceptPort))
+        if (!spSocket->BindForReuse(fly::Socket::InAddrAny(), acceptPort))
         {
             LOGE(-1, "Could not bind socket to port %d", acceptPort);
             spSocket.reset();
@@ -167,9 +168,9 @@ bool GameManager::createAcceptSocket(int acceptPort)
 }
 
 //==============================================================================
-bool GameManager::receiveSingleMessage(Util::AsyncRequest &request) const
+bool GameManager::receiveSingleMessage(fly::AsyncRequest &request) const
 {
-    Util::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+    fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
 
     if (spSocketManager)
     {
@@ -185,7 +186,7 @@ bool GameManager::receiveSingleMessage(Util::AsyncRequest &request) const
 }
 
 //==============================================================================
-void GameManager::giveRequestToGame(const Util::AsyncRequest &request)
+void GameManager::giveRequestToGame(const fly::AsyncRequest &request)
 {
     ChessGamePtr spGame;
     Message message;
@@ -232,7 +233,7 @@ ChessGamePtr GameManager::createOrFindGame(int socketId, const Message &message)
             return ChessGamePtr();
         }
 
-        Util::SocketPtr spSocket = m_pendingMap[socketId].lock();
+        fly::SocketPtr spSocket = m_pendingMap[socketId].lock();
         m_pendingMap.erase(socketId);
 
         if (spSocket)

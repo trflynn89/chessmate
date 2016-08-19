@@ -2,26 +2,26 @@
 #include <chrono>
 #include <thread>
 
+#include <fly/exit_codes.h>
+#include <fly/config/config_manager.h>
+#include <fly/logging/logger.h>
+#include <fly/socket/socket_manager_impl.h>
+#include <fly/system/system.h>
+
 #include <ChessMateEngine.h>
 #include <Game/GameManager.h>
-#include <Util/ExitCodes.h>
-#include <Util/Config/ConfigManager.h>
-#include <Util/Logging/Logger.h>
-#include <Util/Socket/SocketManagerImpl.h>
-#include <Util/System/System.h>
-#include <Util/Task/Runner.h>
 
 //==============================================================================
 ChessMateEngine::ChessMateEngine() : Runner("ChessMateEngine", 0)
 {
-    Util::System::SetupSignalHandler();
+    fly::System::SetupSignalHandler();
 
-    const char sep = Util::System::GetSeparator();
-    const std::string temp = Util::System::GetTempDirectory();
+    const char sep = fly::System::GetSeparator();
+    const std::string temp = fly::System::GetTempDirectory();
 
-    m_chessMateDirectory = Util::String::Join(sep, temp, "ChessMate");
+    m_chessMateDirectory = fly::String::Join(sep, temp, "ChessMate");
 
-    if (!Util::System::MakeDirectory(m_chessMateDirectory))
+    if (!fly::System::MakeDirectory(m_chessMateDirectory))
     {
         m_chessMateDirectory = temp;
     }
@@ -39,7 +39,7 @@ bool ChessMateEngine::StartRunner()
 
     if (!ret)
     {
-        Util::System::CleanExit(Util::InitFailed);
+        fly::System::CleanExit(fly::InitFailed);
     }
 
     return ret;
@@ -63,8 +63,8 @@ bool ChessMateEngine::DoWork()
 //==============================================================================
 bool ChessMateEngine::initConfigManager()
 {
-    m_spConfigManager = std::make_shared<Util::ConfigManager>(
-        Util::ConfigManager::CONFIG_TYPE_INI,
+    m_spConfigManager = std::make_shared<fly::ConfigManager>(
+        fly::ConfigManager::CONFIG_TYPE_INI,
         m_chessMateDirectory, "ChessMate.ini"
     );
 
@@ -74,13 +74,13 @@ bool ChessMateEngine::initConfigManager()
 //==============================================================================
 bool ChessMateEngine::initLogger()
 {
-    m_spLogger = std::make_shared<Util::Logger>(
+    m_spLogger = std::make_shared<fly::Logger>(
         m_spConfigManager, m_chessMateDirectory
     );
 
     if (m_spLogger->Start())
     {
-        Util::Logger::SetInstance(m_spLogger);
+        fly::Logger::SetInstance(m_spLogger);
     }
     else
     {
@@ -94,7 +94,7 @@ bool ChessMateEngine::initLogger()
 //==============================================================================
 bool ChessMateEngine::initSocketManager()
 {
-    m_spSocketManager = std::make_shared<Util::SocketManagerImpl>(
+    m_spSocketManager = std::make_shared<fly::SocketManagerImpl>(
         m_spConfigManager
     );
 
@@ -118,7 +118,7 @@ int main()
 
     if (spEngine && spEngine->Start())
     {
-        while (Util::System::KeepRunning())
+        while (fly::System::KeepRunning())
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
@@ -126,5 +126,5 @@ int main()
         spEngine->Stop();
     }
 
-    return Util::System::GetExitCode();
+    return fly::System::GetExitCode();
 }

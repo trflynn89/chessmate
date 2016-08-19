@@ -2,17 +2,10 @@
 SRC_DIRS_$(d) := \
     Engine \
     Game \
-    Movement \
-    Util/Config \
-    Util/File \
-    Util/Logging \
-    Util/Socket \
-    Util/String \
-    Util/System \
-    Util/Task
+    Movement
 
 # Define libraries to link
-LDLIBS_$(d) := -lpthread
+LDLIBS_$(d) := -lfly -lpthread
 
 # Define source files
 $(eval $(call WILDCARD_SOURCES))

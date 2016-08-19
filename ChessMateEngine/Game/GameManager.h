@@ -7,8 +7,8 @@
 #include <thread>
 #include <vector>
 
-#include <Util/Utilities.h>
-#include <Util/Task/Runner.h>
+#include <fly/fly.h>
+#include <fly/task/runner.h>
 
 namespace Movement {
 
@@ -16,7 +16,7 @@ DEFINE_CLASS_PTRS(MoveSet);
 
 }
 
-namespace Util {
+namespace fly {
 
 DEFINE_CLASS_PTRS(AsyncRequest);
 DEFINE_CLASS_PTRS(ConfigManager);
@@ -42,7 +42,7 @@ DEFINE_CLASS_PTRS(MoveSet);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 21, 2016
  */
-class GameManager : public Util::Runner
+class GameManager : public fly::Runner
 {
 public:
     /**
@@ -53,7 +53,7 @@ public:
     /**
      * Map of clients awaiting game initialization.
      */
-    typedef std::map<int, Util::SocketWPtr> PendingMap;
+    typedef std::map<int, fly::SocketWPtr> PendingMap;
 
     /**
      * Constructor, stores a weak reference to the socket manager.
@@ -61,7 +61,7 @@ public:
      * @param ConfigManagerPtr Reference to the configuration manager.
      * @param SocketManagerPtr Reference to the socket manager.
      */
-    GameManager(Util::ConfigManagerPtr &, const Util::SocketManagerPtr &);
+    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &);
 
     /**
      * Destructor. Stop all games if they have not been already.
@@ -74,7 +74,7 @@ public:
      *
      * @param SocketPtr Shared pointer to the socket connected to the game client.
      */
-    void StartGame(const Util::SocketPtr &);
+    void StartGame(const fly::SocketPtr &);
 
     /**
      * Stop and delete a game.
@@ -136,7 +136,7 @@ private:
      *
      * @return True if the socket manager could be queried for a request.
      */
-    bool receiveSingleMessage(Util::AsyncRequest &) const;
+    bool receiveSingleMessage(fly::AsyncRequest &) const;
 
     /**
      * Find a game associated with an AsyncRequest and launch an async task to
@@ -144,7 +144,7 @@ private:
      *
      * @param AsyncRequest The request to process.
      */
-    void giveRequestToGame(const Util::AsyncRequest &);
+    void giveRequestToGame(const fly::AsyncRequest &);
 
     /**
      * Depending on the given message type, either create a chess game or find
@@ -177,7 +177,7 @@ private:
     PendingMap m_pendingMap;
     std::mutex m_gamesMutex;
 
-    Util::SocketManagerWPtr m_wpSocketManager;
+    fly::SocketManagerWPtr m_wpSocketManager;
 
     std::mutex m_runningFuturesMutex;
     std::vector<std::future<void>> m_runningFutures;

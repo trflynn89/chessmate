@@ -3,8 +3,9 @@
 
 #include <gtest/gtest.h>
 
+#include <fly/logging/logger.h>
+
 #include <Movement/MoveSet.h>
-#include <Util/Logging/Logger.h>
 
 //==============================================================================
 TEST(MovementTest, FooTest)

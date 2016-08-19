@@ -3,9 +3,10 @@
 #include <chrono>
 #include <string>
 
+#include <fly/fly.h>
+#include <fly/config/config.h>
+
 #include <Game/BoardTypes.h>
-#include <Util/Utilities.h>
-#include <Util/Config/Config.h>
 
 namespace Game {
 
@@ -17,7 +18,7 @@ DEFINE_CLASS_PTRS(GameConfig);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 19, 2016
  */
-class GameConfig : public Util::Config
+class GameConfig : public fly::Config
 {
 public:
     /**

@@ -2,13 +2,14 @@
 
 #include <memory>
 
+#include <fly/socket/socket.h>
+
 #include <Engine/MoveSelector.h>
 #include <Game/BitBoard.h>
 #include <Game/GameConfig.h>
 #include <Game/Message.h>
 #include <Movement/Move.h>
 #include <Movement/MoveSet.h>
-#include <Util/Socket/Socket.h>
 
 namespace Game {
 
@@ -46,7 +47,7 @@ public:
      */
     static ChessGamePtr Create(
         const GameConfigPtr &,
-        const Util::SocketPtr &,
+        const fly::SocketPtr &,
         const Movement::MoveSetPtr &,
         const Message &
     );
@@ -62,7 +63,7 @@ public:
      */
     ChessGame(
         const GameConfigPtr &,
-        const Util::SocketPtr &,
+        const fly::SocketPtr &,
         const Movement::MoveSetPtr &,
         const color_type &,
         const value_type &
@@ -142,7 +143,7 @@ private:
 
     int m_gameId;
 
-    Util::SocketWPtr m_wpClientSocket;
+    fly::SocketWPtr m_wpClientSocket;
     Movement::MoveSetWPtr m_wpMoveSet;
 
     value_type m_maxDepth;

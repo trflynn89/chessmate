@@ -2,8 +2,8 @@
 #include <string>
 #include <type_traits>
 
-#include <Util/Utilities.h>
-#include <Util/Task/Runner.h>
+#include <fly/fly.h>
+#include <fly/task/runner.h>
 
 namespace Game {
 
@@ -11,7 +11,7 @@ DEFINE_CLASS_PTRS(GameManager);
 
 }
 
-namespace Util {
+namespace fly {
 
 DEFINE_CLASS_PTRS(ConfigManager);
 DEFINE_CLASS_PTRS(Logger);
@@ -27,7 +27,7 @@ DEFINE_CLASS_PTRS(ChessMateEngine);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 21, 2016
  */
-class ChessMateEngine : public Util::Runner
+class ChessMateEngine : public fly::Runner
 {
 public:
     /**
@@ -89,9 +89,9 @@ private:
     template <typename T>
     void stopRunner(std::shared_ptr<T> &);
 
-    Util::ConfigManagerPtr m_spConfigManager;
-    Util::LoggerPtr m_spLogger;
-    Util::SocketManagerPtr m_spSocketManager;
+    fly::ConfigManagerPtr m_spConfigManager;
+    fly::LoggerPtr m_spLogger;
+    fly::SocketManagerPtr m_spSocketManager;
     Game::GameManagerPtr m_spGameManager;
 
     std::string m_chessMateDirectory;

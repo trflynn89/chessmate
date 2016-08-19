@@ -1,6 +1,6 @@
 #include "BitBoard.h"
 
-#include <Util/Utilities.h>
+#include <fly/fly.h>
 
 namespace Game {
 

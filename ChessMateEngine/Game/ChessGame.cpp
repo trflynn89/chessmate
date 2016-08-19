@@ -3,17 +3,18 @@
 #include <string>
 #include <vector>
 
+#include <fly/fly.h>
+#include <fly/logging/logger.h>
+#include <fly/string/string.h>
+
 #include <Movement/ValidMoveSet.h>
-#include <Util/Logging/Logger.h>
-#include <Util/String/String.h>
-#include <Util/Utilities.h>
 
 namespace Game {
 
 //==============================================================================
 ChessGamePtr ChessGame::Create(
     const GameConfigPtr &spConfig,
-    const Util::SocketPtr &spClientSocket,
+    const fly::SocketPtr &spClientSocket,
     const Movement::MoveSetPtr &spMoveSet,
     const Message &msg
 )
@@ -26,7 +27,7 @@ ChessGamePtr ChessGame::Create(
         return ChessGamePtr();
     }
 
-    std::vector<std::string> arr = Util::String::Split(data, ' ');
+    std::vector<std::string> arr = fly::String::Split(data, ' ');
     color_type engineColor = std::stoi(arr[0]);
     value_type difficulty = std::stoi(arr[1]);
 
@@ -41,7 +42,7 @@ ChessGamePtr ChessGame::Create(
 //==============================================================================
 ChessGame::ChessGame(
     const GameConfigPtr &spConfig,
-    const Util::SocketPtr &spClientSocket,
+    const fly::SocketPtr &spClientSocket,
     const Movement::MoveSetPtr &spMoveSet,
     const color_type &engineColor,
     const value_type &difficulty
@@ -77,7 +78,7 @@ int ChessGame::GetGameID() const
 //==============================================================================
 bool ChessGame::IsValid() const
 {
-    Util::SocketPtr spClientSocket = m_wpClientSocket.lock();
+    fly::SocketPtr spClientSocket = m_wpClientSocket.lock();
 
     if (spClientSocket && spClientSocket->IsValid())
     {
@@ -178,7 +179,7 @@ bool ChessGame::sendMessage(const Message &msg) const
     std::string serialized = msg.Serialize();
     LOGD(m_gameId, "Sending message %s", serialized);
 
-    Util::SocketPtr spClientSocket = m_wpClientSocket.lock();
+    fly::SocketPtr spClientSocket = m_wpClientSocket.lock();
 
     if (spClientSocket && spClientSocket->IsValid())
     {
