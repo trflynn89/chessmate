@@ -1,8 +1,8 @@
 # Define the directories to include and compile
 SRC_DIRS_$(d) := \
-    Engine \
-    Game \
-    Movement
+    engine \
+    game \
+    movement
 
 # Define libraries to link
 LDLIBS_$(d) := -lfly -lpthread

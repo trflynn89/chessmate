@@ -8,10 +8,10 @@ VERSION = $(shell cat $(SOURCE_ROOT)/../VERSION.md)
 include /usr/src/fly/api.mk
 
 # Set default target
-$(eval $(call SET_DEFAULT_TARGET, chessmate_engine))
+$(eval $(call SET_DEFAULT_TARGET, chessmate))
 
 # Main targets
-$(eval $(call ADD_TARGET, chessmate_engine, ., BIN))
+$(eval $(call ADD_TARGET, chessmate, ., BIN))
 
 # Import the build system
 include /usr/src/fly/build.mk
