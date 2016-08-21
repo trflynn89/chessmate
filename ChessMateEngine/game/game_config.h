@@ -8,7 +8,7 @@
 
 #include <game/board_types.h>
 
-namespace Game {
+namespace chessmate {
 
 DEFINE_CLASS_PTRS(GameConfig);
 

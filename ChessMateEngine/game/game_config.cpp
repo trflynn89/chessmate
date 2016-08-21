@@ -1,6 +1,6 @@
 #include "game_config.h"
 
-namespace Game {
+namespace chessmate {
 
 //==============================================================================
 GameConfig::GameConfig()

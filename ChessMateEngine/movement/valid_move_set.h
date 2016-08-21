@@ -4,7 +4,7 @@
 #include <movement/move.h>
 #include <movement/move_set.h>
 
-namespace Movement {
+namespace chessmate {
 
 /**
  * This class uses the set of all moves calculated at the beginning of the game
@@ -23,7 +23,7 @@ public:
      * @param MoveSetPtr The list of possible moves.
      * @param BitBoardPtr The board to generate moves for.
      */
-    ValidMoveSet(const MoveSetWPtr &, const Game::BitBoardPtr &);
+    ValidMoveSet(const MoveSetWPtr &, const BitBoardPtr &);
 
     /**
      * @return The list of the turn player's valid moves.
@@ -38,12 +38,12 @@ public:
     /**
      * @return A given square's attack value.
      */
-    Game::value_type GetAttackValue(Game::square_type, Game::square_type) const;
+    value_type GetAttackValue(square_type, square_type) const;
 
     /**
      * @return A given square's defense value.
      */
-    Game::value_type GetDefendValue(Game::square_type, Game::square_type) const;
+    value_type GetDefendValue(square_type, square_type) const;
 
 private:
     /**
@@ -52,7 +52,7 @@ private:
      * @param MoveSetPtr The list of possible moves.
      * @param BitBoardPtr The board to generate moves for.
      */
-    void generateValidMoves(const MoveSetPtr &, const Game::BitBoardPtr &);
+    void generateValidMoves(const MoveSetPtr &, const BitBoardPtr &);
 
     /**
      * Given a list of sliding moves, add the move to the list if it is valid.
@@ -64,17 +64,17 @@ private:
      * @param MoveList The list of moves to check.
      */
     void addSlidingMoveIfValid(
-        const Game::BitBoardPtr &,
-        const Game::piece_type &,
-        const Game::color_type &,
-        const Game::value_type &,
+        const BitBoardPtr &,
+        const piece_type &,
+        const color_type &,
+        const value_type &,
         MoveList);
 
     MoveList m_myValidMoves;
     MoveList m_oppValidMoves;
 
-    Game::value_type m_attackValue[Game::BOARD_SIZE];
-    Game::value_type m_defendValue[Game::BOARD_SIZE];
+    value_type m_attackValue[BOARD_SIZE];
+    value_type m_defendValue[BOARD_SIZE];
 };
 
 }

@@ -11,7 +11,7 @@
 #include <movement/move.h>
 #include <movement/move_set.h>
 
-namespace Game {
+namespace chessmate {
 
 DEFINE_CLASS_PTRS(ChessGame);
 
@@ -48,7 +48,7 @@ public:
     static ChessGamePtr Create(
         const GameConfigPtr &,
         const fly::SocketPtr &,
-        const Movement::MoveSetPtr &,
+        const MoveSetPtr &,
         const Message &
     );
 
@@ -64,7 +64,7 @@ public:
     ChessGame(
         const GameConfigPtr &,
         const fly::SocketPtr &,
-        const Movement::MoveSetPtr &,
+        const MoveSetPtr &,
         const color_type &,
         const value_type &
     );
@@ -93,7 +93,7 @@ public:
      *
      * @return True if the move was valid, false otherwise.
      */
-    bool MakeMove(Movement::Move &) const;
+    bool MakeMove(Move &) const;
 
     /**
      * Process a message and perform any appropriate action.
@@ -125,7 +125,7 @@ private:
      *
      * @return String of the format "pgnString stalemateStatus".
      */
-    std::string makeMoveAndStalemateMsg(Movement::Move &move) const;
+    std::string makeMoveAndStalemateMsg(Move &move) const;
 
     /**
      * @return True if there are any valid moves that can be made.
@@ -137,21 +137,21 @@ private:
      *
      * @return The best move calculated by the engine.
      */
-    Movement::Move getBestMove();
+    Move getBestMove();
 
     const GameConfigPtr m_spConfig;
 
     int m_gameId;
 
     fly::SocketWPtr m_wpClientSocket;
-    Movement::MoveSetWPtr m_wpMoveSet;
+    MoveSetWPtr m_wpMoveSet;
 
     value_type m_maxDepth;
     bool m_checkMaxDepth;
 
-    Game::BitBoardPtr m_spBoard;
+    BitBoardPtr m_spBoard;
 
-    Engine::MoveSelector m_moveSelector;
+    MoveSelector m_moveSelector;
 };
 
 }

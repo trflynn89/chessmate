@@ -4,7 +4,7 @@
 
 #include <fly/fly.h>
 
-namespace Game {
+namespace chessmate {
 
 DEFINE_CLASS_PTRS(Message);
 

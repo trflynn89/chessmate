@@ -2,7 +2,7 @@
 
 #include "bit_board.h"
 
-namespace Game {
+namespace chessmate {
 
 //==============================================================================
 BitBoard::BitBoard()
@@ -78,7 +78,7 @@ BitBoard::BitBoard(const BitBoard &board)
 }
 
 //==============================================================================
-void BitBoard::MakeMove(Movement::Move &move)
+void BitBoard::MakeMove(Move &move)
 {
     square_type sRank = move.GetStartRank();
     square_type sFile = move.GetStartFile();

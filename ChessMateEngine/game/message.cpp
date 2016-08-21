@@ -1,6 +1,6 @@
 #include "message.h"
 
-namespace Game {
+namespace chessmate {
 
 //==============================================================================
 Message::Message() : m_type(Message::INVALID_TYPE)

@@ -10,12 +10,6 @@
 #include <fly/fly.h>
 #include <fly/task/runner.h>
 
-namespace Movement {
-
-DEFINE_CLASS_PTRS(MoveSet);
-
-}
-
 namespace fly {
 
 DEFINE_CLASS_PTRS(AsyncRequest);
@@ -25,7 +19,7 @@ DEFINE_CLASS_PTRS(SocketManager);
 
 }
 
-namespace Game {
+namespace chessmate {
 
 DEFINE_CLASS_PTRS(ChessGame);
 DEFINE_CLASS_PTRS(GameConfig);
@@ -182,7 +176,7 @@ private:
     std::mutex m_runningFuturesMutex;
     std::vector<std::future<void>> m_runningFutures;
 
-    Movement::MoveSetPtr m_spMoveSet;
+    MoveSetPtr m_spMoveSet;
 
     GameConfigPtr m_spConfig;
 };

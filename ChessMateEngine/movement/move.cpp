@@ -1,6 +1,6 @@
 #include "move.h"
 
-namespace Movement {
+namespace chessmate {
 
 //==============================================================================
 Move::Move() :
@@ -22,10 +22,10 @@ Move::Move() :
 
 //==============================================================================
 Move::Move(
-    const Game::square_type &sRank,
-    const Game::square_type &sFile,
-    const Game::square_type &eRank,
-    const Game::square_type &eFile
+    const square_type &sRank,
+    const square_type &sFile,
+    const square_type &eRank,
+    const square_type &eFile
 ) :
     m_startRank(sRank),
     m_startFile(sFile),
@@ -45,11 +45,11 @@ Move::Move(
 
 //==============================================================================
 Move::Move(
-    const Game::square_type &sRank,
-    const Game::square_type &sFile,
-    const Game::square_type &eRank,
-    const Game::square_type &eFile,
-    const Game::piece_type &promotionPiece
+    const square_type &sRank,
+    const square_type &sFile,
+    const square_type &eRank,
+    const square_type &eFile,
+    const piece_type &promotionPiece
 ) :
     m_startRank(sRank),
     m_startFile(sFile),
@@ -68,8 +68,8 @@ Move::Move(
 }
 
 //==============================================================================
-Move::Move(const std::string &move, Game::color_type player) :
-    m_promotionPiece(Game::PAWN),
+Move::Move(const std::string &move, color_type player) :
+    m_promotionPiece(PAWN),
     m_IsCheck(false),
     m_IsCheckmate(false),
     m_IsStalemate(false),
@@ -81,42 +81,42 @@ Move::Move(const std::string &move, Game::color_type player) :
     // Parse for castle
     if (move.compare("O-O") == 0)
     {
-        m_movingPiece = Game::KING;
+        m_movingPiece = KING;
         m_IsKingsideCastle = true;
 
-        m_startFile = Game::FILE_E;
-        m_endFile = Game::FILE_G;
+        m_startFile = FILE_E;
+        m_endFile = FILE_G;
 
-        if (player == Game::WHITE)
+        if (player == WHITE)
         {
-            m_startRank = Game::RANK_1;
-            m_endRank = Game::RANK_1;
+            m_startRank = RANK_1;
+            m_endRank = RANK_1;
         }
         else
         {
-            m_startRank = Game::RANK_8;
-            m_endRank = Game::RANK_8;
+            m_startRank = RANK_8;
+            m_endRank = RANK_8;
         }
 
         return;
     }
     else if (move.compare("O-O-O") == 0)
     {
-        m_movingPiece = Game::KING;
+        m_movingPiece = KING;
         m_IsQueensideCastle = true;
 
-        m_startFile = Game::FILE_E;
-        m_endFile = Game::FILE_C;
+        m_startFile = FILE_E;
+        m_endFile = FILE_C;
 
-        if (player == Game::WHITE)
+        if (player == WHITE)
         {
-            m_startRank = Game::RANK_1;
-            m_endRank = Game::RANK_1;
+            m_startRank = RANK_1;
+            m_endRank = RANK_1;
         }
         else
         {
-            m_startRank = Game::RANK_8;
-            m_endRank = Game::RANK_8;
+            m_startRank = RANK_8;
+            m_endRank = RANK_8;
         }
 
         return;
@@ -127,32 +127,32 @@ Move::Move(const std::string &move, Game::color_type player) :
     // Parse starting piece
     if (move[ix] == 'N')
     {
-        m_movingPiece = Game::KNIGHT;
+        m_movingPiece = KNIGHT;
         ++ix;
     }
     else if (move[ix] == 'B')
     {
-        m_movingPiece = Game::BISHOP;
+        m_movingPiece = BISHOP;
         ++ix;
     }
     else if (move[ix] == 'R')
     {
-        m_movingPiece = Game::ROOK;
+        m_movingPiece = ROOK;
         ++ix;
     }
     else if (move[ix] == 'Q')
     {
-        m_movingPiece = Game::QUEEN;
+        m_movingPiece = QUEEN;
         ++ix;
     }
     else if (move[ix] == 'K')
     {
-        m_movingPiece = Game::KING;
+        m_movingPiece = KING;
         ++ix;
     }
     else
     {
-        m_movingPiece = Game::PAWN;
+        m_movingPiece = PAWN;
     }
 
     // Parse starting position
@@ -179,23 +179,23 @@ Move::Move(const std::string &move, Game::color_type player) :
 
             if (move[ix] == 'N')
             {
-                m_promotionPiece = Game::KNIGHT;
+                m_promotionPiece = KNIGHT;
             }
             else if (move[ix] == 'B')
             {
-                m_promotionPiece = Game::BISHOP;
+                m_promotionPiece = BISHOP;
             }
             else if (move[ix] == 'R')
             {
-                m_promotionPiece = Game::ROOK;
+                m_promotionPiece = ROOK;
             }
             else if (move[ix] == 'Q')
             {
-                m_promotionPiece = Game::QUEEN;
+                m_promotionPiece = QUEEN;
             }
             else
             {
-                m_promotionPiece = Game::PAWN;
+                m_promotionPiece = PAWN;
             }
         }
         else if (move[ix] == 'e')
@@ -219,25 +219,25 @@ Move::Move(const std::string &move, Game::color_type player) :
 }
 
 //==============================================================================
-Game::square_type Move::GetStartFile() const
+square_type Move::GetStartFile() const
 {
     return m_startFile;
 }
 
 //==============================================================================
-Game::square_type Move::GetStartRank() const
+square_type Move::GetStartRank() const
 {
     return m_startRank;
 }
 
 //==============================================================================
-Game::square_type Move::GetEndFile() const
+square_type Move::GetEndFile() const
 {
     return m_endFile;
 }
 
 //==============================================================================
-Game::square_type Move::GetEndRank() const
+square_type Move::GetEndRank() const
 {
     return m_endRank;
 }
@@ -257,23 +257,23 @@ std::string Move::GetPGNString() const
     std::string ret("");
 
     // Set the moving piece
-    if (m_movingPiece == Game::KNIGHT)
+    if (m_movingPiece == KNIGHT)
     {
         ret += "N";
     }
-    else if (m_movingPiece == Game::BISHOP)
+    else if (m_movingPiece == BISHOP)
     {
         ret += "B";
     }
-    else if (m_movingPiece == Game::ROOK)
+    else if (m_movingPiece == ROOK)
     {
         ret += "R";
     }
-    else if (m_movingPiece == Game::QUEEN)
+    else if (m_movingPiece == QUEEN)
     {
         ret += "Q";
     }
-    else if (m_movingPiece == Game::KING)
+    else if (m_movingPiece == KING)
     {
         ret += "K";
     }
@@ -293,19 +293,19 @@ std::string Move::GetPGNString() const
     ret += ('1' + m_endRank);
 
     // If move is a promotion, indicate the promotion piece
-    if (m_promotionPiece == Game::KNIGHT)
+    if (m_promotionPiece == KNIGHT)
     {
         ret += "=N";
     }
-    else if (m_promotionPiece == Game::BISHOP)
+    else if (m_promotionPiece == BISHOP)
     {
         ret += "=B";
     }
-    else if (m_promotionPiece == Game::ROOK)
+    else if (m_promotionPiece == ROOK)
     {
         ret += "=R";
     }
-    else if (m_promotionPiece == Game::QUEEN)
+    else if (m_promotionPiece == QUEEN)
     {
         ret += "=Q";
     }
@@ -330,25 +330,25 @@ std::string Move::GetPGNString() const
 }
 
 //==============================================================================
-Game::piece_type Move::GetMovingPiece() const
+piece_type Move::GetMovingPiece() const
 {
     return m_movingPiece;
 }
 
 //==============================================================================
-void Move::SetMovingPiece(Game::piece_type movingPiece)
+void Move::SetMovingPiece(piece_type movingPiece)
 {
     m_movingPiece = movingPiece;
 }
 
 //==============================================================================
-Game::piece_type Move::GetPromotionPiece() const
+piece_type Move::GetPromotionPiece() const
 {
     return m_promotionPiece;
 }
 
 //==============================================================================
-void Move::SetPromotionPiece(Game::piece_type promotionPiece)
+void Move::SetPromotionPiece(piece_type promotionPiece)
 {
     m_promotionPiece = promotionPiece;
 }

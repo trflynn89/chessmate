@@ -11,6 +11,8 @@
 #include <chessmate.h>
 #include <game/game_manager.h>
 
+namespace chessmate {
+
 //==============================================================================
 ChessMateEngine::ChessMateEngine() : Runner("ChessMateEngine", 0)
 {
@@ -104,17 +106,21 @@ bool ChessMateEngine::initSocketManager()
 //==============================================================================
 bool ChessMateEngine::initGameManager()
 {
-    m_spGameManager = std::make_shared<Game::GameManager>(
+    m_spGameManager = std::make_shared<GameManager>(
         m_spConfigManager, m_spSocketManager
     );
 
     return m_spGameManager->Start();
 }
 
+}
+
 //==============================================================================
 int main()
 {
-    ChessMateEnginePtr spEngine(std::make_shared<ChessMateEngine>());
+    chessmate::ChessMateEnginePtr spEngine(
+        std::make_shared<chessmate::ChessMateEngine>()
+    );
 
     if (spEngine && spEngine->Start())
     {

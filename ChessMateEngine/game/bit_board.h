@@ -5,7 +5,7 @@
 #include <game/board_types.h>
 #include <movement/move.h>
 
-namespace Game {
+namespace chessmate {
 
 DEFINE_CLASS_PTRS(BitBoard);
 
@@ -47,7 +47,7 @@ public:
      *
      * @param Move The move to make.
      */
-    void MakeMove(Movement::Move &);
+    void MakeMove(Move &);
 
     /**
      * Determine if a piece is a pawn.
@@ -318,7 +318,7 @@ private:
     color_type m_playerInTurn;
 
     // Last move that has occured
-    Movement::Move m_lastMove;
+    Move m_lastMove;
 
     // Locations of the king
     square_type m_whiteKingLocation;

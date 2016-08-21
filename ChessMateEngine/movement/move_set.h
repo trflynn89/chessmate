@@ -8,7 +8,7 @@
 
 #include <movement/move.h>
 
-namespace Movement {
+namespace chessmate {
 
 DEFINE_CLASS_PTRS(MoveSet);
 

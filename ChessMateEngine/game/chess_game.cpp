@@ -9,13 +9,13 @@
 
 #include <movement/valid_move_set.h>
 
-namespace Game {
+namespace chessmate {
 
 //==============================================================================
 ChessGamePtr ChessGame::Create(
     const GameConfigPtr &spConfig,
     const fly::SocketPtr &spClientSocket,
-    const Movement::MoveSetPtr &spMoveSet,
+    const MoveSetPtr &spMoveSet,
     const Message &msg
 )
 {
@@ -43,7 +43,7 @@ ChessGamePtr ChessGame::Create(
 ChessGame::ChessGame(
     const GameConfigPtr &spConfig,
     const fly::SocketPtr &spClientSocket,
-    const Movement::MoveSetPtr &spMoveSet,
+    const MoveSetPtr &spMoveSet,
     const color_type &engineColor,
     const value_type &difficulty
 ) :
@@ -53,7 +53,7 @@ ChessGame::ChessGame(
     m_wpMoveSet(spMoveSet),
     m_maxDepth(2 * difficulty + 1),
     m_checkMaxDepth(m_spConfig->IncreaseEndGameDifficulty()),
-    m_spBoard(std::make_shared<Game::BitBoard>()),
+    m_spBoard(std::make_shared<BitBoard>()),
     m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
     LOGC("Initialized game %d: Engine color = %d, max depth = %d",
@@ -90,10 +90,10 @@ bool ChessGame::IsValid() const
 }
 
 //==============================================================================
-bool ChessGame::MakeMove(Movement::Move &move) const
+bool ChessGame::MakeMove(Move &move) const
 {
-    Movement::ValidMoveSet vms(m_wpMoveSet, m_spBoard);
-    Movement::MoveList list = vms.GetMyValidMoves();
+    ValidMoveSet vms(m_wpMoveSet, m_spBoard);
+    MoveList list = vms.GetMyValidMoves();
 
     // Check all valid moves - if this move is valid, make it
     for (auto it = list.begin(); it != list.end(); ++it)
@@ -132,7 +132,7 @@ bool ChessGame::ProcessMessage(const Message &msg)
     // Send move back to client if valid, otherwise invalidate move
     else if (type == Message::MAKE_MOVE)
     {
-        Movement::Move move(data, m_spBoard->GetPlayerInTurn());
+        Move move(data, m_spBoard->GetPlayerInTurn());
         Message m;
 
         // Try to make the move
@@ -154,7 +154,7 @@ bool ChessGame::ProcessMessage(const Message &msg)
     {
         // Find a move. We know a move will be found - client will only
         // request a move if it knows one can be made.
-        Movement::Move move = getBestMove();
+        Move move = getBestMove();
 
         Message m(Message::MAKE_MOVE, makeMoveAndStalemateMsg(move));
         return sendMessage(m);
@@ -191,7 +191,7 @@ bool ChessGame::sendMessage(const Message &msg) const
 }
 
 //==============================================================================
-std::string ChessGame::makeMoveAndStalemateMsg(Movement::Move &move) const
+std::string ChessGame::makeMoveAndStalemateMsg(Move &move) const
 {
     short stalemateStatus = 0;
 
@@ -222,15 +222,15 @@ std::string ChessGame::makeMoveAndStalemateMsg(Movement::Move &move) const
 //==============================================================================
 bool ChessGame::anyValidMoves() const
 {
-    Movement::ValidMoveSet vms(m_wpMoveSet, m_spBoard);
+    ValidMoveSet vms(m_wpMoveSet, m_spBoard);
     return !vms.GetMyValidMoves().empty();
 }
 
 //==============================================================================
-Movement::Move ChessGame::getBestMove()
+Move ChessGame::getBestMove()
 {
     LOGD(m_gameId, "Searching for best move");
-    Movement::Move m = m_moveSelector.GetBestMove(m_maxDepth);
+    Move m = m_moveSelector.GetBestMove(m_maxDepth);
     LOGD(m_gameId, "Best move is %s", m);
 
     m_spBoard->MakeMove(m); // Always promote to queen for now

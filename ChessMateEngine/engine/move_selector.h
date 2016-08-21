@@ -6,7 +6,7 @@
 #include <movement/move.h>
 #include <movement/move_set.h>
 
-namespace Engine {
+namespace chessmate {
 
 /**
  * Class to select a move for the engine to play. Implements a depth-limited
@@ -25,11 +25,7 @@ public:
      * @param BitBoardPtr Shared pointer to the game's board.
      * @param color_type The engine color.
      */
-    MoveSelector(
-        const Movement::MoveSetPtr &,
-        const Game::BitBoardPtr &,
-        const Game::color_type &
-    );
+    MoveSelector(const MoveSetPtr &, const BitBoardPtr &, const color_type &);
 
     /**
      * Use min-max to determine the best move that can be made.
@@ -38,7 +34,7 @@ public:
      *
      * @return The best move.
      */
-    Movement::Move GetBestMove(const Game::value_type &) const;
+    Move GetBestMove(const value_type &) const;
 
 private:
     /**
@@ -51,11 +47,11 @@ private:
      *
      * @return The max utility value.
      */
-    Game::value_type maxValue(
-        const Game::BitBoardPtr &,
-        const Game::value_type &,
-        Game::value_type,
-        Game::value_type
+    value_type maxValue(
+        const BitBoardPtr &,
+        const value_type &,
+        value_type,
+        value_type
     ) const;
 
     /**
@@ -68,11 +64,11 @@ private:
      *
      * @return The min utility value.
      */
-    Game::value_type minValue(
-        const Game::BitBoardPtr &,
-        const Game::value_type &,
-        Game::value_type,
-        Game::value_type
+    value_type minValue(
+        const BitBoardPtr &,
+        const value_type &,
+        value_type,
+        value_type
     ) const;
 
     /**
@@ -84,7 +80,7 @@ private:
      *
      * @return The created copy after the move was made.
      */
-    Game::BitBoardPtr result(const Game::BitBoardPtr &, Movement::Move) const;
+    BitBoardPtr result(const BitBoardPtr &, Move) const;
 
     /**
      * Decide if the selector should stop searching.
@@ -94,11 +90,11 @@ private:
      *
      * @return True if the selector should stop searching.
      */
-    bool reachedEndState(const Game::value_type &, const Game::value_type &) const;
+    bool reachedEndState(const value_type &, const value_type &) const;
 
-    Movement::MoveSetWPtr m_wpMoveSet;
-    Game::BitBoardWPtr m_wpBoard;
-    Game::color_type m_engineColor;
+    MoveSetWPtr m_wpMoveSet;
+    BitBoardWPtr m_wpBoard;
+    color_type m_engineColor;
 
     Evaluator m_evaluator;
 

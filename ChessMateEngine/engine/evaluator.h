@@ -5,7 +5,7 @@
 #include <movement/move.h>
 #include <movement/valid_move_set.h>
 
-namespace Engine {
+namespace chessmate {
 
 /**
  * Class to evaluate a given board. Scoring works as follows:
@@ -24,7 +24,7 @@ public:
      *
      * @param color_type The engine color.
      */
-    Evaluator(const Game::color_type &);
+    Evaluator(const color_type &);
 
     /**
      * Evaluate the score of the whole board.
@@ -34,7 +34,7 @@ public:
      *
      * @return The board's score.
      */
-    int Score(const Game::BitBoardPtr &, const Movement::ValidMoveSet &) const;
+    int Score(const BitBoardPtr &, const ValidMoveSet &) const;
 
 private:
     /**
@@ -48,13 +48,13 @@ private:
      * @return The piece's score.
      */
     int evaluateSinglePiece(
-        const Game::BitBoardPtr &,
-        const Movement::ValidMoveSet &,
-        const Game::square_type &,
-        const Game::square_type &
+        const BitBoardPtr &,
+        const ValidMoveSet &,
+        const square_type &,
+        const square_type &
     ) const;
 
-    Game::color_type m_engineColor;
+    color_type m_engineColor;
 };
 
 }

@@ -12,7 +12,7 @@
 #include <game/message.h>
 #include <movement/move_set.h>
 
-namespace Game {
+namespace chessmate {
 
 //==============================================================================
 GameManager::GameManager(
@@ -21,7 +21,7 @@ GameManager::GameManager(
 ) :
     Runner(spConfigManager, "GameManager"),
     m_wpSocketManager(spSocketManager),
-    m_spMoveSet(std::make_shared<Movement::MoveSet>()),
+    m_spMoveSet(std::make_shared<MoveSet>()),
     m_spConfig(spConfigManager->CreateConfig<GameConfig>())
 {
 }

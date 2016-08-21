@@ -5,12 +5,6 @@
 #include <fly/fly.h>
 #include <fly/task/runner.h>
 
-namespace Game {
-
-DEFINE_CLASS_PTRS(GameManager);
-
-}
-
 namespace fly {
 
 DEFINE_CLASS_PTRS(ConfigManager);
@@ -19,7 +13,10 @@ DEFINE_CLASS_PTRS(SocketManager);
 
 }
 
+namespace chessmate {
+
 DEFINE_CLASS_PTRS(ChessMateEngine);
+DEFINE_CLASS_PTRS(GameManager);
 
 /**
  * Class to initialize and manage the ChessMate engine.
@@ -92,7 +89,7 @@ private:
     fly::ConfigManagerPtr m_spConfigManager;
     fly::LoggerPtr m_spLogger;
     fly::SocketManagerPtr m_spSocketManager;
-    Game::GameManagerPtr m_spGameManager;
+    GameManagerPtr m_spGameManager;
 
     std::string m_chessMateDirectory;
 };
@@ -108,4 +105,6 @@ void ChessMateEngine::stopRunner(std::shared_ptr<T> &spRunner)
     {
         spRunner->Stop();
     }
+}
+
 }

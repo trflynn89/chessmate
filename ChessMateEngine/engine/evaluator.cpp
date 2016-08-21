@@ -1,29 +1,29 @@
 #include "evaluator.h"
 
-namespace Engine {
+namespace chessmate {
 
 namespace
 {
     // Piece values
-    const Game::value_type s_pawnValue   = 100;
-    const Game::value_type s_knightValue = 320;
-    const Game::value_type s_bishopValue = 325;
-    const Game::value_type s_rookValue   = 500;
-    const Game::value_type s_queenValue  = 975;
-    const Game::value_type s_kingValue   = 32767;
+    const value_type s_pawnValue   = 100;
+    const value_type s_knightValue = 320;
+    const value_type s_bishopValue = 325;
+    const value_type s_rookValue   = 500;
+    const value_type s_queenValue  = 975;
+    const value_type s_kingValue   = 32767;
 
     // Array to store the "meaning" of a pawn in a file
     // i.e. account for isolated and doubled pawns
-    Game::value_type s_whitePawnFileValue[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    Game::value_type s_blackPawnFileValue[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    value_type s_whitePawnFileValue[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    value_type s_blackPawnFileValue[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     // Count the number of bishops
-    Game::value_type s_whiteBishopCount = 0;
-    Game::value_type s_blackBishopCount = 0;
+    value_type s_whiteBishopCount = 0;
+    value_type s_blackBishopCount = 0;
 
     // Tables go from 0th index = A1, to 63rd index = H8
 
-    const Game::value_type s_pawnTable[] =
+    const value_type s_pawnTable[] =
     {
         0,  0,  0,  0,  0,  0,  0,  0,
         5, 10, 10,-25,-25, 10, 10,  5,
@@ -35,7 +35,7 @@ namespace
         0,  0,  0,  0,  0,  0,  0,  0
     };
 
-    const Game::value_type s_knightTable[] =
+    const value_type s_knightTable[] =
     {
         -50,-40,-20,-30,-30,-20,-40,-50,
         -40,-20,  0,  5,  5,  0,-20,-40,
@@ -47,7 +47,7 @@ namespace
         -50,-40,-30,-30,-30,-30,-40,-50
     };
 
-    const Game::value_type s_bishopTable[] =
+    const value_type s_bishopTable[] =
     {
         -20,-10,-40,-10,-10,-40,-10,-20,
         -10,  5,  0,  0,  0,  0,  5,-10,
@@ -59,7 +59,7 @@ namespace
         -20,-10,-10,-10,-10,-10,-10,-20
     };
 
-    const Game::value_type s_kingTable[] =
+    const value_type s_kingTable[] =
     {
         20, 30, 10,  0,  0, 10, 30, 20,
         20, 20,  0,  0,  0,  0, 20, 20,
@@ -71,7 +71,7 @@ namespace
         -30,-40,-40,-50,-50,-40,-40,-30
     };
 
-    const Game::value_type s_kingTableEndGame[] =
+    const value_type s_kingTableEndGame[] =
     {
         -50,-30,-30,-30,-30,-30,-30,-50,
         -30,-30,  0,  0,  0,  0,-30,-30,
@@ -85,18 +85,18 @@ namespace
 }
 
 //==============================================================================
-Evaluator::Evaluator(const Game::color_type &engineColor) : m_engineColor(engineColor)
+Evaluator::Evaluator(const color_type &engineColor) : m_engineColor(engineColor)
 {
 }
 
 //==============================================================================
-int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMoveSet &vms) const
+int Evaluator::Score(const BitBoardPtr &spBoard, const ValidMoveSet &vms) const
 {
-    Game::value_type remainingPieces = 0;
+    value_type remainingPieces = 0;
     int score = 0;
 
     // Reinitialize values
-    for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
+    for (square_type i = FILE_A; i <= FILE_H; ++i)
     {
         s_whitePawnFileValue[i] = 0;
         s_blackPawnFileValue[i] = 0;
@@ -110,11 +110,11 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     {
         if (spBoard->IsWhiteInCheck())
         {
-            return (m_engineColor == Game::WHITE ? -s_kingValue : s_kingValue);
+            return (m_engineColor == WHITE ? -s_kingValue : s_kingValue);
         }
         else if (spBoard->IsBlackInCheck())
         {
-            return (m_engineColor == Game::BLACK ? -s_kingValue : s_kingValue);
+            return (m_engineColor == BLACK ? -s_kingValue : s_kingValue);
         }
 
         return 0;
@@ -139,7 +139,7 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Add for tempo
-    score += ((spBoard->GetPlayerInTurn() == Game::WHITE) ? 10 : -10);
+    score += ((spBoard->GetPlayerInTurn() == WHITE) ? 10 : -10);
 
     // Try to prevent opponent from castling
     if (spBoard->HasWhiteCastled())
@@ -152,10 +152,10 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Loop through all pieces
-    for (Game::square_type s = 0; s < Game::BOARD_SIZE; ++s)
+    for (square_type s = 0; s < BOARD_SIZE; ++s)
     {
-        Game::square_type rank = GET_RANK(s);
-        Game::square_type file = GET_FILE(s);
+        square_type rank = GET_RANK(s);
+        square_type file = GET_FILE(s);
 
         if (!spBoard->IsEmpty(rank, file))
         {
@@ -173,12 +173,12 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Check for white isolated pawns
-    for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
+    for (square_type i = FILE_A; i <= FILE_H; ++i)
     {
         if (s_whitePawnFileValue[i] > 0)
         {
-            if (((i > Game::FILE_A) && (s_whitePawnFileValue[i - 1] == 0)) ||
-                ((i < Game::FILE_H) && (s_whitePawnFileValue[i + 1] == 0)))
+            if (((i > FILE_A) && (s_whitePawnFileValue[i - 1] == 0)) ||
+                ((i < FILE_H) && (s_whitePawnFileValue[i + 1] == 0)))
             {
                 score -= 15;
             }
@@ -186,12 +186,12 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Check for black isolated pawns
-    for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
+    for (square_type i = FILE_A; i <= FILE_H; ++i)
     {
         if (s_blackPawnFileValue[i] > 0)
         {
-            if (((i > Game::FILE_A) && (s_blackPawnFileValue[i - 1] == 0)) ||
-                ((i < Game::FILE_H) && (s_blackPawnFileValue[i + 1] == 0)))
+            if (((i > FILE_A) && (s_blackPawnFileValue[i - 1] == 0)) ||
+                ((i < FILE_H) && (s_blackPawnFileValue[i + 1] == 0)))
             {
                 score += 15;
             }
@@ -199,7 +199,7 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Check for white passed pawns
-    for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
+    for (square_type i = FILE_A; i <= FILE_H; ++i)
     {
         if ((s_whitePawnFileValue[i] > 0) && (s_blackPawnFileValue[i] == 0))
         {
@@ -208,7 +208,7 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
     }
 
     // Check for black passed pawns
-    for (Game::square_type i = Game::FILE_A; i <= Game::FILE_H; ++i)
+    for (square_type i = FILE_A; i <= FILE_H; ++i)
     {
         if ((s_blackPawnFileValue[i] > 0) && (s_whitePawnFileValue[i] == 0))
         {
@@ -216,34 +216,34 @@ int Evaluator::Score(const Game::BitBoardPtr &spBoard, const Movement::ValidMove
         }
     }
 
-    return ((m_engineColor == Game::WHITE) ? score : -score);
+    return ((m_engineColor == WHITE) ? score : -score);
 }
 
 //==============================================================================
 int Evaluator::evaluateSinglePiece(
-    const Game::BitBoardPtr &spBoard,
-    const Movement::ValidMoveSet &vms,
-    const Game::square_type &rank,
-    const Game::square_type &file
+    const BitBoardPtr &spBoard,
+    const ValidMoveSet &vms,
+    const square_type &rank,
+    const square_type &file
 ) const
 {
-    Movement::MoveList myMoveSet = vms.GetMyValidMoves();
-    Movement::MoveList oppMoveSet = vms.GetOppValidMoves();
+    MoveList myMoveSet = vms.GetMyValidMoves();
+    MoveList oppMoveSet = vms.GetOppValidMoves();
 
-    Game::square_type loc = GET_SQUARE(rank, file);
-    Game::color_type pieceColor = spBoard->GetOccupant(rank, file);
+    square_type loc = GET_SQUARE(rank, file);
+    color_type pieceColor = spBoard->GetOccupant(rank, file);
     int score = 0;
 
-    if (pieceColor == Game::BLACK)
+    if (pieceColor == BLACK)
     {
-        loc = Game::BOARD_SIZE - loc - 1;
+        loc = BOARD_SIZE - loc - 1;
     }
 
     // Account for the attacked/defended value of the piece
     bool useMyMoves = (pieceColor == spBoard->GetPlayerInTurn());
 
-    Game::value_type defendedValue = 0;
-    Game::value_type attackedValue = 0;
+    value_type defendedValue = 0;
+    value_type attackedValue = 0;
 
     // Get correct attack/defense values
     if (useMyMoves)
@@ -267,7 +267,7 @@ int Evaluator::evaluateSinglePiece(
     }
 
     // Add points for mobility
-    Movement::MoveList &moveSet = (useMyMoves ? myMoveSet : oppMoveSet);
+    MoveList &moveSet = (useMyMoves ? myMoveSet : oppMoveSet);
 
     for (auto it = moveSet.begin(); it != moveSet.end(); ++it)
     {
@@ -286,13 +286,13 @@ int Evaluator::evaluateSinglePiece(
         score += s_pawnTable[loc];
 
         // Rook-file pawns worth less - can only attack in one direction
-        if (file == Game::FILE_A || file == Game::FILE_H)
+        if (file == FILE_A || file == FILE_H)
         {
             score -= 15;
         }
 
         // White pawn
-        if (pieceColor == Game::WHITE)
+        if (pieceColor == WHITE)
         {
             // If the value isn't 0, we have a doubled pawn
             if (s_whitePawnFileValue[file] > 0)
@@ -301,7 +301,7 @@ int Evaluator::evaluateSinglePiece(
             }
 
             // Good to advance pawn to second rank
-            if (rank == Game::RANK_2)
+            if (rank == RANK_2)
             {
                 if (attackedValue == 0)
                 {
@@ -314,7 +314,7 @@ int Evaluator::evaluateSinglePiece(
                 }
             }
             // Good to advance to third rank
-            else if (rank == Game::RANK_3)
+            else if (rank == RANK_3)
             {
                 if (attackedValue == 0)
                 {
@@ -332,7 +332,7 @@ int Evaluator::evaluateSinglePiece(
         }
 
         // Black pawn
-        else if (pieceColor == Game::BLACK)
+        else if (pieceColor == BLACK)
         {
             // If the value isn't 0, we have a doubled pawn
             if (s_blackPawnFileValue[file] > 0)
@@ -341,7 +341,7 @@ int Evaluator::evaluateSinglePiece(
             }
 
             // Good to advance pawn to seventh rank
-            if (rank == Game::RANK_7)
+            if (rank == RANK_7)
             {
                 if (attackedValue == 0)
                 {
@@ -354,7 +354,7 @@ int Evaluator::evaluateSinglePiece(
                 }
             }
             // Good to advance to sixth rank
-            else if (rank == Game::RANK_6)
+            else if (rank == RANK_6)
             {
                 if (attackedValue == 0)
                 {
@@ -398,7 +398,7 @@ int Evaluator::evaluateSinglePiece(
         }
 
         // Bishops are better if we have more than one
-        if (pieceColor == Game::WHITE)
+        if (pieceColor == WHITE)
         {
             ++s_whiteBishopCount;
             if (s_whiteBishopCount >= 2)
@@ -406,7 +406,7 @@ int Evaluator::evaluateSinglePiece(
                 score += 10;
             }
         }
-        else if (pieceColor == Game::BLACK)
+        else if (pieceColor == BLACK)
         {
             ++s_blackBishopCount;
             if (s_blackBishopCount >= 2)
@@ -422,29 +422,29 @@ int Evaluator::evaluateSinglePiece(
         score += s_rookValue;
 
         // Encourage rooks not to move until we have castled
-        if (pieceColor == Game::WHITE)
+        if (pieceColor == WHITE)
         {
             if (!spBoard->HasWhiteCastled())
             {
-                if (rank != Game::RANK_1)
+                if (rank != RANK_1)
                 {
                     score -= 10;
                 }
-                else if (file != Game::FILE_A || file != Game::FILE_H)
+                else if (file != FILE_A || file != FILE_H)
                 {
                     score -= 10;
                 }
             }
         }
-        else if (pieceColor == Game::BLACK)
+        else if (pieceColor == BLACK)
         {
             if (!spBoard->HasBlackCastled())
             {
-                if (rank != Game::RANK_8)
+                if (rank != RANK_8)
                 {
                     score -= 10;
                 }
-                else if (file != Game::FILE_A || file != Game::FILE_H)
+                else if (file != FILE_A || file != FILE_H)
                 {
                     score -= 10;
                 }
@@ -458,14 +458,14 @@ int Evaluator::evaluateSinglePiece(
         score += s_queenValue;
 
         // Discourage queen from moving too early
-        if (pieceColor == Game::WHITE)
+        if (pieceColor == WHITE)
         {
             if (spBoard->HasWhiteMovedQueen() && !spBoard->IsEndGame())
             {
                 score -= 10;
             }
         }
-        else if (pieceColor == Game::BLACK)
+        else if (pieceColor == BLACK)
         {
             if (spBoard->HasBlackMovedQueen() && !spBoard->IsEndGame())
             {
@@ -480,7 +480,7 @@ int Evaluator::evaluateSinglePiece(
         score += s_kingValue;
 
         // Keep king mobile
-        Game::value_type numberOfKingMoves = 0;
+        value_type numberOfKingMoves = 0;
 
         for (auto it = myMoveSet.begin(); it != myMoveSet.end(); ++it)
         {
@@ -506,7 +506,7 @@ int Evaluator::evaluateSinglePiece(
             // Encourage castling
             bool castled = false;
 
-            if (pieceColor == Game::WHITE)
+            if (pieceColor == WHITE)
             {
                 castled = spBoard->HasWhiteMovedKingsideRook() || spBoard->HasWhiteMovedQueensideRook();
 
@@ -515,7 +515,7 @@ int Evaluator::evaluateSinglePiece(
                     score -= 30;
                 }
             }
-            else if (pieceColor == Game::BLACK)
+            else if (pieceColor == BLACK)
             {
                 castled = spBoard->HasBlackMovedKingsideRook() || spBoard->HasBlackMovedQueensideRook();
 

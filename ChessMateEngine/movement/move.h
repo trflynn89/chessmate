@@ -6,7 +6,7 @@
 
 #include <game/board_types.h>
 
-namespace Movement {
+namespace chessmate {
 
 /**
  * Class to store data about a move.
@@ -31,10 +31,10 @@ public:
      * @param square_type The ending file of the move.
      */
     Move(
-        const Game::square_type &,
-        const Game::square_type &,
-        const Game::square_type &,
-        const Game::square_type &
+        const square_type &,
+        const square_type &,
+        const square_type &,
+        const square_type &
     );
 
     /**
@@ -47,11 +47,11 @@ public:
      * @param piece_type The promotion piece.
      */
     Move(
-        const Game::square_type &,
-        const Game::square_type &,
-        const Game::square_type &,
-        const Game::square_type &,
-        const Game::piece_type &
+        const square_type &,
+        const square_type &,
+        const square_type &,
+        const square_type &,
+        const piece_type &
     );
 
     /**
@@ -60,27 +60,27 @@ public:
      * @param string The PGN formatted string.
      * @param color_type The color of the player who generated the move.
      */
-    Move(const std::string &, Game::color_type);
+    Move(const std::string &, color_type);
 
     /**
      * @return The move's start file.
      */
-    Game::square_type GetStartFile() const;
+    square_type GetStartFile() const;
 
     /**
      * @return The move's start rank.
      */
-    Game::square_type GetStartRank() const;
+    square_type GetStartRank() const;
 
     /**
      * @return The move's end file.
      */
-    Game::square_type GetEndFile() const;
+    square_type GetEndFile() const;
 
     /**
      * @return The move's end rank.
      */
-    Game::square_type GetEndRank() const;
+    square_type GetEndRank() const;
 
     /**
      * @return The move formatted into a PGN string.
@@ -90,22 +90,22 @@ public:
     /**
      * @return The piece being moved.
      */
-    Game::piece_type GetMovingPiece() const;
+    piece_type GetMovingPiece() const;
 
     /**
      * Set the piece being moved.
      */
-    void SetMovingPiece(Game::piece_type);
+    void SetMovingPiece(piece_type);
 
     /**
      * @return This move's promotion piece.
      */
-    Game::piece_type GetPromotionPiece() const;
+    piece_type GetPromotionPiece() const;
 
     /**
      * Set this move's promotion piece.
      */
-    void SetPromotionPiece(Game::piece_type);
+    void SetPromotionPiece(piece_type);
 
     /**
      * @return True if this move captures a piece.
@@ -185,13 +185,13 @@ public:
     friend std::ostream &operator << (std::ostream &, const Move &);
 
 private:
-    Game::square_type m_startRank;
-    Game::square_type m_startFile;
-    Game::square_type m_endRank;
-    Game::square_type m_endFile;
+    square_type m_startRank;
+    square_type m_startFile;
+    square_type m_endRank;
+    square_type m_endFile;
 
-    Game::piece_type m_movingPiece;
-    Game::piece_type m_promotionPiece;
+    piece_type m_movingPiece;
+    piece_type m_promotionPiece;
 
     bool m_IsCheck;
     bool m_IsCheckmate;

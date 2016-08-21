@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Game {
+namespace chessmate {
 
 typedef int64_t board_type;
 typedef int16_t square_type;
@@ -73,10 +73,10 @@ enum Piece {
 }
 
 // Convert (s) to a rank
-#define GET_RANK(s)         ((s) / Game::NUM_RANKS)
+#define GET_RANK(s)         ((s) / NUM_RANKS)
 
 // Convert (s) to a file
-#define GET_FILE(s)         ((s) % Game::NUM_FILES)
+#define GET_FILE(s)         ((s) % NUM_FILES)
 
 // Convert (r, f) to a square's index
-#define GET_SQUARE(r, f)    ((r) * Game::NUM_RANKS + (f))
+#define GET_SQUARE(r, f)    ((r) * NUM_RANKS + (f))
