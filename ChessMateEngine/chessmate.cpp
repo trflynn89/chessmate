@@ -18,10 +18,8 @@ ChessMateEngine::ChessMateEngine() : Runner("ChessMateEngine", 0)
 {
     fly::System::SetupSignalHandler();
 
-    const char sep = fly::System::GetSeparator();
     const std::string temp = fly::System::GetTempDirectory();
-
-    m_chessMateDirectory = fly::String::Join(sep, temp, "ChessMate");
+    m_chessMateDirectory = fly::System::Join(temp, "ChessMate");
 
     if (!fly::System::MakeDirectory(m_chessMateDirectory))
     {
