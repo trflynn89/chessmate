@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="engine">
+      <UniqueIdentifier>{cfa88e46-7038-4cbe-a059-3f5257697f19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{fcfe5fc5-e1c6-470c-8188-99c09192f9fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="movement">
+      <UniqueIdentifier>{46adf355-a3de-4e66-a47e-2add89017829}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\engine\evaluator.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\engine\move_selector.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\game\bit_board.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\game\chess_game.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\game\game_config.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\game\game_manager.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\game\message.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\movement\move.cpp">
+      <Filter>movement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\movement\move_set.cpp">
+      <Filter>movement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\movement\valid_move_set.cpp">
+      <Filter>movement</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\engine\evaluator.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\engine\move_selector.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\game\bit_board.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\game\board_types.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\game\chess_game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\game\game_config.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\game\game_manager.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\game\message.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\movement\move.h">
+      <Filter>movement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\movement\move_set.h">
+      <Filter>movement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\movement\valid_move_set.h">
+      <Filter>movement</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

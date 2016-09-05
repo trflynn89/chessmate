@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <libfly_dir>C:\Program Files (x86)\libfly\libfly-1.0.0.x86</libfly_dir>
+    <libfly_lib>libflyd.x86.lib</libfly_lib>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <libfly_dir>C:\Program Files (x86)\libfly\libfly-1.0.0.x86</libfly_dir>
+    <libfly_lib>libfly.x86.lib</libfly_lib>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <libfly_dir>C:\Program Files\libfly\libfly-1.0.0.x64</libfly_dir>
+    <libfly_lib>libflyd.x64.lib</libfly_lib>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <libfly_dir>C:\Program Files\libfly\libfly-1.0.0.x64</libfly_dir>
+    <libfly_lib>libfly.x64.lib</libfly_lib>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="libfly_dir">
+      <Value>$(libfly_dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="libfly_lib">
+      <Value>$(libfly_lib)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
