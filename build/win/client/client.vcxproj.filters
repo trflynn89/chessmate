@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\client\chessmate_gui.cpp" />
+    <ClCompile Include="..\..\..\client\main.cpp" />
+    <ClCompile Include="..\..\..\client\tile.cpp" />
+    <ClCompile Include="..\..\..\client\validation.cpp" />
+    <ClCompile Include="..\..\..\client\chessmate_gui.moc.cpp" />
+    <ClCompile Include="..\..\..\client\chessmate_gui.rcc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\client\chessmate_gui.h" />
+    <ClInclude Include="..\..\..\client\tile.h" />
+    <ClInclude Include="..\..\..\client\validation.h" />
+  </ItemGroup>
+</Project>

@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chessmate", "chessmate\chessmate.vcxproj", "{B6701330-A8E9-464E-B234-9ABA83DCBB36}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "server\server.vcxproj", "{B6701330-A8E9-464E-B234-9ABA83DCBB36}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "build", "build\build.vcxproj", "{0DB9D14C-CA4B-43CB-88A4-892336E8810B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client\client.vcxproj", "{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{0DB9D14C-CA4B-43CB-88A4-892336E8810B}.Release|x64.Build.0 = Release|x64
 		{0DB9D14C-CA4B-43CB-88A4-892336E8810B}.Release|x86.ActiveCfg = Release|Win32
 		{0DB9D14C-CA4B-43CB-88A4-892336E8810B}.Release|x86.Build.0 = Release|Win32
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Debug|x64.ActiveCfg = Debug|x64
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Debug|x64.Build.0 = Debug|x64
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Debug|x86.ActiveCfg = Debug|Win32
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Debug|x86.Build.0 = Debug|Win32
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Release|x64.ActiveCfg = Release|x64
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Release|x64.Build.0 = Release|x64
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Release|x86.ActiveCfg = Release|Win32
+		{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -42,6 +42,7 @@
     <ClCompile Include="..\..\..\movement\valid_move_set.cpp">
       <Filter>movement</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\chessmate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\engine\evaluator.h">
@@ -77,5 +78,6 @@
     <ClInclude Include="..\..\..\movement\valid_move_set.h">
       <Filter>movement</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\chessmate.h" />
   </ItemGroup>
 </Project>

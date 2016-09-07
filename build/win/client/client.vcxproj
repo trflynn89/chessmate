@@ -19,32 +19,32 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0DB9D14C-CA4B-43CB-88A4-892336E8810B}</ProjectGuid>
-    <RootNamespace>build</RootNamespace>
+    <ProjectGuid>{4B20C9FD-35C1-4522-B984-5D1BC6B19AAD}</ProjectGuid>
+    <RootNamespace>client</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -75,26 +75,30 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
-    <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
+    <TargetName>chessmate_gui</TargetName>
+    <IncludePath>$(qt_dir)\include;$(qt_dir)\include\QtWidgets;$(qt_dir)\include\QtGui;$(qt_dir)\include\QtCore;$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
+    <LibraryPath>$(qt_dir)\lib;$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
-    <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
+    <TargetName>chessmate_gui</TargetName>
+    <IncludePath>$(qt_dir)\include;$(qt_dir)\include\QtWidgets;$(qt_dir)\include\QtGui;$(qt_dir)\include\QtCore;$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
+    <LibraryPath>$(qt_dir)\lib;$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
-    <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
+    <TargetName>chessmate_gui</TargetName>
+    <IncludePath>$(qt_dir)\include;$(qt_dir)\include\QtWidgets;$(qt_dir)\include\QtGui;$(qt_dir)\include\QtCore;$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
+    <LibraryPath>$(qt_dir)\lib;$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
-    <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
+    <TargetName>chessmate_gui</TargetName>
+    <IncludePath>$(qt_dir)\include;$(qt_dir)\include\QtWidgets;$(qt_dir)\include\QtGui;$(qt_dir)\include\QtCore;$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
+    <LibraryPath>$(qt_dir)\lib;$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,6 +106,25 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>Qt5Widgetsd.lib;Qt5Guid.lib;Qt5Cored.lib;$(libfly_lib);ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>set uic=$(qt_dir)\bin\uic.exe
+set moc=$(qt_dir)\bin\moc.exe
+set rcc=$(qt_dir)\bin\rcc.exe
+
+set src=$(SolutionDir)..\..\client\chessmate_gui
+
+echo Generating UIC
+%uic% %src%.ui -o %src%.uic.h
+
+echo Generating MOC
+%moc% %src%.h -o %src%.moc.cpp
+
+echo Generating RCC
+%rcc% %src%.qrc -o %src%.rcc.cpp</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -109,6 +132,25 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>Qt5Widgetsd.lib;Qt5Guid.lib;Qt5Cored.lib;$(libfly_lib);ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>set uic=$(qt_dir)\bin\uic.exe
+set moc=$(qt_dir)\bin\moc.exe
+set rcc=$(qt_dir)\bin\rcc.exe
+
+set src=$(SolutionDir)..\..\client\chessmate_gui
+
+echo Generating UIC
+%uic% %src%.ui -o %src%.uic.h
+
+echo Generating MOC
+%moc% %src%.h -o %src%.moc.cpp
+
+echo Generating RCC
+%rcc% %src%.qrc -o %src%.rcc.cpp</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,7 +163,24 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Qt5Widgetsd.lib;Qt5Guid.lib;Qt5Cored.lib;$(libfly_lib);ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>set uic=$(qt_dir)\bin\uic.exe
+set moc=$(qt_dir)\bin\moc.exe
+set rcc=$(qt_dir)\bin\rcc.exe
+
+set src=$(SolutionDir)..\..\client\chessmate_gui
+
+echo Generating UIC
+%uic% %src%.ui -o %src%.uic.h
+
+echo Generating MOC
+%moc% %src%.h -o %src%.moc.cpp
+
+echo Generating RCC
+%rcc% %src%.qrc -o %src%.rcc.cpp</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -134,34 +193,42 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Qt5Widgetsd.lib;Qt5Guid.lib;Qt5Cored.lib;$(libfly_lib);ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>set uic=$(qt_dir)\bin\uic.exe
+set moc=$(qt_dir)\bin\moc.exe
+set rcc=$(qt_dir)\bin\rcc.exe
+
+set src=$(SolutionDir)..\..\client\chessmate_gui
+
+echo Generating UIC
+%uic% %src%.ui -o %src%.uic.h
+
+echo Generating MOC
+%moc% %src%.h -o %src%.moc.cpp
+
+echo Generating RCC
+%rcc% %src%.qrc -o %src%.rcc.cpp</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\chessmate.cpp" />
-    <ClCompile Include="..\..\..\engine\evaluator.cpp" />
-    <ClCompile Include="..\..\..\engine\move_selector.cpp" />
-    <ClCompile Include="..\..\..\game\bit_board.cpp" />
-    <ClCompile Include="..\..\..\game\chess_game.cpp" />
-    <ClCompile Include="..\..\..\game\game_config.cpp" />
-    <ClCompile Include="..\..\..\game\game_manager.cpp" />
-    <ClCompile Include="..\..\..\game\message.cpp" />
-    <ClCompile Include="..\..\..\movement\move.cpp" />
-    <ClCompile Include="..\..\..\movement\move_set.cpp" />
-    <ClCompile Include="..\..\..\movement\valid_move_set.cpp" />
+    <ClCompile Include="..\..\..\client\chessmate_gui.cpp" />
+    <ClCompile Include="..\..\..\client\chessmate_gui.moc.cpp" />
+    <ClCompile Include="..\..\..\client\chessmate_gui.rcc.cpp" />
+    <ClCompile Include="..\..\..\client\main.cpp" />
+    <ClCompile Include="..\..\..\client\tile.cpp" />
+    <ClCompile Include="..\..\..\client\validation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\chessmate.h" />
-    <ClInclude Include="..\..\..\engine\evaluator.h" />
-    <ClInclude Include="..\..\..\engine\move_selector.h" />
-    <ClInclude Include="..\..\..\game\bit_board.h" />
-    <ClInclude Include="..\..\..\game\board_types.h" />
-    <ClInclude Include="..\..\..\game\chess_game.h" />
-    <ClInclude Include="..\..\..\game\game_config.h" />
-    <ClInclude Include="..\..\..\game\game_manager.h" />
-    <ClInclude Include="..\..\..\game\message.h" />
-    <ClInclude Include="..\..\..\movement\move.h" />
-    <ClInclude Include="..\..\..\movement\move_set.h" />
-    <ClInclude Include="..\..\..\movement\valid_move_set.h" />
+    <ClInclude Include="..\..\..\client\chessmate_gui.h" />
+    <ClInclude Include="..\..\..\client\tile.h" />
+    <ClInclude Include="..\..\..\client\validation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\build\build.vcxproj">
+      <Project>{0db9d14c-ca4b-43cb-88a4-892336e8810b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

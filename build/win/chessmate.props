@@ -4,18 +4,22 @@
   <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <libfly_dir>C:\Program Files (x86)\libfly\libfly-1.0.0.x86</libfly_dir>
     <libfly_lib>libflyd.x86.lib</libfly_lib>
+    <qt_dir>C:\Qt\5.7\msvc2015_64</qt_dir>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <libfly_dir>C:\Program Files (x86)\libfly\libfly-1.0.0.x86</libfly_dir>
     <libfly_lib>libfly.x86.lib</libfly_lib>
+    <qt_dir>C:\Qt\5.7\msvc2015_64</qt_dir>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <libfly_dir>C:\Program Files\libfly\libfly-1.0.0.x64</libfly_dir>
     <libfly_lib>libflyd.x64.lib</libfly_lib>
+    <qt_dir>C:\Qt\5.7\msvc2015_64</qt_dir>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <libfly_dir>C:\Program Files\libfly\libfly-1.0.0.x64</libfly_dir>
     <libfly_lib>libfly.x64.lib</libfly_lib>
+    <qt_dir>C:\Qt\5.7\msvc2015_64</qt_dir>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
@@ -25,6 +29,9 @@
     </BuildMacro>
     <BuildMacro Include="libfly_lib">
       <Value>$(libfly_lib)</Value>
+    </BuildMacro>
+    <BuildMacro Include="qt_dir">
+      <Value>$(qt_dir)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>
