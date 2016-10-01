@@ -29,7 +29,7 @@ Message::Message(Message::MessageType type, const std::string &data) : m_type(ty
 {
 }
 
-//==============================================================================
+//===================================m===========================================
 bool Message::IsValid() const
 {
     bool isValid = false;
@@ -39,6 +39,11 @@ bool Message::IsValid() const
     // START_GAME data of the form "<engine color> <difficulty>"
     case Message::START_GAME:
         isValid = (m_data.length() > 2);
+        break;
+
+    // STARTED_GAME data of the form "<game ID>"
+    case Message::STARTED_GAME:
+        isValid = (m_data.length() > 0);
         break;
 
     // MAKE_MOVE, INVALID_MOVE data of the form "<PGN string> [stalemate]"

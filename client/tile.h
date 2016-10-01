@@ -1,9 +1,8 @@
-#ifndef TILE_H
-#define TILE_H
-#include <QLabel>
-#include <QDebug>
+#pragma once
 
-class Tile: public QLabel
+#include <QLabel>
+
+class Tile : public QLabel
 {
 public:
 
@@ -20,5 +19,3 @@ public:
     void display(char elem);
     void tileDisplay();
 };
-
-#endif // TILE_H

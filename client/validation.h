@@ -1,5 +1,5 @@
-#ifndef VALIDATION_H
-#define VALIDATION_H
+#pragma once
+
 #include "tile.h"
 
 extern Tile *tile[8][8];
@@ -21,5 +21,3 @@ public:
     void orange();
     int check(Tile *temp);
 };
-
-#endif // VALIDATION_H

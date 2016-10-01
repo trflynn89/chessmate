@@ -55,7 +55,7 @@ public:
      * @param ConfigManagerPtr Reference to the configuration manager.
      * @param SocketManagerPtr Reference to the socket manager.
      */
-    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &);
+    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &, bool);
 
     /**
      * Destructor. Stop all games if they have not been already.
@@ -124,6 +124,13 @@ private:
     bool createAcceptSocket(int);
 
     /**
+     *
+     */
+    bool createClientSocket(int);
+
+    bool checkForConnection(fly::AsyncConnect &) const;
+
+    /**
      * Wait for a short time for a message to be available.
      *
      * @param AsyncRequest Reference to request object to store a receive.
@@ -131,6 +138,8 @@ private:
      * @return True if the socket manager could be queried for a request.
      */
     bool receiveSingleMessage(fly::AsyncRequest &) const;
+
+    void createGameFromConnect(const fly::AsyncConnect &);
 
     /**
      * Find a game associated with an AsyncRequest and launch an async task to
@@ -172,6 +181,7 @@ private:
     std::mutex m_gamesMutex;
 
     fly::SocketManagerWPtr m_wpSocketManager;
+    fly::SocketWPtr m_wpGameSocket;
 
     std::mutex m_runningFuturesMutex;
     std::vector<std::future<void>> m_runningFutures;
@@ -179,6 +189,8 @@ private:
     MoveSetPtr m_spMoveSet;
 
     GameConfigPtr m_spConfig;
+
+    bool m_isServer;
 };
 
 }

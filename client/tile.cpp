@@ -86,7 +86,6 @@ void validate(Tile *temp, int c)
         }
         else
         {
-            //qDebug()<<"Rascel, clicking anywhere";
             count=0;
         }
     }

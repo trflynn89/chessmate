@@ -25,6 +25,7 @@ public:
     {
         INVALID_TYPE = -1,
         START_GAME,
+        STARTED_GAME,
         INVALID_MOVE,
         MAKE_MOVE,
         GET_MOVE,

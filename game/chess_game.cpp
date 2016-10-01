@@ -123,8 +123,24 @@ bool ChessGame::ProcessMessage(const Message &msg)
     {
         std::string idStr = std::to_string(m_gameId);
 
-        Message m(Message(Message::START_GAME, idStr));
+        Message m(Message::STARTED_GAME, idStr);
         return sendMessage(m);
+    }
+
+    // STARTED GAME
+    // Parse game ID
+    if (type == Message::START_GAME)
+    {
+        try
+        {
+            m_gameId = fly::String::Convert<int>(data);
+        }
+        catch (...)
+        {
+            m_gameId = -1;
+        }
+
+        return (m_gameId != -1);
     }
 
     // MAKE MOVE

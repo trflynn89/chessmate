@@ -17,12 +17,14 @@ namespace chessmate {
 //==============================================================================
 GameManager::GameManager(
     fly::ConfigManagerPtr &spConfigManager,
-    const fly::SocketManagerPtr &spSocketManager
+    const fly::SocketManagerPtr &spSocketManager,
+    bool isServer
 ) :
     Runner(spConfigManager, "GameManager"),
     m_wpSocketManager(spSocketManager),
     m_spMoveSet(std::make_shared<MoveSet>()),
-    m_spConfig(spConfigManager->CreateConfig<GameConfig>())
+    m_spConfig(spConfigManager->CreateConfig<GameConfig>()),
+    m_isServer(isServer)
 {
 }
 
@@ -62,19 +64,27 @@ void GameManager::StopAllGames()
 bool GameManager::StartRunner()
 {
     const int acceptPort = m_spConfig->AcceptPort();
-    bool ret = false;
+    bool ret = true;
 
-    if (setSocketCallbacks() && createAcceptSocket(acceptPort))
+    if (setSocketCallbacks())
     {
-        LOGI(-1, "Accepting games on port %d", acceptPort);
-        LOGC("Accepting games on port %d", acceptPort);
+        if (m_isServer && createAcceptSocket(acceptPort))
+        {
+            LOGI(-1, "Accepting games on port %d", acceptPort);
+            LOGC("Accepting games on port %d", acceptPort);
+        }
+        else if (!m_isServer && createClientSocket(acceptPort))
+        {
+            LOGI(-1, "Connecting to port %d", acceptPort);
+            LOGC("Connecting to port %d", acceptPort);
+        }
+        else
+        {
+            LOGE(-1, "Could not start game manager on port %d", acceptPort);
+            LOGC("Could not start game manager on port %d", acceptPort);
 
-        ret = true;
-    }
-    else
-    {
-        LOGE(-1, "Could not start game manager on port %d", acceptPort);
-        LOGC("Could not start game manager on port %d", acceptPort);
+            ret = false;
+        }
     }
 
     return ret;
@@ -108,12 +118,30 @@ void GameManager::StopRunner()
 //==============================================================================
 bool GameManager::DoWork()
 {
-    fly::AsyncRequest request;
-    bool healthy = receiveSingleMessage(request);
-
-    if (healthy)
+    bool healthy = false;
     {
-        giveRequestToGame(request);
+        std::lock_guard<std::mutex> lock(m_gamesMutex);
+
+        if (m_gamesMap.empty() && !m_isServer)
+        {
+            fly::AsyncConnect connect;
+            healthy = checkForConnection(connect);
+
+            if (healthy)
+            {
+                createGameFromConnect(connect);
+            }
+        }
+        else
+        {
+            fly::AsyncRequest request;
+            healthy = receiveSingleMessage(request);
+
+            if (healthy)
+            {
+                giveRequestToGame(request);
+            }
+        }
     }
 
     deleteFinishedFutures();
@@ -146,7 +174,7 @@ bool GameManager::createAcceptSocket(int acceptPort)
 
     if (spSocketManager)
     {
-        fly::SocketWPtr wpSocket = spSocketManager->CreateAsyncTcpSocket();
+        m_wpGameSocket = spSocketManager->CreateAsyncTcpSocket();
         spSocket = wpSocket.lock();
     }
 
@@ -169,6 +197,50 @@ bool GameManager::createAcceptSocket(int acceptPort)
 }
 
 //==============================================================================
+bool GameManager::createClientSocket(int acceptPort)
+{
+    fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+    fly::SocketPtr spSocket;
+
+    if (spSocketManager)
+    {
+        m_wpGameSocket = spSocketManager->CreateAsyncTcpSocket();
+        spSocket = wpSocket.lock();
+    }
+
+    if (spSocket)
+    {
+        fly::Socket::ConnectedState state = spSocket->ConnectAsync("localhost", acceptPort);
+
+        if (state == fly::Socket::NOT_CONNECTED)
+        {
+            LOGE(-1, "Could not connect to port %d", acceptPort);
+            spSocket.reset();
+        }
+    }
+
+    return (spSocket && (spSocket->IsConnecting() || spSocket->IsConnected()));
+}
+
+//==============================================================================
+bool GameManager::checkForConnection(fly::AsyncConnect &connect) const
+{
+    fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
+
+    if (spSocketManager)
+    {
+        spSocketManager->WaitForCompletedConnect(connect, m_spConfig->QueueWaitTime());
+    }
+    else
+    {
+        LOGE(-1, "No socket manager");
+        return false;
+    }
+
+    return true;
+}
+
+//==============================================================================
 bool GameManager::receiveSingleMessage(fly::AsyncRequest &request) const
 {
     fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
@@ -184,6 +256,21 @@ bool GameManager::receiveSingleMessage(fly::AsyncRequest &request) const
     }
 
     return true;
+}
+
+//==============================================================================
+void GameManager::createGameFromConnect(const fly::AsyncConnect &connect)
+{
+    SocketPtr spSocket = m_wpGameSocket.lock();
+
+    if (spSocket && connect.IsValid())
+    {
+        Message message;
+
+        ChessGamePtr spGame = ChessGame::Create(
+            m_spConfig, spSocket, m_spMoveSet, message
+        );
+    }
 }
 
 //==============================================================================

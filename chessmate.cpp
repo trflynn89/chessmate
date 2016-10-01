@@ -58,12 +58,12 @@ GameManagerPtr ChessMate::GetGameManager() const
 //==============================================================================
 bool ChessMate::StartRunner()
 {
-    bool ret = initConfigManager() && initLogger() && initSocketManager();
-
-    if (m_isServer)
-    {
-        ret &= initGameManager();
-    }
+    bool ret = (
+        initConfigManager() &&
+        initLogger() &&
+        initSocketManager() &&
+        initGameManager()
+    );
 
     if (!ret)
     {
@@ -133,7 +133,7 @@ bool ChessMate::initSocketManager()
 bool ChessMate::initGameManager()
 {
     m_spGameManager = std::make_shared<GameManager>(
-        m_spConfigManager, m_spSocketManager
+        m_spConfigManager, m_spSocketManager, m_isServer
     );
 
     return m_spGameManager->Start();

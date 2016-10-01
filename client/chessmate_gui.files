@@ -1,1 +1,3 @@
 chessmate_gui.ui
+chessmate_gui.qrc
+chessmate_tile.h

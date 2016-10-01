@@ -7,8 +7,10 @@ SRC_DIRS_$(d) := \
 # Define libraries to link
 LDLIBS_$(d) := -lfly -lpthread
 
-# Define QT5 UIC/MOC/RCC source file
-QT5_$(d) := chessmate_gui
+# Define QT5 UIC/MOC/RCC source files
+QT5_UIC_$(d) := chessmate_gui
+QT5_MOC_$(d) := chessmate_gui chessmate_tile
+QT5_RCC_$(d) := chessmate_gui
 
 # Define source files
 $(eval $(call WILDCARD_SOURCES))
