@@ -64,7 +64,6 @@ bool ServerGameManager::createGameSocket(int acceptPort)
 {
     fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
     fly::SocketPtr spSocket;
-    bool success = false;
 
     if (spSocketManager)
     {
@@ -84,11 +83,9 @@ bool ServerGameManager::createGameSocket(int acceptPort)
             LOGE(-1, "Could not listen on port %d", acceptPort);
             spSocket.reset();
         }
-
-        success = (spSocket && spSocket->IsListening());
     }
 
-    return success;
+    return (spSocket && spSocket->IsListening());
 }
 
 //==============================================================================

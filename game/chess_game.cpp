@@ -38,6 +38,24 @@ ChessGamePtr ChessGame::Create(
     return spGame;
 }
 
+//==============================================================================
+ChessGamePtr ChessGame::Create(
+    const GameConfigPtr &spConfig,
+    const fly::SocketPtr &spClientSocket,
+    const MoveSetPtr &spMoveSet,
+    const color_type &engineColor,
+    const value_type &difficulty
+)
+{
+    ChessGamePtr spGame = std::make_shared<ChessGame>(
+        spConfig, spClientSocket, spMoveSet, engineColor, difficulty
+    );
+
+    std::string data = fly::String::Format("%d %d", engineColor, difficulty);
+    Message msg(Message::START_GAME, data);
+
+    return (spGame->sendMessage(msg) ? spGame : ChessGamePtr());
+}
 
 //==============================================================================
 ChessGame::ChessGame(

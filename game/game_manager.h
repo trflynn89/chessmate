@@ -48,14 +48,6 @@ public:
     static GameManagerPtr Create(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &, bool);
 
     /**
-     * Constructor, stores a weak reference to the socket manager.
-     *
-     * @param ConfigManagerPtr Reference to the configuration manager.
-     * @param SocketManagerPtr Reference to the socket manager.
-     */
-    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &);
-
-    /**
      * Destructor. Stop all games if they have not been already.
      */
     virtual ~GameManager();
@@ -81,6 +73,14 @@ public:
     void StopAllGames();
 
 protected:
+    /**
+     * Constructor, stores a weak reference to the socket manager.
+     *
+     * @param ConfigManagerPtr Reference to the configuration manager.
+     * @param SocketManagerPtr Reference to the socket manager.
+     */
+    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &);
+
     /**
      * Intialize the game manager. Create a socket to be used for accepting new
      * game clients, and set the socket manager callbacks for when a client

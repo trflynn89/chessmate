@@ -52,6 +52,14 @@ public:
         const Message &
     );
 
+    static ChessGamePtr Create(
+        const GameConfigPtr &,
+        const fly::SocketPtr &,
+        const MoveSetPtr &,
+        const color_type &,
+        const value_type &
+    );
+
     /**
      * Constructor to set the game's client socket.
      *

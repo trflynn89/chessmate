@@ -52,11 +52,10 @@ bool ClientGameManager::DoWork()
 }
 
 //==============================================================================
-bool ClientGameManager::createGameSocket(int acceptPort)
+bool ClientGameManager::createGameSocket(int connectPort)
 {
     fly::SocketManagerPtr spSocketManager = m_wpSocketManager.lock();
     fly::SocketPtr spSocket;
-    bool success = false;
 
     if (spSocketManager)
     {
@@ -66,18 +65,16 @@ bool ClientGameManager::createGameSocket(int acceptPort)
 
     if (spSocket)
     {
-        auto state = spSocket->ConnectAsync("localhost", acceptPort);
+        auto state = spSocket->ConnectAsync("localhost", connectPort);
 
         if (state == fly::Socket::NOT_CONNECTED)
         {
-            LOGE(-1, "Could not connect to port %d", acceptPort);
+            LOGE(-1, "Could not connect to port %d", connectPort);
             spSocket.reset();
         }
-
-        success = (spSocket && (spSocket->IsConnecting() || spSocket->IsConnected()));
     }
 
-    return success;
+    return (spSocket && (spSocket->IsConnecting() || spSocket->IsConnected()));
 }
 
 //==============================================================================
@@ -105,9 +102,7 @@ void ClientGameManager::createGameFromConnect(const fly::AsyncConnect &connect)
 
     if (spSocket && connect.IsValid())
     {
-        Message message;
-
-        ChessGamePtr spGame = std::make_shared<ChessGame>(
+        ChessGamePtr spGame = ChessGame::Create(
             m_spConfig, spSocket, m_spMoveSet, 0, 1
         );
 
