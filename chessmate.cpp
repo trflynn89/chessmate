@@ -132,7 +132,7 @@ bool ChessMate::initSocketManager()
 //==============================================================================
 bool ChessMate::initGameManager()
 {
-    m_spGameManager = std::make_shared<GameManager>(
+    m_spGameManager = GameManager::Create(
         m_spConfigManager, m_spSocketManager, m_isServer
     );
 

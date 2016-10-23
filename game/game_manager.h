@@ -1,11 +1,8 @@
 #pragma once
 
-#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
-#include <thread>
-#include <vector>
 
 #include <fly/fly.h>
 #include <fly/task/runner.h>
@@ -24,7 +21,6 @@ namespace chessmate {
 DEFINE_CLASS_PTRS(ChessGame);
 DEFINE_CLASS_PTRS(GameConfig);
 DEFINE_CLASS_PTRS(GameManager);
-DEFINE_CLASS_PTRS(Message);
 DEFINE_CLASS_PTRS(MoveSet);
 
 /**
@@ -49,18 +45,20 @@ public:
      */
     typedef std::map<int, fly::SocketWPtr> PendingMap;
 
+    static GameManagerPtr Create(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &, bool);
+
     /**
      * Constructor, stores a weak reference to the socket manager.
      *
      * @param ConfigManagerPtr Reference to the configuration manager.
      * @param SocketManagerPtr Reference to the socket manager.
      */
-    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &, bool);
+    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &);
 
     /**
      * Destructor. Stop all games if they have not been already.
      */
-    ~GameManager();
+    virtual ~GameManager();
 
     /**
      * Create and start new game. The game will hold a weak reference to the
@@ -103,7 +101,27 @@ protected:
      *
      * @return True if the game manager is healthy.
      */
-    virtual bool DoWork();
+    virtual bool DoWork() = 0;
+
+    /**
+     * Create the accept socket for new games to connect to.
+     *
+     * @param int The port to listen on.
+     *
+     * @return True if the socket could be created and initialized.
+     */
+    virtual bool createGameSocket(int) = 0;
+
+    std::mutex m_gamesMutex;
+    GamesMap m_gamesMap;
+    PendingMap m_pendingMap;
+
+    fly::SocketManagerWPtr m_wpSocketManager;
+    fly::SocketWPtr m_wpGameSocket;
+
+    MoveSetPtr m_spMoveSet;
+
+    GameConfigPtr m_spConfig;
 
 private:
     /**
@@ -113,84 +131,6 @@ private:
      * @return True if the callbacks were set, false otherwise.
      */
     bool setSocketCallbacks();
-
-    /**
-     * Create the accept socket for new games to connect to.
-     *
-     * @param int The port to listen on.
-     *
-     * @return True if the socket could be created and initialized.
-     */
-    bool createAcceptSocket(int);
-
-    /**
-     *
-     */
-    bool createClientSocket(int);
-
-    bool checkForConnection(fly::AsyncConnect &) const;
-
-    /**
-     * Wait for a short time for a message to be available.
-     *
-     * @param AsyncRequest Reference to request object to store a receive.
-     *
-     * @return True if the socket manager could be queried for a request.
-     */
-    bool receiveSingleMessage(fly::AsyncRequest &) const;
-
-    void createGameFromConnect(const fly::AsyncConnect &);
-
-    /**
-     * Find a game associated with an AsyncRequest and launch an async task to
-     * process the message in the request.
-     *
-     * @param AsyncRequest The request to process.
-     */
-    void giveRequestToGame(const fly::AsyncRequest &);
-
-    /**
-     * Depending on the given message type, either create a chess game or find
-     * an already-existing chess game from the given socket ID.
-     *
-     * A chess game is blindy created for START_GAME messages. If a client sent
-     * this message already, its previous game object will be released.
-     *
-     * @param int Socket ID of the client.
-     * @param Message The message from the client.
-     *
-     * @return A shared pointer around the created ChessGame instance.
-     */
-    ChessGamePtr createOrFindGame(int, const Message &);
-
-    /**
-     * Handle a message retrieved by the message receiver thread.
-     *
-     * @param ChessGamePtr The chess game the message is intended for.
-     * @param Message The message to process.
-     */
-    void handleMessage(const ChessGamePtr, const Message);
-
-    /**
-     * Remove any completed futures from the vector of futures.
-     */
-    void deleteFinishedFutures();
-
-    GamesMap m_gamesMap;
-    PendingMap m_pendingMap;
-    std::mutex m_gamesMutex;
-
-    fly::SocketManagerWPtr m_wpSocketManager;
-    fly::SocketWPtr m_wpGameSocket;
-
-    std::mutex m_runningFuturesMutex;
-    std::vector<std::future<void>> m_runningFutures;
-
-    MoveSetPtr m_spMoveSet;
-
-    GameConfigPtr m_spConfig;
-
-    bool m_isServer;
 };
 
 }
