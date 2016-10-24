@@ -32,20 +32,13 @@ ClientGameManager::~ClientGameManager()
 //==============================================================================
 bool ClientGameManager::DoWork()
 {
-    bool healthy = false;
+    fly::AsyncConnect connect;
+    bool healthy = checkForConnection(connect);
+
+    if (healthy)
     {
         std::lock_guard<std::mutex> lock(m_gamesMutex);
-
-        if (m_gamesMap.empty())
-        {
-            fly::AsyncConnect connect;
-            healthy = checkForConnection(connect);
-
-            if (healthy)
-            {
-                createGameFromConnect(connect);
-            }
-        }
+        createGameFromConnect(connect);
     }
 
     return healthy;

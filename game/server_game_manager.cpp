@@ -42,17 +42,13 @@ ServerGameManager::~ServerGameManager()
 //==============================================================================
 bool ServerGameManager::DoWork()
 {
-    bool healthy = false;
+    fly::AsyncRequest request;
+    bool healthy = receiveSingleMessage(request);
+
+    if (healthy)
     {
         std::lock_guard<std::mutex> lock(m_gamesMutex);
-
-        fly::AsyncRequest request;
-        healthy = receiveSingleMessage(request);
-
-        if (healthy)
-        {
-            giveRequestToGame(request);
-        }
+        giveRequestToGame(request);
     }
 
     deleteFinishedFutures();
@@ -144,8 +140,6 @@ void ServerGameManager::giveRequestToGame(const fly::AsyncRequest &request)
 //==============================================================================
 ChessGamePtr ServerGameManager::createOrFindGame(int socketId, const Message &message)
 {
-    std::lock_guard<std::mutex> lock(m_gamesMutex);
-
     if (message.GetMessageType() == Message::START_GAME)
     {
         if (m_pendingMap.find(socketId) == m_pendingMap.end())
