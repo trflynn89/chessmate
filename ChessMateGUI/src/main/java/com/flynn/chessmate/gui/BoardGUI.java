@@ -593,7 +593,6 @@ public class BoardGUI implements ActionListener, MouseListener
             if (fc.showSaveDialog(m_frame) == JFileChooser.APPROVE_OPTION)
             {
                 File file = fc.getSelectedFile();
-                String filePath = file.getParentFile().getAbsolutePath();
                 String fileName = file.getName();
 
                 // Check if file exists, if so, confirm overwrite
@@ -638,7 +637,7 @@ public class BoardGUI implements ActionListener, MouseListener
                 new PgnGenerator(
                     m_game.getPlayerColor(),
                     m_game.isEngineOpponent(),
-                    filePath + "\\" + fileName,
+                    new File(file.getParentFile(), fileName).getAbsolutePath(),
                     m_game.getBoard().getWhiteMoves(),
                     m_game.getBoard().getBlackMoves())
                     .generate();
