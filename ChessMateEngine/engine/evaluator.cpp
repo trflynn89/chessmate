@@ -2,20 +2,20 @@
 
 namespace chessmate {
 
-namespace
-{
+namespace {
+
     // Piece values
-    const value_type s_pawnValue   = 100;
+    const value_type s_pawnValue = 100;
     const value_type s_knightValue = 320;
     const value_type s_bishopValue = 325;
-    const value_type s_rookValue   = 500;
-    const value_type s_queenValue  = 975;
-    const value_type s_kingValue   = 32767;
+    const value_type s_rookValue = 500;
+    const value_type s_queenValue = 975;
+    const value_type s_kingValue = 32767;
 
     // Array to store the "meaning" of a pawn in a file
     // i.e. account for isolated and doubled pawns
-    value_type s_whitePawnFileValue[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    value_type s_blackPawnFileValue[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    value_type s_whitePawnFileValue[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    value_type s_blackPawnFileValue[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
     // Count the number of bishops
     value_type s_whiteBishopCount = 0;
@@ -23,74 +23,44 @@ namespace
 
     // Tables go from 0th index = A1, to 63rd index = H8
 
-    const value_type s_pawnTable[] =
-    {
-        0,  0,  0,  0,  0,  0,  0,  0,
-        5, 10, 10,-25,-25, 10, 10,  5,
-        5, -5,-10,  0,  0,-10, -5,  5,
-        0,  0,  0, 25, 25,  0,  0,  0,
-        5,  5, 10, 27, 27, 10,  5,  5,
-        10, 10, 20, 30, 30, 20, 10, 10,
-        50, 50, 50, 50, 50, 50, 50, 50,
-        0,  0,  0,  0,  0,  0,  0,  0
-    };
+    const value_type s_pawnTable[] = {
+        0,  0,  0,  0,  0,  0,  0,  0,  5,  10, 10, -25, -25, 10, 10, 5,  5, -5, -10, 0,  0,  -10,
+        -5, 5,  0,  0,  0,  25, 25, 0,  0,  0,  5,  5,   10,  27, 27, 10, 5, 5,  10,  10, 20, 30,
+        30, 20, 10, 10, 50, 50, 50, 50, 50, 50, 50, 50,  0,   0,  0,  0,  0, 0,  0,   0};
 
-    const value_type s_knightTable[] =
-    {
-        -50,-40,-20,-30,-30,-20,-40,-50,
-        -40,-20,  0,  5,  5,  0,-20,-40,
-        -30,  5, 10, 15, 15, 10,  5,-30,
-        -30,  0, 15, 20, 20, 15,  0,-30,
-        -30,  5, 15, 20, 20, 15,  5,-30,
-        -30,  0, 10, 15, 15, 10,  0,-30,
-        -40,-20,  0,  0,  0,  0,-20,-40,
-        -50,-40,-30,-30,-30,-30,-40,-50
-    };
+    const value_type s_knightTable[] = {
+        -50, -40, -20, -30, -30, -20, -40, -50, -40, -20, 0,   5,   5,   0,   -20, -40,
+        -30, 5,   10,  15,  15,  10,  5,   -30, -30, 0,   15,  20,  20,  15,  0,   -30,
+        -30, 5,   15,  20,  20,  15,  5,   -30, -30, 0,   10,  15,  15,  10,  0,   -30,
+        -40, -20, 0,   0,   0,   0,   -20, -40, -50, -40, -30, -30, -30, -30, -40, -50};
 
-    const value_type s_bishopTable[] =
-    {
-        -20,-10,-40,-10,-10,-40,-10,-20,
-        -10,  5,  0,  0,  0,  0,  5,-10,
-        -10, 10, 10, 10, 10, 10, 10,-10,
-        -10,  0, 10, 10, 10, 10,  0,-10,
-        -10,  5,  5, 10, 10,  5,  5,-10,
-        -10,  0,  5, 10, 10,  5,  0,-10,
-        -10,  0,  0,  0,  0,  0,  0,-10,
-        -20,-10,-10,-10,-10,-10,-10,-20
-    };
+    const value_type s_bishopTable[] = {
+        -20, -10, -40, -10, -10, -40, -10, -20, -10, 5,   0,   0,   0,   0,   5,   -10,
+        -10, 10,  10,  10,  10,  10,  10,  -10, -10, 0,   10,  10,  10,  10,  0,   -10,
+        -10, 5,   5,   10,  10,  5,   5,   -10, -10, 0,   5,   10,  10,  5,   0,   -10,
+        -10, 0,   0,   0,   0,   0,   0,   -10, -20, -10, -10, -10, -10, -10, -10, -20};
 
-    const value_type s_kingTable[] =
-    {
-        20, 30, 10,  0,  0, 10, 30, 20,
-        20, 20,  0,  0,  0,  0, 20, 20,
-        -10,-20,-20,-20,-20,-20,-20,-10,
-        -20,-30,-30,-40,-40,-30,-30,-20,
-        -30,-40,-40,-50,-50,-40,-40,-30,
-        -30,-40,-40,-50,-50,-40,-40,-30,
-        -30,-40,-40,-50,-50,-40,-40,-30,
-        -30,-40,-40,-50,-50,-40,-40,-30
-    };
+    const value_type s_kingTable[] = {
+        20,  30,  10,  0,   0,   10,  30,  20,  20,  20,  0,   0,   0,   0,   20,  20,
+        -10, -20, -20, -20, -20, -20, -20, -10, -20, -30, -30, -40, -40, -30, -30, -20,
+        -30, -40, -40, -50, -50, -40, -40, -30, -30, -40, -40, -50, -50, -40, -40, -30,
+        -30, -40, -40, -50, -50, -40, -40, -30, -30, -40, -40, -50, -50, -40, -40, -30};
 
-    const value_type s_kingTableEndGame[] =
-    {
-        -50,-30,-30,-30,-30,-30,-30,-50,
-        -30,-30,  0,  0,  0,  0,-30,-30,
-        -30,-10, 20, 30, 30, 20,-10,-30,
-        -30,-10, 30, 40, 40, 30,-10,-30,
-        -30,-10, 30, 40, 40, 30,-10,-30,
-        -30,-10, 20, 30, 30, 20,-10,-30,
-        -30,-20,-10,  0,  0,-10,-20,-30,
-        -50,-40,-30,-20,-20,-30,-40,-50
-    };
-}
+    const value_type s_kingTableEndGame[] = {
+        -50, -30, -30, -30, -30, -30, -30, -50, -30, -30, 0,   0,   0,   0,   -30, -30,
+        -30, -10, 20,  30,  30,  20,  -10, -30, -30, -10, 30,  40,  40,  30,  -10, -30,
+        -30, -10, 30,  40,  40,  30,  -10, -30, -30, -10, 20,  30,  30,  20,  -10, -30,
+        -30, -20, -10, 0,   0,   -10, -20, -30, -50, -40, -30, -20, -20, -30, -40, -50};
 
-//==============================================================================
+} // namespace
+
+//==================================================================================================
 Evaluator::Evaluator(const color_type &engineColor) : m_engineColor(engineColor)
 {
 }
 
-//==============================================================================
-int Evaluator::Score(const BitBoardPtr &spBoard, const ValidMoveSet &vms) const
+//==================================================================================================
+int Evaluator::Score(const std::shared_ptr<BitBoard> &spBoard, const ValidMoveSet &vms) const
 {
     value_type remainingPieces = 0;
     int score = 0;
@@ -219,13 +189,12 @@ int Evaluator::Score(const BitBoardPtr &spBoard, const ValidMoveSet &vms) const
     return ((m_engineColor == WHITE) ? score : -score);
 }
 
-//==============================================================================
+//==================================================================================================
 int Evaluator::evaluateSinglePiece(
-    const BitBoardPtr &spBoard,
+    const std::shared_ptr<BitBoard> &spBoard,
     const ValidMoveSet &vms,
     const square_type &rank,
-    const square_type &file
-) const
+    const square_type &file) const
 {
     MoveList myMoveSet = vms.GetMyValidMoves();
     MoveList oppMoveSet = vms.GetOppValidMoves();
@@ -430,7 +399,7 @@ int Evaluator::evaluateSinglePiece(
                 {
                     score -= 10;
                 }
-                else if (file != FILE_A || file != FILE_H)
+                else if ((file != FILE_A) && (file != FILE_H))
                 {
                     score -= 10;
                 }
@@ -444,7 +413,7 @@ int Evaluator::evaluateSinglePiece(
                 {
                     score -= 10;
                 }
-                else if (file != FILE_A || file != FILE_H)
+                else if ((file != FILE_A) && (file != FILE_H))
                 {
                     score -= 10;
                 }
@@ -508,7 +477,8 @@ int Evaluator::evaluateSinglePiece(
 
             if (pieceColor == WHITE)
             {
-                castled = spBoard->HasWhiteMovedKingsideRook() || spBoard->HasWhiteMovedQueensideRook();
+                castled =
+                    spBoard->HasWhiteMovedKingsideRook() || spBoard->HasWhiteMovedQueensideRook();
 
                 if (spBoard->HasWhiteMovedKing() && !castled)
                 {
@@ -517,7 +487,8 @@ int Evaluator::evaluateSinglePiece(
             }
             else if (pieceColor == BLACK)
             {
-                castled = spBoard->HasBlackMovedKingsideRook() || spBoard->HasBlackMovedQueensideRook();
+                castled =
+                    spBoard->HasBlackMovedKingsideRook() || spBoard->HasBlackMovedQueensideRook();
 
                 if (spBoard->HasBlackMovedKing() && !castled)
                 {
@@ -530,4 +501,4 @@ int Evaluator::evaluateSinglePiece(
     return score;
 }
 
-}
+} // namespace chessmate

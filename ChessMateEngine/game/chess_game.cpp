@@ -1,54 +1,51 @@
+#include "chess_game.h"
+
+#include "movement/valid_move_set.h"
+
+#include <fly/logger/logger.hpp>
+#include <fly/types/string/string.hpp>
+
 #include <string>
 #include <vector>
 
-#include <fly/fly.h>
-#include <fly/logging/logger.h>
-#include <fly/string/string.h>
-
-#include "chess_game.h"
-
-#include <movement/valid_move_set.h>
-
 namespace chessmate {
 
-//==============================================================================
-ChessGamePtr ChessGame::Create(
-    const GameConfigPtr &spConfig,
-    const fly::SocketPtr &spClientSocket,
-    const MoveSetPtr &spMoveSet,
-    const Message &msg
-)
+//==================================================================================================
+std::shared_ptr<ChessGame> ChessGame::Create(
+    const std::shared_ptr<GameConfig> &spConfig,
+    const std::shared_ptr<fly::Socket> &spClientSocket,
+    const std::shared_ptr<MoveSet> &spMoveSet,
+    const Message &msg)
 {
     Message::MessageType type = msg.GetMessageType();
     std::string data = msg.GetData();
 
     if ((type != Message::START_GAME) || !msg.IsValid())
     {
-        return ChessGamePtr();
+        return std::shared_ptr<ChessGame>();
     }
 
-    std::vector<std::string> arr = fly::String::Split(data, ' ');
+    std::vector<std::string> arr = fly::String::split(data, ' ');
     color_type engineColor = std::stoi(arr[0]);
     value_type difficulty = std::stoi(arr[1]);
 
-    ChessGamePtr spGame = std::make_shared<ChessGame>(
-        spConfig, spClientSocket, spMoveSet, engineColor, difficulty
-    );
-
-    return spGame;
+    return std::make_shared<ChessGame>(
+        spConfig,
+        spClientSocket,
+        spMoveSet,
+        engineColor,
+        difficulty);
 }
 
-
-//==============================================================================
+//==================================================================================================
 ChessGame::ChessGame(
-    const GameConfigPtr &spConfig,
-    const fly::SocketPtr &spClientSocket,
-    const MoveSetPtr &spMoveSet,
+    const std::shared_ptr<GameConfig> &spConfig,
+    const std::shared_ptr<fly::Socket> &spClientSocket,
+    const std::shared_ptr<MoveSet> &spMoveSet,
     const color_type &engineColor,
-    const value_type &difficulty
-) :
+    const value_type &difficulty) :
     m_spConfig(spConfig),
-    m_gameId(spClientSocket->GetSocketId()),
+    m_gameId(spClientSocket->get_socket_id()),
     m_wpClientSocket(spClientSocket),
     m_wpMoveSet(spMoveSet),
     m_maxDepth(2 * difficulty + 1),
@@ -56,40 +53,45 @@ ChessGame::ChessGame(
     m_spBoard(std::make_shared<BitBoard>()),
     m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
-    LOGC("Initialized game %d: Engine color = %d, max depth = %d",
-        m_gameId, engineColor, m_maxDepth);
-
-    LOGI(m_gameId, "Initialized game: Engine color = %d, max depth = %d",
-        engineColor, m_maxDepth);
+    LOGC(
+        "Initialized game %d: Engine color = %d, max depth = %d",
+        m_gameId,
+        engineColor,
+        m_maxDepth);
+    LOGI(
+        "Initialized game %d: Engine color = %d, max depth = %d",
+        m_gameId,
+        engineColor,
+        m_maxDepth);
 }
 
-//==============================================================================
+//==================================================================================================
 ChessGame::~ChessGame()
 {
     LOGC("Game finished, ID = %d", m_gameId);
 }
 
-//==============================================================================
+//==================================================================================================
 int ChessGame::GetGameID() const
 {
     return m_gameId;
 }
 
-//==============================================================================
+//==================================================================================================
 bool ChessGame::IsValid() const
 {
-    fly::SocketPtr spClientSocket = m_wpClientSocket.lock();
+    std::shared_ptr<fly::Socket> spClientSocket = m_wpClientSocket.lock();
 
-    if (spClientSocket && spClientSocket->IsValid())
+    if (spClientSocket && spClientSocket->is_valid())
     {
         return true;
     }
 
-    LOGW(m_gameId, "Client disconnected");
+    LOGW("Client %d disconnected", m_gameId);
     return false;
 }
 
-//==============================================================================
+//==================================================================================================
 bool ChessGame::MakeMove(Move &move) const
 {
     ValidMoveSet vms(m_wpMoveSet, m_spBoard);
@@ -100,17 +102,17 @@ bool ChessGame::MakeMove(Move &move) const
     {
         if (move == *it)
         {
-            LOGD(m_gameId, "Made valid move: %s", move);
+            LOGD("Game %d made valid move: %s", m_gameId, move);
             m_spBoard->MakeMove(move);
             return true;
         }
     }
 
-    LOGD(m_gameId, "Made invalid move: %s", move);
+    LOGD("Game %d made invalid move: %s", m_gameId, move);
     return false;
 }
 
-//==============================================================================
+//==================================================================================================
 bool ChessGame::ProcessMessage(const Message &msg)
 {
     Message::MessageType type = msg.GetMessageType();
@@ -169,28 +171,28 @@ bool ChessGame::ProcessMessage(const Message &msg)
 
     // UNKNOWN TYPE
     // Unknown message received - log and end this game
-    LOGW(m_gameId, "Unrecognized message: %d - %s", type, data);
+    LOGW("Unrecognized message %d: %d - %s", m_gameId, type, data);
     return false;
 }
 
-//==============================================================================
+//==================================================================================================
 bool ChessGame::sendMessage(const Message &msg) const
 {
     std::string serialized = msg.Serialize();
-    LOGD(m_gameId, "Sending message %s", serialized);
+    LOGD("Sending message %d: %s", m_gameId, serialized);
 
-    fly::SocketPtr spClientSocket = m_wpClientSocket.lock();
+    std::shared_ptr<fly::Socket> spClientSocket = m_wpClientSocket.lock();
 
-    if (spClientSocket && spClientSocket->IsValid())
+    if (spClientSocket && spClientSocket->is_valid())
     {
-        return spClientSocket->SendAsync(serialized);
+        return spClientSocket->send_async(std::move(serialized));
     }
 
-    LOGW(m_gameId, "Client disconnected");
+    LOGW("Client disconnected: %d", m_gameId);
     return false;
 }
 
-//==============================================================================
+//==================================================================================================
 std::string ChessGame::makeMoveAndStalemateMsg(Move &move) const
 {
     short stalemateStatus = 0;
@@ -219,19 +221,19 @@ std::string ChessGame::makeMoveAndStalemateMsg(Move &move) const
     return (move.GetPGNString() + " " + stalemateStr);
 }
 
-//==============================================================================
+//==================================================================================================
 bool ChessGame::anyValidMoves() const
 {
     ValidMoveSet vms(m_wpMoveSet, m_spBoard);
     return !vms.GetMyValidMoves().empty();
 }
 
-//==============================================================================
+//==================================================================================================
 Move ChessGame::getBestMove()
 {
-    LOGD(m_gameId, "Searching for best move");
+    LOGD("Searching for best move: %d", m_gameId);
     Move m = m_moveSelector.GetBestMove(m_maxDepth);
-    LOGD(m_gameId, "Best move is %s", m);
+    LOGD("Best move is %d: %s", m_gameId, m);
 
     m_spBoard->MakeMove(m); // Always promote to queen for now
 
@@ -245,4 +247,4 @@ Move ChessGame::getBestMove()
     return m;
 }
 
-}
+} // namespace chessmate

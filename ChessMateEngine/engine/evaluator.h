@@ -1,9 +1,9 @@
 #pragma once
 
-#include <game/bit_board.h>
-#include <game/board_types.h>
-#include <movement/move.h>
-#include <movement/valid_move_set.h>
+#include "game/bit_board.h"
+#include "game/board_types.h"
+#include "movement/move.h"
+#include "movement/valid_move_set.h"
 
 namespace chessmate {
 
@@ -29,18 +29,18 @@ public:
     /**
      * Evaluate the score of the whole board.
      *
-     * @param BitBoardPtr The board to evaluate.
+     * @param std::shared_ptr<BitBoard> The board to evaluate.
      * @param ValidMoveSet All valid moves for the board.
      *
      * @return The board's score.
      */
-    int Score(const BitBoardPtr &, const ValidMoveSet &) const;
+    int Score(const std::shared_ptr<BitBoard> &, const ValidMoveSet &) const;
 
 private:
     /**
      * Evaluate the score of a single piece on a board.
      *
-     * @param BitBoardPtr The board to evaluate.
+     * @param std::shared_ptr<BitBoard> The board to evaluate.
      * @param ValidMoveSet All valid moves for the board.
      * @param square_type The rank of the piece.
      * @param square_type The file of the piece.
@@ -48,13 +48,12 @@ private:
      * @return The piece's score.
      */
     int evaluateSinglePiece(
-        const BitBoardPtr &,
+        const std::shared_ptr<BitBoard> &,
         const ValidMoveSet &,
         const square_type &,
-        const square_type &
-    ) const;
+        const square_type &) const;
 
     color_type m_engineColor;
 };
 
-}
+} // namespace chessmate

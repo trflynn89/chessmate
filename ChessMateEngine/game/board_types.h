@@ -4,16 +4,17 @@
 
 namespace chessmate {
 
-typedef int64_t board_type;
-typedef int16_t square_type;
-typedef int16_t color_type;
-typedef int16_t piece_type;
-typedef int16_t value_type;
+typedef std::uint64_t board_type;
+typedef std::int16_t square_type;
+typedef std::int16_t color_type;
+typedef std::int16_t piece_type;
+typedef std::int16_t value_type;
 
 /**
  * Enumerated list of board files.
  */
-enum Files {
+enum Files
+{
     FILE_A,
     FILE_B,
     FILE_C,
@@ -29,7 +30,8 @@ enum Files {
 /**
  * Enumerated list of board ranks.
  */
-enum Ranks {
+enum Ranks
+{
     RANK_1,
     RANK_2,
     RANK_3,
@@ -45,14 +47,16 @@ enum Ranks {
 /**
  * Number of squares on a board.
  */
-enum BoardSize {
+enum BoardSize
+{
     BOARD_SIZE = NUM_FILES * NUM_RANKS
 };
 
 /**
  * Enumerated list of piece colors.
  */
-enum Color {
+enum Color
+{
     WHITE,
     BLACK,
     NONE
@@ -61,7 +65,8 @@ enum Color {
 /**
  * Enumerated list of piece types.
  */
-enum Piece {
+enum Piece
+{
     PAWN,
     KNIGHT,
     BISHOP,
@@ -70,13 +75,13 @@ enum Piece {
     KING
 };
 
-}
+} // namespace chessmate
 
 // Convert (s) to a rank
-#define GET_RANK(s)         ((s) / NUM_RANKS)
+#define GET_RANK(s) ((s) / NUM_RANKS)
 
 // Convert (s) to a file
-#define GET_FILE(s)         ((s) % NUM_FILES)
+#define GET_FILE(s) ((s) % NUM_FILES)
 
 // Convert (r, f) to a square's index
-#define GET_SQUARE(r, f)    ((r) * NUM_RANKS + (f))
+#define GET_SQUARE(r, f) ((r)*NUM_RANKS + (f))

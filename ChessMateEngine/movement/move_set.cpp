@@ -1,10 +1,10 @@
 #include "move_set.h"
 
-#include <game/board_types.h>
+#include "game/board_types.h"
 
 namespace chessmate {
 
-//==============================================================================
+//==================================================================================================
 MoveSet::MoveSet() :
     m_whitePawnMoves(BOARD_SIZE),
     m_blackPawnMoves(BOARD_SIZE),
@@ -36,130 +36,130 @@ MoveSet::MoveSet() :
     initializeKingMoves();
 }
 
-//==============================================================================
-MoveList MoveSet::GetWhitePawnMoves(int i) const
+//==================================================================================================
+MoveList MoveSet::GetWhitePawnMoves(MoveList::size_type i) const
 {
     return m_whitePawnMoves[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetBlackPawnMoves(int i) const
+//==================================================================================================
+MoveList MoveSet::GetBlackPawnMoves(MoveList::size_type i) const
 {
     return m_blackPawnMoves[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetKnightMoves(int i) const
+//==================================================================================================
+MoveList MoveSet::GetKnightMoves(MoveList::size_type i) const
 {
     return m_knightMoves[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetBishopMovesNE(int i) const
+//==================================================================================================
+MoveList MoveSet::GetBishopMovesNE(MoveList::size_type i) const
 {
     return m_bishopMovesNE[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetBishopMovesNW(int i) const
+//==================================================================================================
+MoveList MoveSet::GetBishopMovesNW(MoveList::size_type i) const
 {
     return m_bishopMovesNW[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetBishopMovesSE(int i) const
+//==================================================================================================
+MoveList MoveSet::GetBishopMovesSE(MoveList::size_type i) const
 {
     return m_bishopMovesSE[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetBishopMovesSW(int i) const
+//==================================================================================================
+MoveList MoveSet::GetBishopMovesSW(MoveList::size_type i) const
 {
     return m_bishopMovesSW[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetRookMovesN(int i) const
+//==================================================================================================
+MoveList MoveSet::GetRookMovesN(MoveList::size_type i) const
 {
     return m_rookMovesN[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetRookMovesS(int i) const
+//==================================================================================================
+MoveList MoveSet::GetRookMovesS(MoveList::size_type i) const
 {
     return m_rookMovesS[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetRookMovesE(int i) const
+//==================================================================================================
+MoveList MoveSet::GetRookMovesE(MoveList::size_type i) const
 {
     return m_rookMovesE[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetRookMovesW(int i) const
+//==================================================================================================
+MoveList MoveSet::GetRookMovesW(MoveList::size_type i) const
 {
     return m_rookMovesW[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesN(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesN(MoveList::size_type i) const
 {
     return m_queenMovesN[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesS(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesS(MoveList::size_type i) const
 {
     return m_queenMovesS[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesE(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesE(MoveList::size_type i) const
 {
     return m_queenMovesE[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesW(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesW(MoveList::size_type i) const
 {
     return m_queenMovesW[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesNE(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesNE(MoveList::size_type i) const
 {
     return m_queenMovesNE[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesNW(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesNW(MoveList::size_type i) const
 {
     return m_queenMovesNW[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesSE(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesSE(MoveList::size_type i) const
 {
     return m_queenMovesSE[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetQueenMovesSW(int i) const
+//==================================================================================================
+MoveList MoveSet::GetQueenMovesSW(MoveList::size_type i) const
 {
     return m_queenMovesSW[i];
 }
 
-//==============================================================================
-MoveList MoveSet::GetKingMoves(int i) const
+//==================================================================================================
+MoveList MoveSet::GetKingMoves(MoveList::size_type i) const
 {
     return m_kingMoves[i];
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeWhitePawnMoves()
 {
-    for (square_type i = 8; i < 56; ++i)
+    for (MoveList::size_type i = 8; i < 56; ++i)
     {
         MoveList &moves = m_whitePawnMoves[i];
 
@@ -169,28 +169,28 @@ void MoveSet::initializeWhitePawnMoves()
         // Diagonal capture
         if ((rank < RANK_8) && (file < FILE_H))
         {
-            moves.push_back(Move(rank, file, rank+1, file+1));
+            moves.push_back(Move(rank, file, rank + 1, file + 1));
         }
         if ((rank < RANK_8) && (file > FILE_A))
         {
-            moves.push_back(Move(rank, file, rank+1, file-1));
+            moves.push_back(Move(rank, file, rank + 1, file - 1));
         }
 
         // One move forward
-        moves.push_back(Move(rank, file, rank+1, file));
+        moves.push_back(Move(rank, file, rank + 1, file));
 
         // Two moves forward
         if (rank == RANK_2)
         {
-            moves.push_back(Move(rank, file, rank+2, file));
+            moves.push_back(Move(rank, file, rank + 2, file));
         }
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeBlackPawnMoves()
 {
-    for (square_type i = 8; i < 56; ++i)
+    for (MoveList::size_type i = 8; i < 56; ++i)
     {
         MoveList &moves = m_blackPawnMoves[i];
 
@@ -200,28 +200,28 @@ void MoveSet::initializeBlackPawnMoves()
         // Diagonal capture
         if ((rank > RANK_1) && (file < FILE_H))
         {
-            moves.push_back(Move(rank, file, rank-1, file+1));
+            moves.push_back(Move(rank, file, rank - 1, file + 1));
         }
         if ((rank > RANK_1) && (file > FILE_A))
         {
-            moves.push_back(Move(rank, file, rank-1, file-1));
+            moves.push_back(Move(rank, file, rank - 1, file - 1));
         }
 
         // One move forward
-        moves.push_back(Move(rank, file, rank-1, file));
+        moves.push_back(Move(rank, file, rank - 1, file));
 
         // Two moves forward
         if (rank == RANK_7)
         {
-            moves.push_back(Move(rank, file, rank-2, file));
+            moves.push_back(Move(rank, file, rank - 2, file));
         }
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeKnightMoves()
 {
-    for (square_type i = 0; i < BOARD_SIZE; ++i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         MoveList &moves = m_knightMoves[i];
 
@@ -231,57 +231,57 @@ void MoveSet::initializeKnightMoves()
         // North 1, east 2
         if ((rank < RANK_8) && (file < FILE_G))
         {
-            moves.push_back(Move(rank, file, rank+1, file+2));
+            moves.push_back(Move(rank, file, rank + 1, file + 2));
         }
 
         // North 1, west 2
         if ((rank < RANK_8) && (file > FILE_B))
         {
-            moves.push_back(Move(rank, file, rank+1, file-2));
+            moves.push_back(Move(rank, file, rank + 1, file - 2));
         }
 
         // North 2, east 1
         if ((rank < RANK_7) && (file < FILE_H))
         {
-            moves.push_back(Move(rank, file, rank+2, file+1));
+            moves.push_back(Move(rank, file, rank + 2, file + 1));
         }
 
         // North 2, west 1
         if ((rank < RANK_7) && (file > FILE_A))
         {
-            moves.push_back(Move(rank, file, rank+2, file-1));
+            moves.push_back(Move(rank, file, rank + 2, file - 1));
         }
 
         // South 1, east 2
         if ((rank > RANK_1) && (file < FILE_G))
         {
-            moves.push_back(Move(rank, file, rank-1, file+2));
+            moves.push_back(Move(rank, file, rank - 1, file + 2));
         }
 
         // South 1, west 2
         if ((rank > RANK_1) && (file > FILE_B))
         {
-            moves.push_back(Move(rank, file, rank-1, file-2));
+            moves.push_back(Move(rank, file, rank - 1, file - 2));
         }
 
         // South 2, east 1
         if ((rank > RANK_2) && (file < FILE_H))
         {
-            moves.push_back(Move(rank, file, rank-2, file+1));
+            moves.push_back(Move(rank, file, rank - 2, file + 1));
         }
 
         // South 2, west 1
         if ((rank > RANK_2) && (file > FILE_A))
         {
-            moves.push_back(Move(rank, file, rank-2, file-1));
+            moves.push_back(Move(rank, file, rank - 2, file - 1));
         }
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeBishopMoves()
 {
-    for (square_type i = 0; i < BOARD_SIZE; ++i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         square_type rank = GET_RANK(i);
         square_type file = GET_FILE(i);
@@ -320,10 +320,10 @@ void MoveSet::initializeBishopMoves()
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeRookMoves()
 {
-    for (square_type i = 0; i < BOARD_SIZE;++ i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         square_type rank = GET_RANK(i);
         square_type file = GET_FILE(i);
@@ -358,10 +358,10 @@ void MoveSet::initializeRookMoves()
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeQueenMoves()
 {
-    for (square_type i = 0; i < BOARD_SIZE;++ i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         square_type rank = GET_RANK(i);
         square_type file = GET_FILE(i);
@@ -428,10 +428,10 @@ void MoveSet::initializeQueenMoves()
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void MoveSet::initializeKingMoves()
 {
-    for (square_type i = 0; i < BOARD_SIZE; ++i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         MoveList &moves = m_kingMoves[i];
 
@@ -441,58 +441,58 @@ void MoveSet::initializeKingMoves()
         // North
         if (rank < RANK_8)
         {
-            moves.push_back(Move(rank, file, rank+1, file));
+            moves.push_back(Move(rank, file, rank + 1, file));
         }
 
         // South
         if (rank > RANK_1)
         {
-            moves.push_back(Move(rank, file, rank-1, file));
+            moves.push_back(Move(rank, file, rank - 1, file));
         }
 
         // East
         if (file < FILE_H)
         {
-            moves.push_back(Move(rank, file, rank, file+1));
+            moves.push_back(Move(rank, file, rank, file + 1));
         }
 
         // West
         if (file > FILE_A)
         {
-            moves.push_back(Move(rank, file, rank, file-1));
+            moves.push_back(Move(rank, file, rank, file - 1));
         }
 
         // North-east
         if ((rank < RANK_8) && (file < FILE_H))
         {
-            moves.push_back(Move(rank, file, rank+1, file+1));
+            moves.push_back(Move(rank, file, rank + 1, file + 1));
         }
 
         // North-west
         if ((rank < RANK_8) && (file > FILE_A))
         {
-            moves.push_back(Move(rank, file, rank+1, file-1));
+            moves.push_back(Move(rank, file, rank + 1, file - 1));
         }
 
         // South-east
         if ((rank > RANK_1) && (file < FILE_H))
         {
-            moves.push_back(Move(rank, file, rank-1, file+1));
+            moves.push_back(Move(rank, file, rank - 1, file + 1));
         }
 
         // South-west
         if ((rank > RANK_1) && (file > FILE_A))
         {
-            moves.push_back(Move(rank, file, rank-1, file-1));
+            moves.push_back(Move(rank, file, rank - 1, file - 1));
         }
 
         // Castle
         if ((file == FILE_E) && (rank == RANK_1 || rank == RANK_8))
         {
-            moves.push_back(Move(rank, file, rank, file+2));
-            moves.push_back(Move(rank, file, rank, file-2));
+            moves.push_back(Move(rank, file, rank, file + 2));
+            moves.push_back(Move(rank, file, rank, file - 2));
         }
     }
 }
 
-}
+} // namespace chessmate

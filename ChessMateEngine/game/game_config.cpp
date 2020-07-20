@@ -1,47 +1,34 @@
 #include "game_config.h"
 
+#include <fly/types/numeric/literals.hpp>
+
+using namespace fly::literals::numeric_literals;
+
 namespace chessmate {
 
-//==============================================================================
-GameConfig::GameConfig()
-{
-}
-
-//==============================================================================
-GameConfig::~GameConfig()
-{
-}
-
-//==============================================================================
-std::string GameConfig::GetName()
-{
-    return "game";
-}
-
-//==============================================================================
+//==================================================================================================
 int GameConfig::AcceptPort() const
 {
-    return GetValue<int>("accept_port", 12389);
+    return get_value<int>("accept_port", 12389);
 }
 
-//==============================================================================
-std::chrono::seconds GameConfig::QueueWaitTime() const
+//==================================================================================================
+std::chrono::milliseconds GameConfig::QueueWaitTime() const
 {
-    return std::chrono::seconds(
-        GetValue<std::chrono::seconds::rep>("queue_wait_time", I64(1))
-    );
+    return std::chrono::milliseconds(
+        get_value<std::chrono::milliseconds::rep>("queue_wait_time", 100_i64));
 }
 
-//==============================================================================
+//==================================================================================================
 bool GameConfig::IncreaseEndGameDifficulty() const
 {
-    return GetValue<bool>("increase_end_game_difficulty", true);
+    return get_value<bool>("increase_end_game_difficulty", true);
 }
 
-//==============================================================================
+//==================================================================================================
 value_type GameConfig::EndGameDifficultyIncrease() const
 {
-    return GetValue<value_type>("end_game_difficulty_increase", 2);
+    return get_value<value_type>("end_game_difficulty_increase", 2);
 }
 
-}
+} // namespace chessmate

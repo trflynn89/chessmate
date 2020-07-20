@@ -1,83 +1,85 @@
-#include <fly/fly.h>
-
 #include "bit_board.h"
+
+#include <fly/types/numeric/literals.hpp>
+
+using namespace fly::literals::numeric_literals;
 
 namespace chessmate {
 
-//==============================================================================
+//==================================================================================================
 BitBoard::BitBoard()
 {
-    m_pawn      = 0x00FF00000000FF00;
-    m_knight    = 0x4200000000000042;
-    m_bishop    = 0x2400000000000024;
-    m_rook      = 0x8100000000000081;
-    m_queen     = 0x0800000000000008;
-    m_king      = 0x1000000000000010;
-    m_white     = 0x000000000000FFFF;
-    m_black     = 0xFFFF000000000000;
+    m_pawn = 0x00FF00000000FF00_u64;
+    m_knight = 0x4200000000000042_u64;
+    m_bishop = 0x2400000000000024_u64;
+    m_rook = 0x8100000000000081_u64;
+    m_queen = 0x0800000000000008_u64;
+    m_king = 0x1000000000000010_u64;
+    m_white = 0x000000000000FFFF_u64;
+    m_black = 0xFFFF000000000000_u64;
 
-    m_boardScore                = 0;
-    m_playerInTurn              = WHITE;
-    m_whiteInCheck              = false;
-    m_blackInCheck              = false;
-    m_endGame                   = false;
-    m_whiteKingLocation         = GET_SQUARE(RANK_1, FILE_E);
-    m_blackKingLocation         = GET_SQUARE(RANK_8, FILE_E);
-    m_whiteMovedKing            = false;
-    m_whiteMovedQueen           = false;
-    m_whiteMovedKingsideRook    = false;
-    m_whiteMovedQueensideRook   = false;
-    m_blackMovedKing            = false;
-    m_blackMovedQueen           = false;
-    m_blackMovedKingsideRook    = false;
-    m_blackMovedQueensideRook   = false;
-    m_whiteCastled              = false;
-    m_blackCastled              = false;
-    m_fiftyMoveCount            = 0;
-    m_repeatedMoveCount         = 0;
-    m_enPassantColor            = NONE;
-    m_enPassantPosition         = -1;
+    m_boardScore = 0;
+    m_playerInTurn = WHITE;
+    m_whiteInCheck = false;
+    m_blackInCheck = false;
+    m_endGame = false;
+    m_whiteKingLocation = GET_SQUARE(RANK_1, FILE_E);
+    m_blackKingLocation = GET_SQUARE(RANK_8, FILE_E);
+    m_whiteMovedKing = false;
+    m_whiteMovedQueen = false;
+    m_whiteMovedKingsideRook = false;
+    m_whiteMovedQueensideRook = false;
+    m_blackMovedKing = false;
+    m_blackMovedQueen = false;
+    m_blackMovedKingsideRook = false;
+    m_blackMovedQueensideRook = false;
+    m_whiteCastled = false;
+    m_blackCastled = false;
+    m_fiftyMoveCount = 0;
+    m_repeatedMoveCount = 0;
+    m_enPassantColor = NONE;
+    m_enPassantPosition = -1;
 }
 
-//==============================================================================
+//==================================================================================================
 BitBoard::BitBoard(const BitBoard &board)
 {
-    m_pawn      = board.m_pawn;
-    m_knight    = board.m_knight;
-    m_bishop    = board.m_bishop;
-    m_rook      = board.m_rook;
-    m_queen     = board.m_queen;
-    m_king      = board.m_king;
-    m_white     = board.m_white;
-    m_black     = board.m_black;
+    m_pawn = board.m_pawn;
+    m_knight = board.m_knight;
+    m_bishop = board.m_bishop;
+    m_rook = board.m_rook;
+    m_queen = board.m_queen;
+    m_king = board.m_king;
+    m_white = board.m_white;
+    m_black = board.m_black;
 
-    m_attackedByWhite           = board.m_attackedByWhite;
-    m_attackedByBlack           = board.m_attackedByBlack;
-    m_boardScore                = board.m_boardScore;
-    m_playerInTurn              = board.m_playerInTurn;
-    m_lastMove                  = board.m_lastMove;
-    m_whiteInCheck              = board.m_whiteInCheck;
-    m_blackInCheck              = board.m_blackInCheck;
-    m_endGame                   = board.m_endGame;
-    m_whiteKingLocation         = board.m_whiteKingLocation;
-    m_blackKingLocation         = board.m_blackKingLocation;
-    m_whiteMovedKing            = board.m_whiteMovedKing;
-    m_whiteMovedQueen           = board.m_whiteMovedQueen;
-    m_whiteMovedKingsideRook    = board.m_whiteMovedKingsideRook;
-    m_whiteMovedQueensideRook   = board.m_whiteMovedQueensideRook;
-    m_blackMovedKing            = board.m_blackMovedKing;
-    m_blackMovedQueen           = board.m_blackMovedQueen;
-    m_blackMovedKingsideRook    = board.m_blackMovedKingsideRook;
-    m_blackMovedQueensideRook   = board.m_blackMovedQueensideRook;
-    m_whiteCastled              = board.m_whiteCastled;
-    m_blackCastled              = board.m_blackCastled;
-    m_fiftyMoveCount            = board.m_fiftyMoveCount;
-    m_repeatedMoveCount         = board.m_repeatedMoveCount;
-    m_enPassantColor            = board.m_enPassantColor;
-    m_enPassantPosition         = board.m_enPassantPosition;
+    m_attackedByWhite = board.m_attackedByWhite;
+    m_attackedByBlack = board.m_attackedByBlack;
+    m_boardScore = board.m_boardScore;
+    m_playerInTurn = board.m_playerInTurn;
+    m_lastMove = board.m_lastMove;
+    m_whiteInCheck = board.m_whiteInCheck;
+    m_blackInCheck = board.m_blackInCheck;
+    m_endGame = board.m_endGame;
+    m_whiteKingLocation = board.m_whiteKingLocation;
+    m_blackKingLocation = board.m_blackKingLocation;
+    m_whiteMovedKing = board.m_whiteMovedKing;
+    m_whiteMovedQueen = board.m_whiteMovedQueen;
+    m_whiteMovedKingsideRook = board.m_whiteMovedKingsideRook;
+    m_whiteMovedQueensideRook = board.m_whiteMovedQueensideRook;
+    m_blackMovedKing = board.m_blackMovedKing;
+    m_blackMovedQueen = board.m_blackMovedQueen;
+    m_blackMovedKingsideRook = board.m_blackMovedKingsideRook;
+    m_blackMovedQueensideRook = board.m_blackMovedQueensideRook;
+    m_whiteCastled = board.m_whiteCastled;
+    m_blackCastled = board.m_blackCastled;
+    m_fiftyMoveCount = board.m_fiftyMoveCount;
+    m_repeatedMoveCount = board.m_repeatedMoveCount;
+    m_enPassantColor = board.m_enPassantColor;
+    m_enPassantPosition = board.m_enPassantPosition;
 }
 
-//==============================================================================
+//==================================================================================================
 void BitBoard::MakeMove(Move &move)
 {
     square_type sRank = move.GetStartRank();
@@ -86,8 +88,8 @@ void BitBoard::MakeMove(Move &move)
     square_type eFile = move.GetEndFile();
 
     // Bits to set and erase
-    board_type eraseBit = ~(I64(1) << GET_SQUARE(sRank, sFile));
-    board_type setBit = (I64(1) << GET_SQUARE(eRank, eFile));
+    board_type eraseBit = ~(1_u64 << GET_SQUARE(sRank, sFile));
+    board_type setBit = (1_u64 << GET_SQUARE(eRank, eFile));
 
     // Increment the fifty move counter
     ++m_fiftyMoveCount;
@@ -100,8 +102,8 @@ void BitBoard::MakeMove(Move &move)
     {
         m_fiftyMoveCount = 0;
 
-        board_type enPassantBit = (I64(1) << GET_SQUARE(sRank, eFile));
-        m_pawn  &= ~enPassantBit;
+        board_type enPassantBit = (1_u64 << GET_SQUARE(sRank, eFile));
+        m_pawn &= ~enPassantBit;
         m_white &= ~enPassantBit;
         m_black &= ~enPassantBit;
     }
@@ -240,34 +242,34 @@ void BitBoard::MakeMove(Move &move)
     {
         if (color == WHITE)
         {
-            m_rook &= ~(I64(1) << 7);
-            m_white &= ~(I64(1) << 7);
-            m_rook |= (I64(1) << 5);
-            m_white |= (I64(1) << 5);
+            m_rook &= ~(1_u64 << 7);
+            m_white &= ~(1_u64 << 7);
+            m_rook |= (1_u64 << 5);
+            m_white |= (1_u64 << 5);
         }
         else
         {
-            m_rook &= ~(I64(1) << 63);
-            m_black &= ~(I64(1) << 63);
-            m_rook |= (I64(1) << 61);
-            m_black |= (I64(1) << 61);
+            m_rook &= ~(1_u64 << 63);
+            m_black &= ~(1_u64 << 63);
+            m_rook |= (1_u64 << 61);
+            m_black |= (1_u64 << 61);
         }
     }
     else if (move.IsQueensideCastle())
     {
         if (color == WHITE)
         {
-            m_rook &= ~(I64(1) << 0);
-            m_white &= ~(I64(1) << 0);
-            m_rook |= (I64(1) << 3);
-            m_white |= (I64(1) << 3);
+            m_rook &= ~(1_u64 << 0);
+            m_white &= ~(1_u64 << 0);
+            m_rook |= (1_u64 << 3);
+            m_white |= (1_u64 << 3);
         }
         else
         {
-            m_rook &= ~(I64(1) << 56);
-            m_black &= ~(I64(1) << 56);
-            m_rook |= (I64(1) << 59);
-            m_black |= (I64(1) << 59);
+            m_rook &= ~(1_u64 << 56);
+            m_black &= ~(1_u64 << 56);
+            m_rook |= (1_u64 << 59);
+            m_black |= (1_u64 << 59);
         }
     }
 
@@ -314,67 +316,67 @@ void BitBoard::MakeMove(Move &move)
     m_playerInTurn = !m_playerInTurn;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsPawn(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_pawn >> n) & 0x1;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsKnight(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_knight >> n) & 0x1;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsBishop(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_bishop >> n) & 0x1;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsRook(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_rook >> n) & 0x1;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsQueen(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_queen >> n) & 0x1;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsKing(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
     return (m_king >> n) & 0x1;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsWhite(const square_type &rank, const square_type &file) const
 {
     return (GetOccupant(rank, file) == WHITE);
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsBlack(const square_type &rank, const square_type &file) const
 {
     return (GetOccupant(rank, file) == BLACK);
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsEmpty(const square_type &rank, const square_type &file) const
 {
     return (GetOccupant(rank, file) == NONE);
 }
 
-//==============================================================================
+//==================================================================================================
 color_type BitBoard::GetOccupant(const square_type &rank, const square_type &file) const
 {
     square_type n = GET_SQUARE(rank, file);
@@ -391,8 +393,11 @@ color_type BitBoard::GetOccupant(const square_type &rank, const square_type &fil
     return NONE;
 }
 
-//==============================================================================
-bool BitBoard::IsUnderAttack(const square_type &rank, const square_type &file, const color_type &color) const
+//==================================================================================================
+bool BitBoard::IsUnderAttack(
+    const square_type &rank,
+    const square_type &file,
+    const color_type &color) const
 {
     square_type n = GET_SQUARE(rank, file);
 
@@ -408,27 +413,27 @@ bool BitBoard::IsUnderAttack(const square_type &rank, const square_type &file, c
     return false;
 }
 
-//==============================================================================
+//==================================================================================================
 void BitBoard::generateAttackedSquares()
 {
     m_attackedByWhite = 0x0;
     m_attackedByBlack = 0x0;
 
     // White pieces
-    board_type pawnW   = (m_white & m_pawn);
+    board_type pawnW = (m_white & m_pawn);
     board_type knightW = (m_white & m_knight);
     board_type bishopW = (m_white & m_bishop);
-    board_type rookW   = (m_white & m_rook);
-    board_type queenW  = (m_white & m_queen);
-    board_type kingW   = (m_white & m_king);
+    board_type rookW = (m_white & m_rook);
+    board_type queenW = (m_white & m_queen);
+    board_type kingW = (m_white & m_king);
 
     // Black pieces
-    board_type pawnB   = (m_black & m_pawn);
+    board_type pawnB = (m_black & m_pawn);
     board_type knightB = (m_black & m_knight);
     board_type bishopB = (m_black & m_bishop);
-    board_type rookB   = (m_black & m_rook);
-    board_type queenB  = (m_black & m_queen);
-    board_type kingB   = (m_black & m_king);
+    board_type rookB = (m_black & m_rook);
+    board_type queenB = (m_black & m_queen);
+    board_type kingB = (m_black & m_king);
 
     board_type allPieces = (m_white | m_black);
     board_type allPiecesR90 = 0x0;
@@ -446,46 +451,46 @@ void BitBoard::generateAttackedSquares()
     board_type notHFile = 0x7f7f7f7f7f7f7f7f;
 
     // White - Regular capture moves
-    m_attackedByWhite |= (pawnW << I64(7)) & notHFile & ~m_white;
-    m_attackedByWhite |= (pawnW << I64(9)) & notAFile & ~m_white;
+    m_attackedByWhite |= (pawnW << 7_u64) & notHFile & ~m_white;
+    m_attackedByWhite |= (pawnW << 9_u64) & notAFile & ~m_white;
 
     // White - En passant moves
     if (m_enPassantColor == BLACK)
     {
-        m_attackedByWhite |= (pawnW << I64(7)) & ((I64(1) << m_enPassantPosition));
-        m_attackedByWhite |= (pawnW << I64(9)) & ((I64(1) << m_enPassantPosition));
+        m_attackedByWhite |= (pawnW << 7_u64) & ((1_u64 << m_enPassantPosition));
+        m_attackedByWhite |= (pawnW << 9_u64) & ((1_u64 << m_enPassantPosition));
     }
 
     // Black - Regular capture moves
-    m_attackedByBlack |= (pawnB >> I64(7)) & notAFile & ~m_black;
-    m_attackedByBlack |= (pawnB >> I64(9)) & notHFile & ~m_black;
+    m_attackedByBlack |= (pawnB >> 7_u64) & notAFile & ~m_black;
+    m_attackedByBlack |= (pawnB >> 9_u64) & notHFile & ~m_black;
 
     // Black - En passant moves
     if (m_enPassantColor == WHITE)
     {
-        m_attackedByBlack |= (pawnB >> I64(7)) & ((I64(1) << m_enPassantPosition));
-        m_attackedByBlack |= (pawnB >> I64(9)) & ((I64(1) << m_enPassantPosition));
+        m_attackedByBlack |= (pawnB >> 7_u64) & ((1_u64 << m_enPassantPosition));
+        m_attackedByBlack |= (pawnB >> 9_u64) & ((1_u64 << m_enPassantPosition));
     }
 
     // KNIGHT - White
-    m_attackedByWhite |= (knightW << I64(6))  & ~m_white;
-    m_attackedByWhite |= (knightW << I64(10)) & ~m_white;
-    m_attackedByWhite |= (knightW << I64(15)) & ~m_white;
-    m_attackedByWhite |= (knightW << I64(17)) & ~m_white;
-    m_attackedByWhite |= (knightW >> I64(6))  & ~m_white;
-    m_attackedByWhite |= (knightW >> I64(10)) & ~m_white;
-    m_attackedByWhite |= (knightW >> I64(15)) & ~m_white;
-    m_attackedByWhite |= (knightW >> I64(17)) & ~m_white;
+    m_attackedByWhite |= (knightW << 6_u64) & ~m_white;
+    m_attackedByWhite |= (knightW << 10_u64) & ~m_white;
+    m_attackedByWhite |= (knightW << 15_u64) & ~m_white;
+    m_attackedByWhite |= (knightW << 17_u64) & ~m_white;
+    m_attackedByWhite |= (knightW >> 6_u64) & ~m_white;
+    m_attackedByWhite |= (knightW >> 10_u64) & ~m_white;
+    m_attackedByWhite |= (knightW >> 15_u64) & ~m_white;
+    m_attackedByWhite |= (knightW >> 17_u64) & ~m_white;
 
     // KNIGHT - Black
-    m_attackedByBlack |= (knightB << I64(6))  & ~m_black;
-    m_attackedByBlack |= (knightB << I64(10)) & ~m_black;
-    m_attackedByBlack |= (knightB << I64(15)) & ~m_black;
-    m_attackedByBlack |= (knightB << I64(17)) & ~m_black;
-    m_attackedByBlack |= (knightB >> I64(6))  & ~m_black;
-    m_attackedByBlack |= (knightB >> I64(10)) & ~m_black;
-    m_attackedByBlack |= (knightB >> I64(15)) & ~m_black;
-    m_attackedByBlack |= (knightB >> I64(17)) & ~m_black;
+    m_attackedByBlack |= (knightB << 6_u64) & ~m_black;
+    m_attackedByBlack |= (knightB << 10_u64) & ~m_black;
+    m_attackedByBlack |= (knightB << 15_u64) & ~m_black;
+    m_attackedByBlack |= (knightB << 17_u64) & ~m_black;
+    m_attackedByBlack |= (knightB >> 6_u64) & ~m_black;
+    m_attackedByBlack |= (knightB >> 10_u64) & ~m_black;
+    m_attackedByBlack |= (knightB >> 15_u64) & ~m_black;
+    m_attackedByBlack |= (knightB >> 17_u64) & ~m_black;
 
     // Sliding pieces
     for (square_type i = 0; i < BOARD_SIZE; ++i)
@@ -497,18 +502,19 @@ void BitBoard::generateAttackedSquares()
             square_type file = GET_FILE(i);
 
             // North-east
-            for (square_type j = rank + 1, k = file + 1; (j < NUM_RANKS) && (k < NUM_FILES); ++j, ++k)
+            for (square_type j = rank + 1, k = file + 1; (j < NUM_RANKS) && (k < NUM_FILES);
+                 ++j, ++k)
             {
                 square_type n = GET_SQUARE(j, k);
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << n) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << n) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << n);
+                    m_attackedByWhite |= (1_u64 << n);
                 }
             }
 
@@ -519,12 +525,12 @@ void BitBoard::generateAttackedSquares()
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << n) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << n) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << n);
+                    m_attackedByWhite |= (1_u64 << n);
                 }
             }
 
@@ -535,12 +541,12 @@ void BitBoard::generateAttackedSquares()
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << n) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << n) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << n);
+                    m_attackedByWhite |= (1_u64 << n);
                 }
             }
 
@@ -551,12 +557,12 @@ void BitBoard::generateAttackedSquares()
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << n) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << n) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << n);
+                    m_attackedByWhite |= (1_u64 << n);
                 }
             }
         }
@@ -568,18 +574,19 @@ void BitBoard::generateAttackedSquares()
             square_type file = GET_FILE(i);
 
             // North-east
-            for (square_type j = rank + 1, k = file + 1; (j < NUM_RANKS) && (k < NUM_FILES); ++j, ++k)
+            for (square_type j = rank + 1, k = file + 1; (j < NUM_RANKS) && (k < NUM_FILES);
+                 ++j, ++k)
             {
                 square_type n = GET_SQUARE(j, k);
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << n) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << n) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << n);
+                    m_attackedByBlack |= (1_u64 << n);
                 }
             }
 
@@ -590,12 +597,12 @@ void BitBoard::generateAttackedSquares()
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << n) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << n) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << n);
+                    m_attackedByBlack |= (1_u64 << n);
                 }
             }
 
@@ -606,12 +613,12 @@ void BitBoard::generateAttackedSquares()
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << n) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << n) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << n);
+                    m_attackedByBlack |= (1_u64 << n);
                 }
             }
 
@@ -622,12 +629,12 @@ void BitBoard::generateAttackedSquares()
 
                 if ((allPieces >> n) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << n) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << n) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << n);
+                    m_attackedByBlack |= (1_u64 << n);
                 }
             }
         }
@@ -637,7 +644,7 @@ void BitBoard::generateAttackedSquares()
         {
             square_type rank = GET_RANK(i);
             square_type file = GET_FILE(i);
-            square_type rankOcc = (allPieces    >> (rank * NUM_FILES)) & 0xff;
+            square_type rankOcc = (allPieces >> (rank * NUM_FILES)) & 0xff;
             square_type fileOcc = (allPiecesR90 >> (file * NUM_RANKS)) & 0xff;
 
             // North
@@ -645,12 +652,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((fileOcc >> j) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(j, file)) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(j, file)) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(j, file));
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(j, file));
                 }
             }
 
@@ -659,12 +666,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((fileOcc >> j) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(j, file)) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(j, file)) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(j, file));
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(j, file));
                 }
             }
 
@@ -673,12 +680,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((rankOcc >> j) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(rank, j)) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(rank, j)) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(rank, j));
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(rank, j));
                 }
             }
 
@@ -687,12 +694,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((rankOcc >> j) & 0x1)
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(rank, j)) & ~m_white;
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(rank, j)) & ~m_white;
                     break;
                 }
                 else
                 {
-                    m_attackedByWhite |= (I64(1) << GET_SQUARE(rank, j));
+                    m_attackedByWhite |= (1_u64 << GET_SQUARE(rank, j));
                 }
             }
         }
@@ -702,7 +709,7 @@ void BitBoard::generateAttackedSquares()
         {
             square_type rank = GET_RANK(i);
             square_type file = GET_FILE(i);
-            square_type rankOcc = (allPieces    >> (rank * NUM_FILES)) & 0xff;
+            square_type rankOcc = (allPieces >> (rank * NUM_FILES)) & 0xff;
             square_type fileOcc = (allPiecesR90 >> (file * NUM_RANKS)) & 0xff;
 
             // North
@@ -710,12 +717,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((fileOcc >> j) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(j, file)) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(j, file)) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(j, file));
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(j, file));
                 }
             }
 
@@ -724,12 +731,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((fileOcc >> j) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(j, file)) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(j, file)) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(j, file));
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(j, file));
                 }
             }
 
@@ -738,12 +745,12 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((rankOcc >> j) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(rank, j)) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(rank, j)) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(rank, j));
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(rank, j));
                 }
             }
 
@@ -752,171 +759,170 @@ void BitBoard::generateAttackedSquares()
             {
                 if ((rankOcc >> j) & 0x1)
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(rank, j)) & ~m_black;
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(rank, j)) & ~m_black;
                     break;
                 }
                 else
                 {
-                    m_attackedByBlack |= (I64(1) << GET_SQUARE(rank, j));
+                    m_attackedByBlack |= (1_u64 << GET_SQUARE(rank, j));
                 }
             }
         }
     }
 
     // KING - White
-    m_attackedByWhite |= (kingW << I64(1)) & ~m_white;
-    m_attackedByWhite |= (kingW << I64(7)) & ~m_white;
-    m_attackedByWhite |= (kingW << I64(8)) & ~m_white;
-    m_attackedByWhite |= (kingW << I64(9)) & ~m_white;
-    m_attackedByWhite |= (kingW >> I64(1)) & ~m_white;
-    m_attackedByWhite |= (kingW >> I64(7)) & ~m_white;
-    m_attackedByWhite |= (kingW >> I64(8)) & ~m_white;
-    m_attackedByWhite |= (kingW >> I64(9)) & ~m_white;
+    m_attackedByWhite |= (kingW << 1_u64) & ~m_white;
+    m_attackedByWhite |= (kingW << 7_u64) & ~m_white;
+    m_attackedByWhite |= (kingW << 8_u64) & ~m_white;
+    m_attackedByWhite |= (kingW << 9_u64) & ~m_white;
+    m_attackedByWhite |= (kingW >> 1_u64) & ~m_white;
+    m_attackedByWhite |= (kingW >> 7_u64) & ~m_white;
+    m_attackedByWhite |= (kingW >> 8_u64) & ~m_white;
+    m_attackedByWhite |= (kingW >> 9_u64) & ~m_white;
 
     // KING - Black
-    m_attackedByBlack |= (kingB << I64(1)) & ~m_black;
-    m_attackedByBlack |= (kingB << I64(7)) & ~m_black;
-    m_attackedByBlack |= (kingB << I64(8)) & ~m_black;
-    m_attackedByBlack |= (kingB << I64(9)) & ~m_black;
-    m_attackedByBlack |= (kingB >> I64(1)) & ~m_black;
-    m_attackedByBlack |= (kingB >> I64(7)) & ~m_black;
-    m_attackedByBlack |= (kingB >> I64(8)) & ~m_black;
-    m_attackedByBlack |= (kingB >> I64(9)) & ~m_black;
+    m_attackedByBlack |= (kingB << 1_u64) & ~m_black;
+    m_attackedByBlack |= (kingB << 7_u64) & ~m_black;
+    m_attackedByBlack |= (kingB << 8_u64) & ~m_black;
+    m_attackedByBlack |= (kingB << 9_u64) & ~m_black;
+    m_attackedByBlack |= (kingB >> 1_u64) & ~m_black;
+    m_attackedByBlack |= (kingB >> 7_u64) & ~m_black;
+    m_attackedByBlack |= (kingB >> 8_u64) & ~m_black;
+    m_attackedByBlack |= (kingB >> 9_u64) & ~m_black;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsWhiteInCheck() const
 {
     return m_whiteInCheck;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsBlackInCheck() const
 {
     return m_blackInCheck;
 }
 
-//==============================================================================
+//==================================================================================================
 void BitBoard::SetEndGame(bool endGame)
 {
     m_endGame = endGame;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsEndGame() const
 {
     return m_endGame;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsStalemateViaFiftyMoves() const
 {
     return (m_fiftyMoveCount >= 50);
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::IsStalemateViaRepetition() const
 {
     return (m_repeatedMoveCount >= 3);
 }
 
-//==============================================================================
+//==================================================================================================
 color_type BitBoard::GetPlayerInTurn() const
 {
     return m_playerInTurn;
 }
 
-//==============================================================================
+//==================================================================================================
 color_type BitBoard::GetEnPassantColor() const
 {
     return m_enPassantColor;
 }
 
-//==============================================================================
+//==================================================================================================
 square_type BitBoard::GetEnPassantPosition() const
 {
     return m_enPassantPosition;
 }
 
-//==============================================================================
+//==================================================================================================
 square_type BitBoard::GetWhiteKingLocation() const
 {
     return m_whiteKingLocation;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasWhiteMovedKing() const
 {
     return m_whiteMovedKing;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasWhiteMovedQueen() const
 {
     return m_whiteMovedQueen;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasWhiteMovedKingsideRook() const
 {
     return m_whiteMovedKingsideRook;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasWhiteMovedQueensideRook() const
 {
     return m_whiteMovedQueensideRook;
 }
 
-//==============================================================================
+//==================================================================================================
 square_type BitBoard::GetBlackKingLocation() const
 {
     return m_blackKingLocation;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasBlackMovedKing() const
 {
     return m_blackMovedKing;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasBlackMovedQueen() const
 {
     return m_blackMovedQueen;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasBlackMovedKingsideRook() const
 {
     return m_blackMovedKingsideRook;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasBlackMovedQueensideRook() const
 {
     return m_blackMovedQueensideRook;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasWhiteCastled() const
 {
     return m_whiteCastled;
 }
 
-//==============================================================================
+//==================================================================================================
 bool BitBoard::HasBlackCastled() const
 {
     return m_blackCastled;
 }
 
-//==============================================================================
+//==================================================================================================
 void BitBoard::recordEnPassant(
     const square_type &sRank,
     const square_type &sFile,
     const square_type &eRank,
-    const square_type &eFile
-)
+    const square_type &eFile)
 {
     square_type endSquare = GET_SQUARE(eRank, eFile);
     square_type distance = GET_SQUARE(sRank, sFile) - endSquare;
@@ -928,7 +934,7 @@ void BitBoard::recordEnPassant(
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void BitBoard::setCheckFlags()
 {
     // White
@@ -942,8 +948,8 @@ void BitBoard::setCheckFlags()
     m_blackInCheck = IsUnderAttack(rank, file, WHITE);
 }
 
-//==============================================================================
-std::ostream &operator << (std::ostream &stream, const BitBoard &board)
+//==================================================================================================
+std::ostream &operator<<(std::ostream &stream, const BitBoard &board)
 {
     for (square_type i = NUM_RANKS - 1; i >= 0; --i)
     {
@@ -997,4 +1003,4 @@ std::ostream &operator << (std::ostream &stream, const BitBoard &board)
     return stream;
 }
 
-}
+} // namespace chessmate

@@ -1,22 +1,19 @@
+#include <atomic>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <type_traits>
 
-#include <fly/fly.h>
-#include <fly/task/runner.h>
-
 namespace fly {
-
-DEFINE_CLASS_PTRS(ConfigManager);
-DEFINE_CLASS_PTRS(Logger);
-DEFINE_CLASS_PTRS(SocketManager);
-
-}
+class ConfigManager;
+class Logger;
+class SocketManager;
+class TaskManager;
+} // namespace fly
 
 namespace chessmate {
 
-DEFINE_CLASS_PTRS(ChessMateEngine);
-DEFINE_CLASS_PTRS(GameManager);
+class GameManager;
 
 /**
  * Class to initialize and manage the ChessMate engine.
@@ -24,7 +21,7 @@ DEFINE_CLASS_PTRS(GameManager);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 21, 2016
  */
-class ChessMateEngine : public fly::Runner
+class ChessMateEngine
 {
 public:
     /**
@@ -33,25 +30,28 @@ public:
      */
     ChessMateEngine();
 
-protected:
     /**
      * Start the ChessMate engine. Initialize all subsystems.
      *
      * @retun True if each subsystem could be initialized.
      */
-    virtual bool StartRunner();
+    bool Start();
 
     /**
      * Stop the ChessMate engine. Deinitialize all subsystems.
      */
-    virtual void StopRunner();
+    void Stop();
 
-    /**
-     * @return False - no workers are used, thus this should not be called.
-     */
-    virtual bool DoWork();
+    bool KeepRunning(int &signal) const;
 
 private:
+    /**
+     * Initialize the task subsystem.
+     *
+     * @retun True if it could be initialized.
+     */
+    bool initTaskManager();
+
     /**
      * Initialize the configuration subsystem.
      *
@@ -80,31 +80,16 @@ private:
      */
     bool initGameManager();
 
-    /**
-     * Deinitialize a running subsystem.
-     */
-    template <typename T>
-    void stopRunner(std::shared_ptr<T> &);
+    std::shared_ptr<fly::TaskManager> m_spTaskManager;
+    std::shared_ptr<fly::ConfigManager> m_spConfigManager;
+    std::shared_ptr<fly::Logger> m_spLogger;
+    std::shared_ptr<fly::SocketManager> m_spSocketManager;
+    std::shared_ptr<GameManager> m_spGameManager;
 
-    fly::ConfigManagerPtr m_spConfigManager;
-    fly::LoggerPtr m_spLogger;
-    fly::SocketManagerPtr m_spSocketManager;
-    GameManagerPtr m_spGameManager;
+    std::filesystem::path m_chessMateDirectory;
 
-    std::string m_chessMateDirectory;
+    std::atomic_bool m_keepRunning {false};
+    std::atomic_int m_killSignal {0};
 };
 
-//==============================================================================
-template <typename T>
-void ChessMateEngine::stopRunner(std::shared_ptr<T> &spRunner)
-{
-    static_assert(std::is_base_of<Runner, T>::value,
-        "Given type is not a runnable type");
-
-    if (spRunner)
-    {
-        spRunner->Stop();
-    }
-}
-
-}
+} // namespace chessmate

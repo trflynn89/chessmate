@@ -1,13 +1,9 @@
 #pragma once
 
-#include <fly/fly.h>
-
-#include <game/board_types.h>
-#include <movement/move.h>
+#include "game/board_types.h"
+#include "movement/move.h"
 
 namespace chessmate {
-
-DEFINE_CLASS_PTRS(BitBoard);
 
 /**
  * Class to represent a chess board. Uses a bit board representation. There are
@@ -273,7 +269,7 @@ public:
      * @param ostream The stream to print to.
      * @param BitBoard The board to print.
      */
-    friend std::ostream &operator << (std::ostream &, const BitBoard &);
+    friend std::ostream &operator<<(std::ostream &, const BitBoard &);
 
 private:
     /**
@@ -289,7 +285,11 @@ private:
      * @param square_type The ending rank of the move.
      * @param square_type The ending file of the move.
      */
-    void recordEnPassant(const square_type &, const square_type &, const square_type &, const square_type &);
+    void recordEnPassant(
+        const square_type &,
+        const square_type &,
+        const square_type &,
+        const square_type &);
 
     /**
      * Set the flags for whether either side is in check.
@@ -354,4 +354,4 @@ private:
     square_type m_enPassantPosition; // 0-63. Position where a pawn would move to.
 };
 
-}
+} // namespace chessmate

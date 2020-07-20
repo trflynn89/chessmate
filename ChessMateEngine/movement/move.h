@@ -1,10 +1,10 @@
 #pragma once
 
+#include "game/board_types.h"
+
 #include <array>
 #include <iostream>
 #include <string>
-
-#include <game/board_types.h>
 
 namespace chessmate {
 
@@ -30,12 +30,7 @@ public:
      * @param square_type The ending rank of the move.
      * @param square_type The ending file of the move.
      */
-    Move(
-        const square_type &,
-        const square_type &,
-        const square_type &,
-        const square_type &
-    );
+    Move(const square_type &, const square_type &, const square_type &, const square_type &);
 
     /**
      * Constructor to set the move data.
@@ -51,8 +46,7 @@ public:
         const square_type &,
         const square_type &,
         const square_type &,
-        const piece_type &
-    );
+        const piece_type &);
 
     /**
      * Constructor to parse a move in PGN format.
@@ -174,7 +168,7 @@ public:
      *
      * @return True if the moves are identical, false otherwise.
      */
-    bool operator == (const Move &move) const;
+    bool operator==(const Move &move) const;
 
     /**
      * Overloaded operator << for printing the move.
@@ -182,7 +176,7 @@ public:
      * @param stream The stream to print to.
      * @param Move The move to print.
      */
-    friend std::ostream &operator << (std::ostream &, const Move &);
+    friend std::ostream &operator<<(std::ostream &, const Move &);
 
 private:
     square_type m_startRank;
@@ -202,4 +196,4 @@ private:
     bool m_IsEnPassant;
 };
 
-}
+} // namespace chessmate

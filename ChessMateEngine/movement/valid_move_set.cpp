@@ -2,26 +2,26 @@
 
 namespace chessmate {
 
-namespace
-{
+namespace {
+
     // Attacking piece values - better to attack with pawn than queen
-    const value_type s_pawnValue   = 6;
+    const value_type s_pawnValue = 6;
     const value_type s_knightValue = 3;
     const value_type s_bishopValue = 3;
-    const value_type s_rookValue   = 2;
-    const value_type s_queenValue  = 1;
-    const value_type s_kingValue   = 1;
-}
+    const value_type s_rookValue = 2;
+    const value_type s_queenValue = 1;
+    // const value_type s_kingValue = 1;
 
-//==============================================================================
+} // namespace
+
+//==================================================================================================
 ValidMoveSet::ValidMoveSet(
-    const MoveSetWPtr &wpMoveSet,
-    const BitBoardPtr &spBoard
-)
+    const std::weak_ptr<MoveSet> &wpMoveSet,
+    const std::shared_ptr<BitBoard> &spBoard)
 {
-    MoveSetPtr spMoveSet = wpMoveSet.lock();
+    std::shared_ptr<MoveSet> spMoveSet = wpMoveSet.lock();
 
-    for (square_type i = 0; i < BOARD_SIZE; ++i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         m_attackValue[i] = 0;
         m_defendValue[i] = 0;
@@ -33,15 +33,14 @@ ValidMoveSet::ValidMoveSet(
     }
 }
 
-//==============================================================================
+//==================================================================================================
 void ValidMoveSet::generateValidMoves(
-    const MoveSetPtr &spMoveSet,
-    const BitBoardPtr &spBoard
-)
+    const std::shared_ptr<MoveSet> &spMoveSet,
+    const std::shared_ptr<BitBoard> &spBoard)
 {
     color_type playerInTurn = spBoard->GetPlayerInTurn();
 
-    for (square_type i = 0; i < BOARD_SIZE; ++i)
+    for (MoveList::size_type i = 0; i < BOARD_SIZE; ++i)
     {
         MoveList wPawn = spMoveSet->GetWhitePawnMoves(i);
         MoveList bPawn = spMoveSet->GetBlackPawnMoves(i);
@@ -74,7 +73,7 @@ void ValidMoveSet::generateValidMoves(
                         // 2 move start
                         if (it->GetEndRank() - it->GetStartRank() == 2)
                         {
-                            if (spBoard->IsEmpty(it->GetStartRank()+1, it->GetStartFile()))
+                            if (spBoard->IsEmpty(it->GetStartRank() + 1, it->GetStartFile()))
                             {
                                 if (spBoard->IsEmpty(it->GetEndRank(), it->GetEndFile()))
                                 {
@@ -113,13 +112,13 @@ void ValidMoveSet::generateValidMoves(
                     {
                         if (playerInTurn == WHITE)
                         {
-                            m_defendValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())]
-                                += s_pawnValue;
+                            m_defendValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())] +=
+                                s_pawnValue;
                         }
                         else
                         {
-                            m_attackValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())]
-                                += s_pawnValue;
+                            m_attackValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())] +=
+                                s_pawnValue;
                         }
 
                         if (spBoard->IsBlack(it->GetEndRank(), it->GetEndFile()))
@@ -175,7 +174,7 @@ void ValidMoveSet::generateValidMoves(
                         // 2 move start
                         if (it->GetStartRank() - it->GetEndRank() == 2)
                         {
-                            if (spBoard->IsEmpty(it->GetStartRank()-1, it->GetStartFile()))
+                            if (spBoard->IsEmpty(it->GetStartRank() - 1, it->GetStartFile()))
                             {
                                 if (spBoard->IsEmpty(it->GetEndRank(), it->GetEndFile()))
                                 {
@@ -214,13 +213,13 @@ void ValidMoveSet::generateValidMoves(
                     {
                         if (playerInTurn == BLACK)
                         {
-                            m_defendValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())]
-                                += s_pawnValue;
+                            m_defendValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())] +=
+                                s_pawnValue;
                         }
                         else
                         {
-                            m_attackValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())]
-                                += s_pawnValue;
+                            m_attackValue[GET_SQUARE(it->GetEndRank(), it->GetEndFile())] +=
+                                s_pawnValue;
                         }
 
                         if (spBoard->IsWhite(it->GetEndRank(), it->GetEndFile()))
@@ -322,10 +321,30 @@ void ValidMoveSet::generateValidMoves(
 
         if (spBoard->IsBishop(rank, file))
         {
-            addSlidingMoveIfValid(spBoard, BISHOP, c, s_bishopValue, spMoveSet->GetBishopMovesNE(i));
-            addSlidingMoveIfValid(spBoard, BISHOP, c, s_bishopValue, spMoveSet->GetBishopMovesNW(i));
-            addSlidingMoveIfValid(spBoard, BISHOP, c, s_bishopValue, spMoveSet->GetBishopMovesSE(i));
-            addSlidingMoveIfValid(spBoard, BISHOP, c, s_bishopValue, spMoveSet->GetBishopMovesSW(i));
+            addSlidingMoveIfValid(
+                spBoard,
+                BISHOP,
+                c,
+                s_bishopValue,
+                spMoveSet->GetBishopMovesNE(i));
+            addSlidingMoveIfValid(
+                spBoard,
+                BISHOP,
+                c,
+                s_bishopValue,
+                spMoveSet->GetBishopMovesNW(i));
+            addSlidingMoveIfValid(
+                spBoard,
+                BISHOP,
+                c,
+                s_bishopValue,
+                spMoveSet->GetBishopMovesSE(i));
+            addSlidingMoveIfValid(
+                spBoard,
+                BISHOP,
+                c,
+                s_bishopValue,
+                spMoveSet->GetBishopMovesSW(i));
         }
 
         /***** ROOK *****/
@@ -362,18 +381,16 @@ void ValidMoveSet::generateValidMoves(
             {
                 for (auto it = king.begin(); it != king.end(); ++it)
                 {
-                    bool movedKing = (c == WHITE ?
-                        spBoard->HasWhiteMovedKing() :
-                        spBoard->HasBlackMovedKing());
-                    bool movedKingsideRook = (c == WHITE ?
-                        spBoard->HasWhiteMovedKingsideRook() :
-                        spBoard->HasBlackMovedKingsideRook());
-                    bool movedQueensideRook = (c == WHITE ?
-                        spBoard->HasWhiteMovedQueensideRook() :
-                        spBoard->HasBlackMovedQueensideRook());
-                    bool inCheck = (c == WHITE ?
-                        spBoard->IsWhiteInCheck() :
-                        spBoard->IsBlackInCheck());
+                    bool movedKing =
+                        (c == WHITE ? spBoard->HasWhiteMovedKing() : spBoard->HasBlackMovedKing());
+                    bool movedKingsideRook =
+                        (c == WHITE ? spBoard->HasWhiteMovedKingsideRook() :
+                                      spBoard->HasBlackMovedKingsideRook());
+                    bool movedQueensideRook =
+                        (c == WHITE ? spBoard->HasWhiteMovedQueensideRook() :
+                                      spBoard->HasBlackMovedQueensideRook());
+                    bool inCheck =
+                        (c == WHITE ? spBoard->IsWhiteInCheck() : spBoard->IsBlackInCheck());
 
                     square_type diff = it->GetEndFile() - it->GetStartFile();
 
@@ -395,10 +412,12 @@ void ValidMoveSet::generateValidMoves(
                             if (diff == 2)
                             {
                                 if (!movedKingsideRook &&
-                                    spBoard->IsEmpty(it->GetStartRank(), it->GetStartFile()+1))
+                                    spBoard->IsEmpty(it->GetStartRank(), it->GetStartFile() + 1))
                                 {
-                                    if (spBoard->IsUnderAttack(it->GetStartRank(),
-                                        it->GetStartFile()+1, oppC) == 0)
+                                    if (spBoard->IsUnderAttack(
+                                            it->GetStartRank(),
+                                            it->GetStartFile() + 1,
+                                            oppC) == 0)
                                     {
                                         it->SetKingsideCastle();
                                         it->SetMovingPiece(KING);
@@ -411,10 +430,12 @@ void ValidMoveSet::generateValidMoves(
                             else if (diff == -2)
                             {
                                 if (!movedQueensideRook &&
-                                    spBoard->IsEmpty(it->GetStartRank(), it->GetStartFile()-1))
+                                    spBoard->IsEmpty(it->GetStartRank(), it->GetStartFile() - 1))
                                 {
-                                    if (spBoard->IsUnderAttack(it->GetStartRank(),
-                                        it->GetStartFile()-1, oppC) == 0)
+                                    if (spBoard->IsUnderAttack(
+                                            it->GetStartRank(),
+                                            it->GetStartFile() - 1,
+                                            oppC) == 0)
                                     {
                                         it->SetQueensideCastle();
                                         it->SetMovingPiece(KING);
@@ -426,8 +447,7 @@ void ValidMoveSet::generateValidMoves(
                     }
 
                     // Or if we are white and destination is black
-                    else if ((c == WHITE)
-                        && spBoard->IsBlack(it->GetEndRank(), it->GetEndFile()))
+                    else if ((c == WHITE) && spBoard->IsBlack(it->GetEndRank(), it->GetEndFile()))
                     {
                         if ((diff > -2) && (diff < 2))
                         {
@@ -438,8 +458,7 @@ void ValidMoveSet::generateValidMoves(
                     }
 
                     // Or if we are black and destination is white
-                    else if ((c == BLACK)
-                        && spBoard->IsWhite(it->GetEndRank(), it->GetEndFile()))
+                    else if ((c == BLACK) && spBoard->IsWhite(it->GetEndRank(), it->GetEndFile()))
                     {
                         if ((diff > -2) && (diff < 2))
                         {
@@ -479,38 +498,37 @@ void ValidMoveSet::generateValidMoves(
     m_myValidMoves = newValidMoves;
 }
 
-//==============================================================================
+//==================================================================================================
 MoveList ValidMoveSet::GetMyValidMoves() const
 {
     return m_myValidMoves;
 }
 
-//==============================================================================
+//==================================================================================================
 MoveList ValidMoveSet::GetOppValidMoves() const
 {
     return m_oppValidMoves;
 }
 
-//==============================================================================
+//==================================================================================================
 value_type ValidMoveSet::GetAttackValue(square_type rank, square_type file) const
 {
     return m_attackValue[GET_SQUARE(rank, file)];
 }
 
-//==============================================================================
+//==================================================================================================
 value_type ValidMoveSet::GetDefendValue(square_type rank, square_type file) const
 {
     return m_defendValue[GET_SQUARE(rank, file)];
 }
 
-//==============================================================================
+//==================================================================================================
 void ValidMoveSet::addSlidingMoveIfValid(
-    const BitBoardPtr &spBoard,
+    const std::shared_ptr<BitBoard> &spBoard,
     const piece_type &piece,
     const color_type &color,
     const value_type &value,
-    MoveList moves
-)
+    MoveList moves)
 {
     color_type playerInTurn = spBoard->GetPlayerInTurn();
 
@@ -582,4 +600,4 @@ void ValidMoveSet::addSlidingMoveIfValid(
     }
 }
 
-}
+} // namespace chessmate

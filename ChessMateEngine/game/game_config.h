@@ -1,16 +1,12 @@
 #pragma once
 
+#include "game/board_types.h"
+
+#include <fly/config/config.hpp>
+
 #include <chrono>
-#include <string>
-
-#include <fly/fly.h>
-#include <fly/config/config.h>
-
-#include <game/board_types.h>
 
 namespace chessmate {
-
-DEFINE_CLASS_PTRS(GameConfig);
 
 /**
  * Class to hold configuration values related to games and the game manager.
@@ -21,20 +17,7 @@ DEFINE_CLASS_PTRS(GameConfig);
 class GameConfig : public fly::Config
 {
 public:
-    /**
-     * Constructor.
-     */
-    GameConfig();
-
-    /**
-     * Destructor.
-     */
-    virtual ~GameConfig();
-
-    /**
-     * Get the name to associate with this configuration.
-     */
-    static std::string GetName();
+    static constexpr const char *identifier = "game";
 
     /**
      * @return Port used to listen for new game connections.
@@ -44,7 +27,7 @@ public:
     /**
      * @return Sleep time for logger IO thread.
      */
-    std::chrono::seconds QueueWaitTime() const;
+    std::chrono::milliseconds QueueWaitTime() const;
 
     /**
      * @return Whether to increase difficulty during the end game.
@@ -57,4 +40,4 @@ public:
     value_type EndGameDifficultyIncrease() const;
 };
 
-}
+} // namespace chessmate

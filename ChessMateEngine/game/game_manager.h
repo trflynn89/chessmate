@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fly/task/task.hpp>
+
 #include <future>
 #include <map>
 #include <memory>
@@ -7,25 +9,20 @@
 #include <thread>
 #include <vector>
 
-#include <fly/fly.h>
-#include <fly/task/runner.h>
-
 namespace fly {
-
-DEFINE_CLASS_PTRS(AsyncRequest);
-DEFINE_CLASS_PTRS(ConfigManager);
-DEFINE_CLASS_PTRS(Socket);
-DEFINE_CLASS_PTRS(SocketManager);
-
-}
+class AsyncRequest;
+class ParallelTaskRunner;
+class Socket;
+class SocketManager;
+} // namespace fly
 
 namespace chessmate {
 
-DEFINE_CLASS_PTRS(ChessGame);
-DEFINE_CLASS_PTRS(GameConfig);
-DEFINE_CLASS_PTRS(GameManager);
-DEFINE_CLASS_PTRS(Message);
-DEFINE_CLASS_PTRS(MoveSet);
+class ChessGame;
+class GameConfig;
+class Message;
+class MessageReceiver;
+class MoveSet;
 
 /**
  * Manager class to own and control all chess game instances.
@@ -36,26 +33,28 @@ DEFINE_CLASS_PTRS(MoveSet);
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 21, 2016
  */
-class GameManager : public fly::Runner
+class GameManager : public std::enable_shared_from_this<GameManager>
 {
 public:
     /**
      * Map of games indexed by the client ID.
      */
-    typedef std::map<int, ChessGamePtr> GamesMap;
+    typedef std::map<int, std::shared_ptr<ChessGame>> GamesMap;
 
     /**
      * Map of clients awaiting game initialization.
      */
-    typedef std::map<int, fly::SocketWPtr> PendingMap;
+    typedef std::map<int, std::weak_ptr<fly::Socket>> PendingMap;
 
     /**
      * Constructor, stores a weak reference to the socket manager.
      *
-     * @param ConfigManagerPtr Reference to the configuration manager.
      * @param SocketManagerPtr Reference to the socket manager.
      */
-    GameManager(fly::ConfigManagerPtr &, const fly::SocketManagerPtr &);
+    GameManager(
+        const std::shared_ptr<fly::ParallelTaskRunner> &,
+        const std::shared_ptr<fly::SocketManager> &,
+        const std::shared_ptr<GameConfig> &);
 
     /**
      * Destructor. Stop all games if they have not been already.
@@ -68,13 +67,14 @@ public:
      *
      * @param SocketPtr Shared pointer to the socket connected to the game client.
      */
-    void StartGame(const fly::SocketPtr &);
+    void StartGame(std::shared_ptr<fly::Socket>);
 
     /**
      * Stop and delete a game.
      *
      * @param int The socket ID of the game.
      */
+    void StopGame(std::shared_ptr<fly::Socket>);
     void StopGame(int);
 
     /**
@@ -82,7 +82,6 @@ public:
      */
     void StopAllGames();
 
-protected:
     /**
      * Intialize the game manager. Create a socket to be used for accepting new
      * game clients, and set the socket manager callbacks for when a client
@@ -90,22 +89,24 @@ protected:
      *
      * @return True if initialization of successful, false otherwise.
      */
-    virtual bool StartRunner();
+    bool Start();
 
     /**
      * Stop the game manager. Stop all ongoing games and clear the callbacks for
      * client connects/disconnects.
      */
-    virtual void StopRunner();
+    void Stop();
+
+private:
+    friend class MessageReceiver;
 
     /**
      * Process any data received by the socket manager.
      *
      * @return True if the game manager is healthy.
      */
-    virtual bool DoWork();
+    bool processMessage();
 
-private:
     /**
      * Set the socket manager callbacks for when a new client connects or an
      * existing client disconnects.
@@ -152,15 +153,15 @@ private:
      *
      * @return A shared pointer around the created ChessGame instance.
      */
-    ChessGamePtr createOrFindGame(int, const Message &);
+    std::shared_ptr<ChessGame> createOrFindGame(int, const Message &);
 
     /**
      * Handle a message retrieved by the message receiver thread.
      *
-     * @param ChessGamePtr The chess game the message is intended for.
+     * @param std::shared_ptr<ChessGame> The chess game the message is intended for.
      * @param Message The message to process.
      */
-    void handleMessage(const ChessGamePtr, const Message);
+    void handleMessage(const std::shared_ptr<ChessGame>, const Message);
 
     /**
      * Remove any completed futures from the vector of futures.
@@ -171,14 +172,29 @@ private:
     PendingMap m_pendingMap;
     std::mutex m_gamesMutex;
 
-    fly::SocketManagerWPtr m_wpSocketManager;
+    std::shared_ptr<fly::ParallelTaskRunner> m_spTaskRunner;
+    std::vector<std::shared_ptr<MessageReceiver>> m_receiverTasks;
+
+    std::weak_ptr<fly::SocketManager> m_wpSocketManager;
 
     std::mutex m_runningFuturesMutex;
     std::vector<std::future<void>> m_runningFutures;
 
-    MoveSetPtr m_spMoveSet;
+    std::shared_ptr<MoveSet> m_spMoveSet;
 
-    GameConfigPtr m_spConfig;
+    std::shared_ptr<GameConfig> m_spConfig;
 };
 
-}
+class MessageReceiver : public std::enable_shared_from_this<MessageReceiver>, public fly::Task
+{
+public:
+    explicit MessageReceiver(std::weak_ptr<GameManager> wpGameManager) noexcept;
+
+protected:
+    void run() override;
+
+private:
+    std::weak_ptr<GameManager> m_wpGameManager;
+};
+
+} // namespace chessmate

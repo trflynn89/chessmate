@@ -2,11 +2,7 @@
 
 #include <string>
 
-#include <fly/fly.h>
-
 namespace chessmate {
-
-DEFINE_CLASS_PTRS(Message);
 
 /**
  * Class to represent a message send over the wire. Contains a message type
@@ -80,4 +76,4 @@ private:
     std::string m_data;
 };
 
-}
+} // namespace chessmate

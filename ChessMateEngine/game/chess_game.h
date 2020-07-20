@@ -1,19 +1,21 @@
 #pragma once
 
+#include "engine/move_selector.h"
+#include "game/bit_board.h"
+#include "game/game_config.h"
+#include "game/message.h"
+#include "movement/move.h"
+#include "movement/move_set.h"
+
+#include <fly/socket/socket.hpp>
+
 #include <memory>
 
-#include <fly/socket/socket.h>
-
-#include <engine/move_selector.h>
-#include <game/bit_board.h>
-#include <game/game_config.h>
-#include <game/message.h>
-#include <movement/move.h>
-#include <movement/move_set.h>
+namespace fly {
+class Socket;
+} // namespace fly
 
 namespace chessmate {
-
-DEFINE_CLASS_PTRS(ChessGame);
 
 /**
  * Class to represent a single chess game, and to maintain its board and
@@ -27,7 +29,8 @@ class ChessGame : public std::enable_shared_from_this<ChessGame>
     /**
      * Enumerated list of game difficulties.
      */
-    enum Difficulty {
+    enum Difficulty
+    {
         EASY,
         MEDIUM,
         HARD
@@ -38,36 +41,34 @@ public:
      * Create a ChessGame instance from the initialization message received
      * from the game client.
      *
-     * @param GameConfigPtr The game configuration.
+     * @param std::shared_ptr<GameConfig> The game configuration.
      * @param SocketPtr The game client's socket.
-     * @param MoveSetPtr The list of possible moves.
+     * @param std::shared_ptr<MoveSet> The list of possible moves.
      * @param Message The START_GAME message containing the client's settings.
      *
      * @return A shared pointer around the created ChessGame instance.
      */
-    static ChessGamePtr Create(
-        const GameConfigPtr &,
-        const fly::SocketPtr &,
-        const MoveSetPtr &,
-        const Message &
-    );
+    static std::shared_ptr<ChessGame> Create(
+        const std::shared_ptr<GameConfig> &,
+        const std::shared_ptr<fly::Socket> &,
+        const std::shared_ptr<MoveSet> &,
+        const Message &);
 
     /**
      * Constructor to set the game's client socket.
      *
-     * @param GameConfigPtr The game configuration.
+     * @param std::shared_ptr<GameConfig> The game configuration.
      * @param SocketPtr The game client's socket.
-     * @param MoveSetPtr The list of possible moves.
+     * @param std::shared_ptr<MoveSet> The list of possible moves.
      * @param color_type The color of the engine.
      * @param value_type The difficulty of the engine.
      */
     ChessGame(
-        const GameConfigPtr &,
-        const fly::SocketPtr &,
-        const MoveSetPtr &,
+        const std::shared_ptr<GameConfig> &,
+        const std::shared_ptr<fly::Socket> &,
+        const std::shared_ptr<MoveSet> &,
         const color_type &,
-        const value_type &
-    );
+        const value_type &);
 
     /**
      * Destructor to close the client socket.
@@ -139,19 +140,19 @@ private:
      */
     Move getBestMove();
 
-    const GameConfigPtr m_spConfig;
+    const std::shared_ptr<GameConfig> m_spConfig;
 
     int m_gameId;
 
-    fly::SocketWPtr m_wpClientSocket;
-    MoveSetWPtr m_wpMoveSet;
+    std::weak_ptr<fly::Socket> m_wpClientSocket;
+    std::weak_ptr<MoveSet> m_wpMoveSet;
 
     value_type m_maxDepth;
     bool m_checkMaxDepth;
 
-    BitBoardPtr m_spBoard;
+    std::shared_ptr<BitBoard> m_spBoard;
 
     MoveSelector m_moveSelector;
 };
 
-}
+} // namespace chessmate

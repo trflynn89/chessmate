@@ -1,16 +1,12 @@
 #pragma once
 
+#include "movement/move.h"
+
 #include <array>
-#include <vector>
 #include <list>
-
-#include <fly/fly.h>
-
-#include <movement/move.h>
+#include <vector>
 
 namespace chessmate {
-
-DEFINE_CLASS_PTRS(MoveSet);
 
 typedef std::vector<Move> MoveList;
 
@@ -32,102 +28,102 @@ public:
     /**
      * @return All possible moves a white pawn can make.
      */
-    MoveList GetWhitePawnMoves(int) const;
+    MoveList GetWhitePawnMoves(MoveList::size_type) const;
 
     /**
      * @return All possible moves a black pawn can make.
      */
-    MoveList GetBlackPawnMoves(int) const;
+    MoveList GetBlackPawnMoves(MoveList::size_type) const;
 
     /**
      * @return All possible moves a knight can make.
      */
-    MoveList GetKnightMoves(int) const;
+    MoveList GetKnightMoves(MoveList::size_type) const;
 
     /**
      * @return All possible moves a bishop can make in a NE direction.
      */
-    MoveList GetBishopMovesNE(int) const;
+    MoveList GetBishopMovesNE(MoveList::size_type) const;
 
     /**
      * @return All possible moves a bishop can make in a NW direction.
      */
-    MoveList GetBishopMovesNW(int) const;
+    MoveList GetBishopMovesNW(MoveList::size_type) const;
 
     /**
      * @return All possible moves a bishop can make in a SE direction.
      */
-    MoveList GetBishopMovesSE(int) const;
+    MoveList GetBishopMovesSE(MoveList::size_type) const;
 
     /**
      * @return All possible moves a bishop can make in a SW direction.
      */
-    MoveList GetBishopMovesSW(int) const;
+    MoveList GetBishopMovesSW(MoveList::size_type) const;
 
     /**
      * @return All possible moves a rook can make in a N direction.
      */
-    MoveList GetRookMovesN(int) const;
+    MoveList GetRookMovesN(MoveList::size_type) const;
 
     /**
      * @return All possible moves a rook can make in a S direction.
      */
-    MoveList GetRookMovesS(int) const;
+    MoveList GetRookMovesS(MoveList::size_type) const;
 
     /**
      * @return All possible moves a rook can make in an E direction.
      */
-    MoveList GetRookMovesE(int) const;
+    MoveList GetRookMovesE(MoveList::size_type) const;
 
     /**
      * @return All possible moves a rook can make in a W direction.
      */
-    MoveList GetRookMovesW(int) const;
+    MoveList GetRookMovesW(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a N direction.
      */
-    MoveList GetQueenMovesN(int) const;
+    MoveList GetQueenMovesN(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a S direction.
      */
-    MoveList GetQueenMovesS(int) const;
+    MoveList GetQueenMovesS(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in an E direction.
      */
-    MoveList GetQueenMovesE(int) const;
+    MoveList GetQueenMovesE(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a W direction.
      */
-    MoveList GetQueenMovesW(int) const;
+    MoveList GetQueenMovesW(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a NE direction.
      */
-    MoveList GetQueenMovesNE(int) const;
+    MoveList GetQueenMovesNE(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a NW direction.
      */
-    MoveList GetQueenMovesNW(int) const;
+    MoveList GetQueenMovesNW(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a SE direction.
      */
-    MoveList GetQueenMovesSE(int) const;
+    MoveList GetQueenMovesSE(MoveList::size_type) const;
 
     /**
      * @return All possible moves a queen can make in a SW direction.
      */
-    MoveList GetQueenMovesSW(int) const;
+    MoveList GetQueenMovesSW(MoveList::size_type) const;
 
     /**
      * @return All possible moves a king can make
      */
-    MoveList GetKingMoves(int) const;
+    MoveList GetKingMoves(MoveList::size_type) const;
 
 private:
     /**
@@ -187,4 +183,4 @@ private:
     std::vector<MoveList> m_kingMoves;
 };
 
-}
+} // namespace chessmate

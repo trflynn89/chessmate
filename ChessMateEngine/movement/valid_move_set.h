@@ -1,8 +1,10 @@
 #pragma once
 
-#include <game/bit_board.h>
-#include <movement/move.h>
-#include <movement/move_set.h>
+#include "game/bit_board.h"
+#include "movement/move.h"
+#include "movement/move_set.h"
+
+#include <memory>
 
 namespace chessmate {
 
@@ -20,10 +22,10 @@ public:
     /**
      * Default constructor.
      *
-     * @param MoveSetPtr The list of possible moves.
-     * @param BitBoardPtr The board to generate moves for.
+     * @param std::shared_ptr<MoveSet> The list of possible moves.
+     * @param std::shared_ptr<BitBoard> The board to generate moves for.
      */
-    ValidMoveSet(const MoveSetWPtr &, const BitBoardPtr &);
+    ValidMoveSet(const std::weak_ptr<MoveSet> &, const std::shared_ptr<BitBoard> &);
 
     /**
      * @return The list of the turn player's valid moves.
@@ -49,22 +51,22 @@ private:
     /**
      * Generate a list of moves all pieces can make.
      *
-     * @param MoveSetPtr The list of possible moves.
-     * @param BitBoardPtr The board to generate moves for.
+     * @param std::shared_ptr<MoveSet> The list of possible moves.
+     * @param std::shared_ptr<BitBoard> The board to generate moves for.
      */
-    void generateValidMoves(const MoveSetPtr &, const BitBoardPtr &);
+    void generateValidMoves(const std::shared_ptr<MoveSet> &, const std::shared_ptr<BitBoard> &);
 
     /**
      * Given a list of sliding moves, add the move to the list if it is valid.
      *
-     * @param BitBoardPtr The board to generate moves for.
+     * @param std::shared_ptr<BitBoard> The board to generate moves for.
      * @param piece_type The sliding piece.
      * @param color_type The sliding piece's color.
      * @param value_type The sliding piece's value.
      * @param MoveList The list of moves to check.
      */
     void addSlidingMoveIfValid(
-        const BitBoardPtr &,
+        const std::shared_ptr<BitBoard> &,
         const piece_type &,
         const color_type &,
         const value_type &,
@@ -77,4 +79,4 @@ private:
     value_type m_defendValue[BOARD_SIZE];
 };
 
-}
+} // namespace chessmate
