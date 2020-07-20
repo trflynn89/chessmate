@@ -1,9 +1,9 @@
-package cm.movement;
+package com.flynn.chessmate.movement;
 
 import java.awt.Color;
 
-import cm.game.Piece;
-import cm.util.Constants;
+import com.flynn.chessmate.game.Piece;
+import com.flynn.chessmate.util.Constants;
 
 /**
  * Data structure to store information about a move.
@@ -17,9 +17,9 @@ public class Move
 	private int m_startFile;
 	private int m_endRank;
 	private int m_endFile;
-	
+
 	private Piece m_movingPiece;
-	
+
 	private boolean m_isCheck;
 	private boolean m_isCheckmate;
 	private boolean m_isStalemate;
@@ -29,10 +29,10 @@ public class Move
 	private boolean m_isEnPassant;
 	private Piece m_pawnPromotionPiece;
 	private int m_ambiguityType;
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param rank The rank of the start position.
 	 * @param file The file of the start position.
 	 * @param i The rank of the end position.
@@ -44,7 +44,7 @@ public class Move
 		this.m_startFile = file;
 		this.m_endRank = i;
 		this.m_endFile = j;
-		
+
 		m_isCheck = false;
 		m_isCheckmate = false;
 		m_isStalemate = false;
@@ -55,7 +55,7 @@ public class Move
 		m_pawnPromotionPiece = null;
 		m_ambiguityType = 0;
 	}
-	
+
 	/**
 	 * Constructor to parse a move in PGN format.
 	 *
@@ -63,15 +63,15 @@ public class Move
 	 * @param player The color of the player who generated the move.
 	 */
 	public Move(String move, Color player)
-	{		
+	{
 		// Parse for castle
 		if(move.equals("O-O"))
 		{
 			m_isKingsideCastle = true;
-			
+
 			m_startFile = Constants.FILE_E;
 			m_endFile = Constants.FILE_G;
-			
+
 			if(player == Color.WHITE)
 			{
 				m_movingPiece = Piece.WHITE_KING;
@@ -84,7 +84,7 @@ public class Move
 				m_startRank = Constants.RANK_8;
 				m_endRank = Constants.RANK_8;
 			}
-			
+
 			return;
 		}
 		else if(move.equals("O-O-O"))
@@ -93,7 +93,7 @@ public class Move
 
 			m_startFile = Constants.FILE_E;
 			m_endFile = Constants.FILE_C;
-			
+
 			if(player == Color.WHITE)
 			{
 				m_movingPiece = Piece.WHITE_KING;
@@ -106,12 +106,12 @@ public class Move
 				m_startRank = Constants.RANK_8;
 				m_endRank = Constants.RANK_8;
 			}
-			
+
 			return;
 		}
-		
+
 		int ix = 0;
-		
+
 		// Parse moving piece
 		if(move.startsWith("N"))
 		{
@@ -148,18 +148,18 @@ public class Move
 			m_movingPiece = (player == Color.WHITE ?
 				Piece.WHITE_PAWN : Piece.BLACK_PAWN);
 		}
-		
+
 		// Parse starting position
 		m_startFile = move.charAt(ix++) - 'a';
 		m_startRank = move.charAt(ix++) - '1';
-		
+
 		// Parse for capture
 		if(move.contains("x"))
 		{
 			ix++;
 			m_isCapture = true;
 		}
-		
+
 		// Parse ending position
 		m_endFile = move.charAt(ix++) - 'a';
 		m_endRank = move.charAt(ix++) - '1';
@@ -185,13 +185,13 @@ public class Move
 			m_pawnPromotionPiece = (player == Color.WHITE ?
 				Piece.WHITE_QUEEN: Piece.BLACK_QUEEN);
 		}
-		
+
 		// Parse for enpassant
 		if(move.contains("ep"))
 		{
 			m_isEnPassant = true;
 		}
-		
+
 		// Parse for check / checkmate
 		if(move.contains("+"))
 		{
@@ -202,7 +202,7 @@ public class Move
 			m_isCheckmate = true;
 		}
 	}
-	
+
 	/**
 	 * @return A string representation of the move.
 	 */
@@ -216,9 +216,9 @@ public class Move
 		{
 			return "O-O-O";
 		}
-		
+
 		StringBuilder move = new StringBuilder();
-		
+
 		// Set the moving piece
 		switch(m_movingPiece)
 		{
@@ -238,14 +238,14 @@ public class Move
 			case BLACK_QUEEN:
 				move.append("Q");
 				break;
-			case WHITE_KING: 
+			case WHITE_KING:
 			case BLACK_KING:
 				move.append("K");
 				break;
 			default:
 				break;
 		}
-		
+
 		// Append the start file and start rank
 		if(!preserveAmbiguity || (m_ambiguityType & 1) > 0)
 		{
@@ -255,17 +255,17 @@ public class Move
 		{
 			move.append(String.valueOf(m_startRank + 1));
 		}
-		
+
 		// If move is capture, indicate such
 		if(m_isCapture)
 		{
 			move.append("x");
 		}
-		
+
 		// Append the end file and end rank
 		move.append((char)('a' + m_endFile));
 		move.append(String.valueOf(m_endRank + 1));
-		
+
 		// If move is a promotion, indicate the promotion piece
 		if(m_pawnPromotionPiece != null)
 		{
@@ -295,13 +295,13 @@ public class Move
 				}
 			}
 		}
-		
+
 		// If move is an enpassant, indicate such
 		if(m_isEnPassant)
 		{
 			move.append("ep");
 		}
-		
+
 		// If move is check or checkmate, indicate such
 		if(m_isCheckmate)
 		{
@@ -311,10 +311,10 @@ public class Move
 		{
 			move.append("+");
 		}
-		
+
 		return move.toString();
 	}
-	
+
 	/**
 	 * @return The rank of the start position.
 	 */
@@ -322,14 +322,14 @@ public class Move
 	{
 		return m_startRank;
 	}
-	
+
 	/**
 	 * @return The file of the start position.
 	 */
 	public int getStartFile() {
 		return m_startFile;
 	}
-	
+
 	/**
 	 * @return The rank of the end position.
 	 */
@@ -337,7 +337,7 @@ public class Move
 	{
 		return m_endRank;
 	}
-	
+
 	/**
 	 * @return The file of the end position.
 	 */
@@ -345,17 +345,17 @@ public class Move
 	{
 		return m_endFile;
 	}
-	
+
 	/**
 	 * Set the moving piece for this move.
-	 * 
+	 *
 	 * @param movingPiece The moving piece.
 	 */
 	public void setMovingPiece(Piece movingPiece)
 	{
 		this.m_movingPiece = movingPiece;
 	}
-	
+
 	/**
 	 * @return The piece being moved.
 	 */
@@ -363,17 +363,17 @@ public class Move
 	{
 		return m_movingPiece;
 	}
-	
+
 	/**
 	 * If this move promotes a pawn, set the piece being promoted to.
-	 * 
+	 *
 	 * @param pawnPromotionPiece The piece to promote to.
 	 */
 	public void setPawnPromotionPiece(Piece pawnPromotionPiece)
-	{	
+	{
 		this.m_pawnPromotionPiece = pawnPromotionPiece;
 	}
-	
+
 	/**
 	 * @return The piece to promote to, or null.
 	 */
@@ -381,7 +381,7 @@ public class Move
 	{
 		return m_pawnPromotionPiece;
 	}
-	
+
 	/**
 	 * Set that this move is a capturing move.
 	 */
@@ -389,7 +389,7 @@ public class Move
 	{
 		this.m_isCapture = true;
 	}
-	
+
 	/**
 	 * @return True if the move is a capturing move, false otherwise.
 	 */
@@ -397,7 +397,7 @@ public class Move
 	{
 		return m_isCapture;
 	}
-	
+
 	/**
 	 * Set that this move puts the opponent in check.
 	 */
@@ -405,7 +405,7 @@ public class Move
 	{
 		this.m_isCheck = true;
 	}
-	
+
 	/**
 	 * @return True if the opponent is in check, false otherwise
 	 */
@@ -413,7 +413,7 @@ public class Move
 	{
 		return m_isCheck;
 	}
-	
+
 	/**
 	 * Set that this move puts the opponent in checkmate.
 	 */
@@ -421,7 +421,7 @@ public class Move
 	{
 		this.m_isCheckmate = true;
 	}
-	
+
 	/**
 	 * @return True if the opponent is in checkmate, false otherwise
 	 */
@@ -429,7 +429,7 @@ public class Move
 	{
 		return m_isCheckmate;
 	}
-	
+
 	/**
 	 * Set that this move puts the board in stalemate.
 	 */
@@ -437,7 +437,7 @@ public class Move
 	{
 		this.m_isStalemate = true;
 	}
-	
+
 	/**
 	 * @return True if the board is in stalemate, false otherwise
 	 */
@@ -445,17 +445,17 @@ public class Move
 	{
 		return m_isStalemate;
 	}
-	
+
 	/**
 	 * Set that this move is an en passant.
-	 * 
+	 *
 	 * @param isEnPassant True if the move is an en passant, false otherwise.
 	 */
 	public void setEnPassant()
 	{
 		this.m_isEnPassant = true;
 	}
-	
+
 	/**
 	 * @return True if this move is an en passant.
 	 */
@@ -463,7 +463,7 @@ public class Move
 	{
 		return m_isEnPassant;
 	}
-	
+
 	/**
 	 * Set that this move is a kingside castle.
 	 */
@@ -471,7 +471,7 @@ public class Move
 	{
 		this.m_isKingsideCastle = true;
 	}
-	
+
 	/**
 	 * @return True if this move is a kingside castle.
 	 */
@@ -479,7 +479,7 @@ public class Move
 	{
 		return m_isKingsideCastle;
 	}
-	
+
 	/**
 	 * Set that this move is a queenside castle.
 	 */
@@ -487,7 +487,7 @@ public class Move
 	{
 		this.m_isQueensideCastle = true;
 	}
-	
+
 	/**
 	 * @return True if this move is a queenside castle.
 	 */
@@ -495,14 +495,14 @@ public class Move
 	{
 		return m_isQueensideCastle;
 	}
-	
+
 	/**
 	 * Set the ambiguity type for the move. Use the following values:
 	 * <li>0 = No ambiguity.
 	 * <li>1 = Resolve ambiguity by indicating file.
 	 * <li>2 = Resolve ambiguity by indicating rank.
 	 * <li>3 = Resolve ambiguity by indicating file and rank.
-	 * 
+	 *
 	 * @param ambiguityType Integer representing the type of ambiguity.
 	 */
 	public void setAmbiguityType(int ambiguityType)

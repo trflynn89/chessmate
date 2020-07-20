@@ -1,12 +1,12 @@
-package cm.gui;
+package com.flynn.chessmate.gui;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import cm.game.Board;
-import cm.game.Piece;
-import cm.util.Constants;
+import com.flynn.chessmate.game.Board;
+import com.flynn.chessmate.game.Piece;
+import com.flynn.chessmate.util.Constants;
 
 /**
  * Class to represent a square on the board. Stores location, color, and piece.
@@ -17,16 +17,16 @@ import cm.util.Constants;
 public class SquareGUI extends JButton
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	private int m_rank;
 	private int m_file;
 	private Piece m_piece = null;
-	
+
 	private ImageIcon m_square = null;
-	
+
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param rank The rank of the square.
 	 * @param file The file of the square.
 	 * @param square The image of the square.
@@ -35,11 +35,11 @@ public class SquareGUI extends JButton
 	{
 		m_rank = rank;
 		m_file = file;
-		
+
 		setSquareImage(square);
 		setBorder(BorderFactory.createRaisedBevelBorder());
 	}
-	
+
 	/**
 	 * @return The rank of the square.
 	 */
@@ -47,7 +47,7 @@ public class SquareGUI extends JButton
 	{
 		return m_rank;
 	}
-	
+
 	/**
 	 * @return The file of the square.
 	 */
@@ -55,10 +55,10 @@ public class SquareGUI extends JButton
 	{
 		return m_file;
 	}
-	
+
 	/**
 	 * Set the piece the square contains.
-	 * 
+	 *
 	 * @param piece The new piece.
 	 */
 	public void setPiece(Piece piece)
@@ -66,7 +66,7 @@ public class SquareGUI extends JButton
 		this.m_piece = piece;
 		setSquareImage(getSquareImage(this));
 	}
-	
+
 	/**
 	 * @return The piece the square contains.
 	 */
@@ -74,19 +74,19 @@ public class SquareGUI extends JButton
 	{
 		return m_piece;
 	}
-	
+
 	/**
 	 * Get the (non-special) image of a square.
-	 * 
+	 *
 	 * @param square The square to get the image from.
 	 * @return The image of the square.
 	 */
 	public static ImageIcon getSquareImage(SquareGUI square)
 	{
 		boolean whiteTile = ((square.getRank() + square.getFile()) % 2 == 1);
-		
+
 		Piece p = square.getPiece();
-		
+
 		if(p != null) {
 			switch(square.getPiece())
 			{
@@ -128,14 +128,14 @@ public class SquareGUI extends JButton
 					Constants.BKING_WTILE : Constants.BKING_BTILE);
 			}
 		}
-		
+
 		return (whiteTile ? Constants.EMPTY_WTILE : Constants.EMPTY_BTILE);
 	}
-	
+
 	/**
 	 * Get the image of a square. Will be an "empty" image, used for Tile
 	 * construction.
-	 * 
+	 *
 	 * @param rank The rank of the square.
 	 * @param file The color of the square.
 	 * @return The image of the square.
@@ -145,13 +145,13 @@ public class SquareGUI extends JButton
 		boolean whiteTile = ((rank + file) % 2 == 1);
 		return (whiteTile ? Constants.EMPTY_WTILE : Constants.EMPTY_BTILE);
 	}
-	
+
 	/**
 	 * Reset all squares to original background color.
-	 * 
+	 *
 	 * A square is special if it is highlighted as being part of a move or
 	 * being in check.
-	 * 
+	 *
 	 * @param board The board to modify.
 	 * @param ignoreSpecial True if speciality of a square should be ignored.
 	 */
@@ -162,14 +162,14 @@ public class SquareGUI extends JButton
 			for(int j=0; j<Constants.NUM_FILES; j++)
 			{
 				SquareGUI t = board.getSquare(i, j);
-				
+
 				if(ignoreSpecial || t.shouldReset())
 				{
 					t.setSquareImage(SquareGUI.getSquareImage(t));
 				}
 			}
 		}
-	}	
+	}
 
 	/**
 	 * Hover over the square.
@@ -180,9 +180,9 @@ public class SquareGUI extends JButton
 		{
 			return;
 		}
-		
+
 		if(m_piece != null)
-		{			
+		{
 			switch(m_piece)
 			{
 			case WHITE_PAWN:
@@ -223,10 +223,10 @@ public class SquareGUI extends JButton
 				return;
 			}
 		}
-		
+
 		setSquareImage(Constants.EMPTY_HTILE);
 	}
-	
+
 	/**
 	 * Reset the square to its normal image.
 	 */
@@ -237,7 +237,7 @@ public class SquareGUI extends JButton
 			setSquareImage(getSquareImage(this));
 		}
 	}
-	
+
 	/**
 	 * Select the square.
 	 */
@@ -285,7 +285,7 @@ public class SquareGUI extends JButton
 				return;
 			}
 		}
-			
+
 		setSquareImage(Constants.EMPTY_STILE);
 	}
 
@@ -336,10 +336,10 @@ public class SquareGUI extends JButton
 				return;
 			}
 		}
-		
+
 		setSquareImage(Constants.EMPTY_MTILE);
 	}
-	
+
 	/**
 	 * Highlight the square (if it is a king) as being in check.
 	 */
@@ -357,18 +357,18 @@ public class SquareGUI extends JButton
 			}
 		}
 	}
-	
+
 	/**
 	 * Set the image of the square.
 	 */
 	private void setSquareImage(ImageIcon square)
 	{
 		m_square = square;
-		
+
 		setIcon(square);
 		setDisabledIcon(square);
 	}
-	
+
 	/**
 	 * @return True if the square's highlighting is non-special.
 	 */
@@ -393,7 +393,7 @@ public class SquareGUI extends JButton
 		{
 			return false;
 		}
-		
+
 		else if
 		(
 			m_square.equals(Constants.WKING_CTILE)		||
@@ -402,7 +402,7 @@ public class SquareGUI extends JButton
 		{
 			return false;
 		}
-				
+
 		return true;
 	}
 }

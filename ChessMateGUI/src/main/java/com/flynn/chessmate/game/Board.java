@@ -1,4 +1,4 @@
-package cm.game;
+package com.flynn.chessmate.game;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import cm.gui.BoardGUI;
-import cm.gui.SquareGUI;
-import cm.movement.Move;
-import cm.util.Constants;
+import com.flynn.chessmate.gui.BoardGUI;
+import com.flynn.chessmate.gui.SquareGUI;
+import com.flynn.chessmate.movement.Move;
+import com.flynn.chessmate.util.Constants;
 
 /**
  * Class to represent the board.
@@ -22,12 +22,12 @@ public class Board
 	private SquareGUI[][] m_board;
 	private ArrayList<Move> m_whiteMoves;
 	private ArrayList<Move> m_blackMoves;
-	
+
 	private Color m_playerInTurn;
-	
+
 	private SquareGUI m_whiteKing;
 	private SquareGUI m_blackKing;
-	
+
 	/**
 	 * Default constructor.
 	 */
@@ -54,18 +54,18 @@ public class Board
 		m_whiteKing = m_board[Constants.RANK_1][Constants.FILE_E];
 		m_blackKing = m_board[Constants.RANK_8][Constants.FILE_E];
 	}
-	
+
 	/**
 	 * @return The color of player in turn.
 	 */
 	public Color getPlayerInTurn()
 	{
 		return m_playerInTurn;
-	}	
-	
+	}
+
 	/**
 	 * Signify a player is in check.
-	 * 
+	 *
 	 * @param playerInCheck The color of the player in check.
 	 */
 	public void setCheck(Color playerInCheck)
@@ -79,10 +79,10 @@ public class Board
 			m_blackKing.checkSquare();
 		}
 	}
-	
+
 	/**
 	 * Get a specific square.
-	 * 
+	 *
 	 * @param rank The rank of the tile.
 	 * @param file The file of the tile.
 	 * @return The desired tile.
@@ -91,69 +91,69 @@ public class Board
 	{
 		return m_board[rank][file];
 	}
-	
+
 	/**
 	 * @return A list of all moves made by the white player.
-	 */	
+	 */
 	public ArrayList<Move> getWhiteMoves()
 	{
 		return m_whiteMoves;
 	}
-	
+
 	/**
 	 * @return A list of all moves made by the black player.
-	 */	
+	 */
 	public ArrayList<Move> getBlackMoves()
 	{
 		return m_blackMoves;
 	}
-	
+
 	/**
 	 * Set the properities for a move.
-	 * 
+	 *
 	 * @param move The move to analyze.
 	 */
 	public void setMoveStats(Move move)
 	{
 		SquareGUI start = m_board[move.getStartRank()][move.getStartFile()];
 		SquareGUI end = m_board[move.getEndRank()][move.getEndFile()];
-		
+
 		// Set ambiguity for display
 		setAmbiguityType(move);
-		
+
 		// Check if this is a capturing move
 		Piece p = end.getPiece();
 		if(p != null)
 		{
 			move.setCapture();
 		}
-		
+
 		// Check if this was an en passant
 		checkForEnPassant(move);
-		
+
 		// Set the moving piece
 		move.setMovingPiece(start.getPiece());
-		
+
 		// Check if this was a castle
 		checkForCastle(move);
-			
+
 		// Check if we can promote a pawn
 		checkForPawnPromotion(move);
 	}
-	
+
 	/**
 	 * Make a move that has been validated by the engine.
-	 * 
+	 *
 	 * @param move The move to execute.
 	 */
 	public void makeMove(Move move)
 	{
 		SquareGUI start = m_board[move.getStartRank()][move.getStartFile()];
 		SquareGUI end = m_board[move.getEndRank()][move.getEndFile()];
-		
+
 		// Set ambiguity for display
 		setAmbiguityType(move);
-		
+
 		// Check if this is a capturing move
 		if(move.isCapture())
 		{
@@ -168,7 +168,7 @@ public class Board
 				{
 					BoardGUI.addCapturedPiece(Piece.WHITE_PAWN);
 				}
-				
+
 				SquareGUI ep = m_board[move.getStartRank()][move.getEndFile()];
 				ep.setPiece(null);
 			}
@@ -178,7 +178,7 @@ public class Board
 				BoardGUI.addCapturedPiece(p);
 			}
 		}
-		
+
 		// Check if this was a castle
 		if(move.isKingsideCastle())
 		{
@@ -206,11 +206,11 @@ public class Board
 				m_board[Constants.RANK_8][Constants.FILE_A].setPiece(null);
 			}
 		}
-		
+
 		// Move the piece
 		end.setPiece(move.getMovingPiece());
 		start.setPiece(null);
-		
+
 		if(m_playerInTurn == Color.WHITE)
 		{
 			m_whiteMoves.add(move);
@@ -219,23 +219,23 @@ public class Board
 		{
 			m_blackMoves.add(move);
 		}
-			
+
 		// Check if we can promote a pawn
 		Piece p = move.getPawnPromotionPiece();
 		if(p != null)
 		{
 			end.setPiece(p);
 		}
-		
+
 		// Change the player in turn
-		m_playerInTurn = 
+		m_playerInTurn =
 			(m_playerInTurn == Color.WHITE ? Color.BLACK : Color.WHITE);
-		
+
 		// Highlight the start/end squares
 		SquareGUI.resetAllSquares(this, true);
 		start.moveSquare();
 		end.moveSquare();
-		
+
 		// Update king location
 		if(start.equals(m_whiteKing))
 		{
@@ -249,7 +249,7 @@ public class Board
 		// Update GUI
 		BoardGUI.updateDisplay();
 	}
-	
+
 	/**
 	 * Initialize the board to the standard setup.
 	 */
@@ -288,33 +288,33 @@ public class Board
 		m_board[Constants.RANK_1][Constants.FILE_E].setPiece(Piece.WHITE_KING);
 		m_board[Constants.RANK_8][Constants.FILE_E].setPiece(Piece.BLACK_KING);
 	}
-	
+
 	/**
 	 * Check if a pawn can be promoted.
-	 * 
+	 *
 	 * @param m_playerInTurn The color of the player in turn.
 	 */
 	private void checkForPawnPromotion(Move move)
 	{
 		int homeRank = (m_playerInTurn == Color.WHITE ? 7 : 0);
 		int fromRank = (m_playerInTurn == Color.WHITE ? 6 : 1);
-		
+
 		if(move.getEndRank() == homeRank && move.getStartRank() == fromRank)
 		{
 			SquareGUI s = m_board[move.getStartRank()][move.getStartFile()];
-			Piece pawn = (m_playerInTurn == Color.WHITE ? 
+			Piece pawn = (m_playerInTurn == Color.WHITE ?
 				Piece.WHITE_PAWN : Piece.BLACK_PAWN);
-			
+
 			if(s.getPiece() == pawn)
 			{
 				ImageIcon[] buttons;
 				int p, offset=0;
-					
+
 			    if(m_playerInTurn == Color.WHITE)
 			    {
 			    	buttons = new ImageIcon[]
-			    	{ 
-			    		Constants.WKNIGHT_TRANSPARENT, 
+			    	{
+			    		Constants.WKNIGHT_TRANSPARENT,
 			    		Constants.WBISHOP_TRANSPARENT,
 			    		Constants.WROOK_TRANSPARENT,
 			    		Constants.WQUEEN_TRANSPARENT
@@ -331,7 +331,7 @@ public class Board
 			    		Constants.BQUEEN_TRANSPARENT
 			    	};
 			    }
-			    
+
 			    do
 		    	{
 		    		p = offset + JOptionPane.showOptionDialog
@@ -341,7 +341,7 @@ public class Board
 		    			buttons, 0
 		    		);
 		    	} while(p == 0);
-			    
+
 			    switch(p)
 			    {
 			    case 0:
@@ -372,10 +372,10 @@ public class Board
 			}
 		}
 	}
-	
+
 	/**
 	 * Check if a move was a castling move.
-	 * 
+	 *
 	 * @param move The move to check.
 	 */
 	private void checkForCastle(Move move)
@@ -383,9 +383,9 @@ public class Board
 		int sRank = move.getStartRank();
 		int sFile = move.getStartFile();
 		int eFile = move.getEndFile();
-		
+
 		Piece p = m_board[sRank][sFile].getPiece();
-		
+
 		if(p == Piece.WHITE_KING)
 		{
 			if(sRank == 0 && sFile == 4)
@@ -415,10 +415,10 @@ public class Board
 			}
 		}
 	}
-	
+
 	/**
 	 * Check if a move was an en passant move.
-	 * 
+	 *
 	 * @param move The move to check.
 	 */
 	private void checkForEnPassant(Move move)
@@ -427,16 +427,16 @@ public class Board
 		int sFile = move.getStartFile();
 		int eRank = move.getEndRank();
 		int eFile = move.getEndFile();
-		
+
 		Piece movingPiece = m_board[sRank][sFile].getPiece();
 		Piece epPiece = m_board[sRank][eFile].getPiece();
 		Piece destPiece = m_board[eRank][eFile].getPiece();
-		
+
 		if(epPiece == null || destPiece != null)
 		{
 			return;
 		}
-		
+
 		if(movingPiece==Piece.WHITE_PAWN && epPiece==Piece.BLACK_PAWN)
 		{
 			if(sRank == 4)
@@ -460,10 +460,10 @@ public class Board
 			}
 		}
 	}
-	
+
 	/**
      * Set the ambiguity type for a move.
-     * 
+     *
      * @param move The move being made.
      */
 	private void setAmbiguityType(Move move)
@@ -517,7 +517,7 @@ public class Board
 							}
 						}
 						break;
-						
+
 					case BLACK_PAWN:
 						if(m_board[eRank][eFile].getPiece() != null)
 						{
@@ -530,9 +530,9 @@ public class Board
 							}
 						}
 						break;
-						
-					case WHITE_KNIGHT: 
-					case BLACK_KNIGHT: 
+
+					case WHITE_KNIGHT:
+					case BLACK_KNIGHT:
 						if((rise == 2 && run == 1) || (rise == 1 && run == 2))
 						{
 							if(j != sFile)
@@ -545,9 +545,9 @@ public class Board
 							}
 						}
 						break;
-						
-					case WHITE_BISHOP: 
-					case BLACK_BISHOP: 
+
+					case WHITE_BISHOP:
+					case BLACK_BISHOP:
 						if(rise == run)
 						{
 							if(spacesBetweenAreEmpty
@@ -566,8 +566,8 @@ public class Board
 							}
 						}
 						break;
-						
-					case WHITE_ROOK: 
+
+					case WHITE_ROOK:
 					case BLACK_ROOK:
 						if(rise == 0 || run == 0)
 						{
@@ -587,9 +587,9 @@ public class Board
 							}
 						}
 						break;
-						
-					case WHITE_QUEEN: 
-					case BLACK_QUEEN: 
+
+					case WHITE_QUEEN:
+					case BLACK_QUEEN:
 						if((rise == run) || (rise == 0 || run == 0))
 						{
 							if(spacesBetweenAreEmpty
@@ -600,7 +600,7 @@ public class Board
 								if(j != sFile)
 								{
 									move.setAmbiguityType(1);
-								} 
+								}
 								else if(i != sRank)
 								{
 									move.setAmbiguityType(2);
@@ -608,7 +608,7 @@ public class Board
 							}
 						}
 						break;
-						
+
 					default:
 						break;
 					}
@@ -616,10 +616,10 @@ public class Board
 			}
 		}
     }
-	
+
 	/**
      * Check that the spaces between two tiles are empty.
-     * 
+     *
      * @param sRank The rank of the starting tile.
      * @param sFile The file of the starting tile.
      * @param eRank The rank of the ending tile.
@@ -635,11 +635,11 @@ public class Board
 		int rise = sRank - eRank;
 		int run = sFile - eFile;
 
-		boolean isBishop = 
+		boolean isBishop =
 			(piece == Piece.WHITE_BISHOP || piece == Piece.BLACK_BISHOP);
-		boolean isRook = 
+		boolean isRook =
 			(piece == Piece.WHITE_ROOK || piece == Piece.BLACK_ROOK);
-		boolean isQueen = 
+		boolean isQueen =
 			(piece == Piece.WHITE_QUEEN || piece == Piece.BLACK_QUEEN);
 
 		// Rook or queen - lateral
@@ -658,9 +658,9 @@ public class Board
 			}
 
 			// South
-			if(rise < 0 && run == 0) 
+			if(rise < 0 && run == 0)
 			{
-				for(int i=sRank+1; i<eRank; i++) 
+				for(int i=sRank+1; i<eRank; i++)
 				{
 					if(m_board[i][sFile].getPiece() != null)
 					{
@@ -670,9 +670,9 @@ public class Board
 			}
 
 			// East
-			if(rise == 0 && run < 0) 
+			if(rise == 0 && run < 0)
 			{
-				for(int j=sFile+1; j<eFile; j++) 
+				for(int j=sFile+1; j<eFile; j++)
 				{
 					if(m_board[sRank][j].getPiece() != null)
 					{
@@ -682,9 +682,9 @@ public class Board
 			}
 
 			// West
-			if(rise == 0 && run > 0) 
+			if(rise == 0 && run > 0)
 			{
-				for(int j=sFile-1; j>eFile; j--) 
+				for(int j=sFile-1; j>eFile; j--)
 				{
 					if(m_board[sRank][j].getPiece() != null)
 					{

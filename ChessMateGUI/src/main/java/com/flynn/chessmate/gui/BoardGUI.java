@@ -1,4 +1,4 @@
-package cm.gui;
+package com.flynn.chessmate.gui;
 
 import java.awt.Adjustable;
 import java.awt.Color;
@@ -33,17 +33,17 @@ import javax.swing.table.TableColumnModel;
 
 import org.freixas.tablelayout.TableLayout;
 
-import cm.communication.Message;
-import cm.communication.Message.MessageType;
-import cm.game.Board;
-import cm.game.ChessGame;
-import cm.game.Piece;
-import cm.movement.Move;
-import cm.util.Constants;
-import cm.util.ImagePanel;
-import cm.util.PgnFileFilter;
-import cm.util.PgnGenerator;
-import cm.util.TableModel;
+import com.flynn.chessmate.communication.Message;
+import com.flynn.chessmate.communication.Message.MessageType;
+import com.flynn.chessmate.game.Board;
+import com.flynn.chessmate.game.ChessGame;
+import com.flynn.chessmate.game.Piece;
+import com.flynn.chessmate.movement.Move;
+import com.flynn.chessmate.util.Constants;
+import com.flynn.chessmate.util.ImagePanel;
+import com.flynn.chessmate.util.PgnFileFilter;
+import com.flynn.chessmate.util.PgnGenerator;
+import com.flynn.chessmate.util.TableModel;
 
 /**
  * GUI for the chess board.
@@ -54,13 +54,13 @@ import cm.util.TableModel;
 public class BoardGUI implements ActionListener, MouseListener
 {
 	private static JFrame m_frame;
-	
+
 	private static ChessGame m_game;
 	private static boolean m_acceptMoves;
 
 	private static SquareGUI m_selected;
 	private static SquareGUI m_hovered;;
-	
+
 	private static JTable m_table;
 
 	private static JLabel m_whitePawnsCaptured;
@@ -68,15 +68,15 @@ public class BoardGUI implements ActionListener, MouseListener
 	private static JLabel m_whiteBishopsCaptured;
 	private static JLabel m_whiteRooksCaptured;
 	private static JLabel m_whiteQueensCaptured;
-	
+
 	private static JLabel m_blackPawnsCaptured;
 	private static JLabel m_blackKnightsCaptured;
 	private static JLabel m_blackBishopsCaptured;
 	private static JLabel m_blackRooksCaptured;
 	private static JLabel m_blackQueensCaptured;
-	
+
 	private static JLabel m_status;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -84,7 +84,7 @@ public class BoardGUI implements ActionListener, MouseListener
 	{
 		m_game = game;
 	}
-	
+
 	/**
 	 * Update the elements of this GUI.
 	 */
@@ -93,23 +93,23 @@ public class BoardGUI implements ActionListener, MouseListener
 		if(m_table != null)
 		{
 			m_table.revalidate();
-			m_table.repaint();		
+			m_table.repaint();
 		}
 	}
-	
+
 	/**
 	 * Should the GUI accept moves from the player(s)?
-	 * 
+	 *
 	 * @param acceptMoves True if moves should be accepted.
 	 */
 	public static void acceptMoves(boolean acceptMoves)
 	{
 		m_acceptMoves = acceptMoves;
 	}
-	
+
 	/**
 	 * Change the cursor to either a normal cursor or a wait cursor.
-	 * 
+	 *
 	 * @param wait True if the cursor should be a wait cursor.
 	 */
 	public static void setWaitCursor(boolean wait)
@@ -126,10 +126,10 @@ public class BoardGUI implements ActionListener, MouseListener
 			}
 		}
 	}
-	
+
 	/**
 	 * Increment a piece's capture count.
-	 * 
+	 *
 	 * @param piece The piece to increment.
 	 */
 	public static void addCapturedPiece(Piece piece)
@@ -180,10 +180,10 @@ public class BoardGUI implements ActionListener, MouseListener
 				break;
 		}
 	}
-	
+
 	/**
 	 * Set the game status (check, checkmate, stalemate).
-	 * 
+	 *
 	 * @param status The status to set.
 	 */
 	public static void setStatus(String status)
@@ -193,7 +193,7 @@ public class BoardGUI implements ActionListener, MouseListener
 			m_status.setText(status);
 		}
 	}
-	
+
 	/**
 	 * Initialize all components of the GUI, and show it.
 	 */
@@ -204,18 +204,18 @@ public class BoardGUI implements ActionListener, MouseListener
 		panel.add(createTiles());
 		panel.add(createMoveTable(), "rspan=2");
 		panel.add(createInfoPanel());
-		
+
 		m_frame = new JFrame("ChessMate");
 		m_frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		m_frame.setIconImage(Constants.BROOK_TRANSPARENT.getImage());
-		m_frame.setJMenuBar(createMenuControls()); 
+		m_frame.setJMenuBar(createMenuControls());
 		m_frame.add(panel);
 		m_frame.pack();
 		m_frame.setSize(Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
 		m_frame.setLocationRelativeTo(null);
 		m_frame.setResizable(false);
 		m_frame.setVisible(true);
-		
+
 		m_frame.addWindowListener(new WindowAdapter()
 		{
 			public void windowClosing(WindowEvent e)
@@ -224,10 +224,10 @@ public class BoardGUI implements ActionListener, MouseListener
 			}
 		});
 	}
-	
+
 	/**
 	 * Initializes all components of the <code>JMenuBar</code>.
-	 * 
+	 *
 	 * @return The created <code>JMenuBar</code>.
 	 */
 	private JMenuBar createMenuControls()
@@ -241,7 +241,7 @@ public class BoardGUI implements ActionListener, MouseListener
 		// FILE
 		file = new JMenu("File");
 		file.setBackground(Constants.BACKGROUND);
-		
+
 		// New game
 		game = new JMenuItem("New Game");
 		game.setBackground(Constants.BACKGROUND);
@@ -294,10 +294,10 @@ public class BoardGUI implements ActionListener, MouseListener
 
 		return menu;
 	}
-	
+
 	/**
 	 * Initialize each tile on the board.
-	 * 
+	 *
 	 * @return The JPanel holding the tiles.
 	 */
 	private JPanel createTiles()
@@ -307,13 +307,13 @@ public class BoardGUI implements ActionListener, MouseListener
 
 		Board b = m_game.getBoard();
 		Color c = m_game.getPlayerColor();
-		
+
 		if(c == Color.WHITE)
 		{
 			for(int i=Constants.NUM_RANKS-1; i>=0; i--)
 			{
 				panel.add(new JLabel((i+1) + "    "));
-				
+
 				for(int j=0; j<Constants.NUM_FILES; j++)
 				{
 					SquareGUI s = b.getSquare(i, j);
@@ -327,7 +327,7 @@ public class BoardGUI implements ActionListener, MouseListener
 			for(int i=0; i<Constants.NUM_RANKS; i++)
 			{
 				panel.add(new JLabel((i+1) + "    "));
-				
+
 				for(int j=Constants.NUM_FILES-1; j>=0; j--)
 				{
 					SquareGUI s = b.getSquare(i, j);
@@ -367,7 +367,7 @@ public class BoardGUI implements ActionListener, MouseListener
 					{
 						panel.add(new JLabel(space + "C"));
 					}
-					else 
+					else
 					{
 						panel.add(new JLabel(space + "F"));
 					}
@@ -397,7 +397,7 @@ public class BoardGUI implements ActionListener, MouseListener
 					{
 						panel.add(new JLabel(space + "F"));
 					}
-					else 
+					else
 					{
 						panel.add(new JLabel(space + "C"));
 					}
@@ -407,7 +407,7 @@ public class BoardGUI implements ActionListener, MouseListener
 					{
 						panel.add(new JLabel(space + "G"));
 					}
-					else 
+					else
 					{
 						panel.add(new JLabel(space + "B"));
 					}
@@ -423,26 +423,26 @@ public class BoardGUI implements ActionListener, MouseListener
 					}
 					break;
 			}
-		} 
-		
+		}
+
 		return panel;
 	}
-	
+
 	/**
 	 * Create the table to display the moves made thus far.
-	 * 
+	 *
 	 * @return A JScrollPane containing the moves.
 	 */
 	private JScrollPane createMoveTable()
 	{
 		Board b = m_game.getBoard();
-		
-		
+
+
 		TableModel model = new TableModel(b.getWhiteMoves(), b.getBlackMoves());
 		m_table = new JTable(model);
 		m_table.setBackground(Constants.BACKGROUND);
 		m_table.getTableHeader().setBackground(Constants.BACKGROUND);
-		
+
 		TableColumnModel columnModel = new DefaultTableColumnModel();
 		String[] headers = new String[] { "", "White", "Black" };
 		int index = 0;
@@ -452,17 +452,17 @@ public class BoardGUI implements ActionListener, MouseListener
 			col.setHeaderValue(h);
 			columnModel.addColumn(col);
 		}
-		
+
 		m_table.setColumnModel(columnModel);
 		m_table.getColumnModel().getColumn(0).setPreferredWidth(5);
 		m_table.setEnabled(false);
-		
+
 		JScrollPane scroll = new JScrollPane(m_table);
 		scroll.setVerticalScrollBarPolicy(
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scroll.getVerticalScrollBar().addAdjustmentListener
 		(
-			new AdjustmentListener() 
+			new AdjustmentListener()
 			{
 				@Override
 				public void adjustmentValueChanged(AdjustmentEvent e)
@@ -472,13 +472,13 @@ public class BoardGUI implements ActionListener, MouseListener
 				}
 			}
 		);
-		
+
 		return scroll;
 	}
-	
+
 	/**
 	 * Create the panel to display game information.
-	 * 
+	 *
 	 * @return The panel holding the status of the information.
 	 */
 	private JPanel createInfoPanel()
@@ -489,9 +489,9 @@ public class BoardGUI implements ActionListener, MouseListener
 		panel.setBackground(Constants.BACKGROUND);
 		statusPanel.setBackground(Constants.BACKGROUND);
 		scorePanel.setBackground(Constants.BACKGROUND);
-		
+
 		m_status = new JLabel(" ");
-		
+
 		m_whitePawnsCaptured = new JLabel("0");
 		m_whiteKnightsCaptured = new JLabel("0");
 		m_whiteBishopsCaptured = new JLabel("0");
@@ -505,7 +505,7 @@ public class BoardGUI implements ActionListener, MouseListener
 		m_blackQueensCaptured = new JLabel("0");
 
 		statusPanel.add(m_status, "c");
-		
+
 		scorePanel.add(new ImagePanel(
 			Constants.WPAWN_TRANSPARENT.getDescription(),
 			Constants.TINY_PIECE_SIZE), "s skip=1"
@@ -525,7 +525,7 @@ public class BoardGUI implements ActionListener, MouseListener
 			Constants.WQUEEN_TRANSPARENT.getDescription(),
 			Constants.TINY_PIECE_SIZE), "s"
 		);
-		
+
 		scorePanel.add(new ImagePanel(
 			Constants.BQUEEN_TRANSPARENT.getDescription(),
 			Constants.TINY_PIECE_SIZE), "s skip=9"
@@ -558,16 +558,16 @@ public class BoardGUI implements ActionListener, MouseListener
 		scorePanel.add(m_blackBishopsCaptured, "n");
 		scorePanel.add(m_blackKnightsCaptured, "n");
 		scorePanel.add(m_blackPawnsCaptured, "n");
-		
+
 		panel.add(statusPanel);
 		panel.add(scorePanel);
-		
+
 		return panel;
 	}
-	
+
 	/**
 	 * Performs an action depending on the event that took place.
-	 * 
+	 *
 	 * @param e The action being performed.
 	 */
 	@Override
@@ -582,14 +582,14 @@ public class BoardGUI implements ActionListener, MouseListener
 			m_game.disconnectFromServer();
 			new InitializeGameGUI().createAndShowGUI();
 		}
-		
+
 		// Generate PGN menu
 		else if(command.equals(Constants.PGN))
 		{
 			JFileChooser fc = new JFileChooser();
 			fc.setFileFilter(new PgnFileFilter());
 			fc.setAcceptAllFileFilterUsed(false);
-			
+
 			Calendar cal = Calendar.getInstance();
 			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy_hh-mm-ss");
 			fc.setSelectedFile(new File(sdf.format(cal.getTime()) + ".pgn"));
@@ -599,12 +599,12 @@ public class BoardGUI implements ActionListener, MouseListener
 				File file = fc.getSelectedFile();
 				String filePath = file.getParentFile().getAbsolutePath();
 				String fileName = file.getName();
-				
+
 				// Check if file exists, if so, confirm overwrite
 				if(file.exists())
 				{
 					int opt = JOptionPane.showConfirmDialog(
-						m_frame, fileName + 
+						m_frame, fileName +
 						" already exists.\nDo you want to replace it?",
 						"Confirm", JOptionPane.YES_NO_OPTION
 					);
@@ -613,7 +613,7 @@ public class BoardGUI implements ActionListener, MouseListener
 						return;
 					}
 				}
-				
+
 				// Validate file name
 				if(!file.getParentFile().isDirectory()
 					|| fileName.contains("/")
@@ -633,7 +633,7 @@ public class BoardGUI implements ActionListener, MouseListener
 						"Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				// Check file extension, append if neccesary
 				int i = fileName.lastIndexOf('.');
 				String ext = "";
@@ -645,7 +645,7 @@ public class BoardGUI implements ActionListener, MouseListener
 		        {
 		        	fileName += ".pgn";
 		        }
-		        
+
 		        // Generate PGN
 				new PgnGenerator
 				(
@@ -657,10 +657,10 @@ public class BoardGUI implements ActionListener, MouseListener
 				).generate();
 			}
 		}
-		
+
 		// Quit menu
 		else if(command.equals(Constants.QUIT))
-		{			
+		{
 			m_frame.dispose();
 			m_game.disconnectFromServer();
 			System.exit(0);
@@ -669,7 +669,7 @@ public class BoardGUI implements ActionListener, MouseListener
 		// Info menu
 		else if(command.equals(Constants.INFO))
 		{
-			JOptionPane.showMessageDialog(null, 
+			JOptionPane.showMessageDialog(null,
 				"To create a new game, go to File > New Game or press CTRL+0\n\n" +
 				"To save a PGN file of the game, go to File > Save PGN or press CTRL+1\n\n" +
 				"To move a piece, first click that piece, then click where you want to move that piece.\n" +
@@ -683,16 +683,16 @@ public class BoardGUI implements ActionListener, MouseListener
 		{
 			JOptionPane.showMessageDialog(null, "Created by Timothy Flynn\n" +
 				"timothy.flynn@outlook.com\n" +
-				"Version " + Constants.VERSION + "\n", 
+				"Version " + Constants.VERSION + "\n",
 				"About ChessMate", JOptionPane.INFORMATION_MESSAGE,
 				Constants.BROOK_TRANSPARENT
 			);
 		}
 	}
-	
+
 	/**
 	 * Performs an action depending on the mouse press event that took place.
-	 * 
+	 *
 	 * @param e The action being performed.
 	 */
 	@Override
@@ -701,16 +701,16 @@ public class BoardGUI implements ActionListener, MouseListener
 		Board b = m_game.getBoard();
 		SquareGUI.resetAllSquares(b, false);
 		SquareGUI prevSelected = m_selected;
-		
+
 		m_selected = (SquareGUI) me.getComponent();
-		
+
 		if
 		(
 			m_acceptMoves &&
-			prevSelected != null && 
+			prevSelected != null &&
 			prevSelected.getPiece() != null
 		)
-		{	
+		{
 			if(m_selected == prevSelected)
 			{
 				m_selected.resetSquare();
@@ -722,14 +722,14 @@ public class BoardGUI implements ActionListener, MouseListener
 					prevSelected.getRank(), prevSelected.getFile(),
 					m_selected.getRank(), m_selected.getFile()
 				);
-				
+
 				b.setMoveStats(m);
 				m_game.sendMessage
 				(
 					new Message(MessageType.MAKE_MOVE, m.getPgnString(false))
 				);
 			}
-			
+
 			m_selected = null;
 		}
 		else if(m_selected.getPiece() != null)
@@ -745,19 +745,19 @@ public class BoardGUI implements ActionListener, MouseListener
 
 	/**
 	 * Performs an action depending on the mouse entered event that took place.
-	 * 
+	 *
 	 * @param e The action being performed.
 	 */
 	@Override
 	public void mouseEntered(MouseEvent me)
-	{ 
+	{
 		m_hovered = (SquareGUI) me.getComponent();
 		m_hovered.hoverSquare();
 	}
-	
+
 	/**
 	 * Performs an action depending on the mouse exited event that took place.
-	 * 
+	 *
 	 * @param e The action being performed.
 	 */
 	@Override
@@ -772,7 +772,7 @@ public class BoardGUI implements ActionListener, MouseListener
 			m_selected.selectSquare();
 		}
 	}
-	
+
 	public void mouseReleased(MouseEvent me) { }
 	public void mouseClicked(MouseEvent me) { }
 }

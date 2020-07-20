@@ -1,4 +1,4 @@
-package cm.util;
+package com.flynn.chessmate.util;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -15,14 +15,14 @@ import javax.swing.JPanel;
 
 /**
  * Construct a JPanel to resize and hold an image.
- * 
+ *
  * @author Timothy Flynn (timothy.flynn@outlook.com)
  * @version March 8, 2011
  */
 public class ImagePanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Image m_img;
 	private Image m_scaledImg;
 	private int m_imgWidth;
@@ -31,7 +31,7 @@ public class ImagePanel extends JPanel
 	/**
 	 * Create a square panel with the given image resized to the preconfigured
 	 *  size.
-	 * 
+	 *
 	 * @param img The absolute path of the image.
 	 * @param size The size to resize the image to.
 	 */
@@ -39,10 +39,10 @@ public class ImagePanel extends JPanel
 	{
 		this(img, size, size);
 	}
-	
+
 	/**
 	 * Create an panel with the given image resized to the preconfigured size.
-	 * 
+	 *
 	 * @param img The absolute path of the image.
 	 * @param width The width to resize the image to.
 	 * @param height The height to resize the image to.
@@ -51,7 +51,7 @@ public class ImagePanel extends JPanel
 	{
 		this.m_imgWidth = width;
 		this.m_imgHeight = height;
-		
+
 		try
 		{
 			this.m_img = ImageIO.read(new File(img));
@@ -61,7 +61,7 @@ public class ImagePanel extends JPanel
 			e.printStackTrace();
 			return;
 		}
-		
+
 		Dimension size = new Dimension(m_imgWidth, m_imgHeight);
 		setPreferredSize(size);
 		setMinimumSize(size);
@@ -70,7 +70,7 @@ public class ImagePanel extends JPanel
 		setLayout(null);
 		scaleImage();
 	}
-	
+
 	/**
 	 * Scale the image to the correct size.
 	 */
@@ -85,7 +85,7 @@ public class ImagePanel extends JPanel
 
 	/**
 	 * Render the image.
-	 * 
+	 *
 	 * @param g The graphics object for the image.
 	 */
 	@Override

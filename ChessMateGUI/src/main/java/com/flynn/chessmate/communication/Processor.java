@@ -1,11 +1,11 @@
-package cm.communication;
+package com.flynn.chessmate.communication;
 
 import java.awt.Color;
 
-import cm.communication.Message.MessageType;
-import cm.game.ChessGame;
-import cm.gui.BoardGUI;
-import cm.movement.Move;
+import com.flynn.chessmate.communication.Message.MessageType;
+import com.flynn.chessmate.game.ChessGame;
+import com.flynn.chessmate.gui.BoardGUI;
+import com.flynn.chessmate.movement.Move;
 
 /**
  * Static class to process a message received from the server.
@@ -29,12 +29,12 @@ public class Processor
 	)
 	{
 		BoardGUI.setStatus(" ");
-		
+
 		MessageType type = msg.getMessageType();
 		String data = msg.getData();
-		
+
 		Move m;
-		
+
 		switch(type)
 		{
 		// START GAME
@@ -43,16 +43,16 @@ public class Processor
 			int id = Integer.parseInt(data);
 			game.setSessionId(id);
 			return true;
-			
+
 		// MAKE MOVE
 		// Parse unambiguous PGN string from server and make it
 		case MAKE_MOVE:
 			String str[] = data.split(" ");
 			Color c = game.getBoard().getPlayerInTurn();
-			
+
 			m = new Move(str[0], c);
 			game.getBoard().makeMove(m);
-			
+
 			// Check or checkmate?
 			if(m.isCheck())
 			{
@@ -79,17 +79,17 @@ public class Processor
 					game.getBoard().setCheck(Color.WHITE);
 					BoardGUI.setStatus("Game over! Black wins!");
 				}
-				
+
 				game.disconnectFromServer();
 				return false;
 			}
-			
+
 			// Stalemate?
 			int status = Integer.parseInt(str[1]);
 			if(status > 0)
 			{
 				m.setStalemate();
-				
+
 				if(status == 1)
 				{
 					BoardGUI.setStatus("Stalemate! No valid moves!");
@@ -102,20 +102,20 @@ public class Processor
 				{
 					BoardGUI.setStatus("Stalemate! Three move repetition rule");
 				}
-				
+
 				game.disconnectFromServer();
 				return false;
 			}
 
 			game.requestMove();
 			return true;
-			
+
 		// INVALID MOVE
 		// We sent a bad move - alert the player
 		case INVALID_MOVE:
 			m = new Move(data, game.getBoard().getPlayerInTurn());
 			game.getBoard().setMoveStats(m);
-			
+
 			BoardGUI.setStatus("Invalid move! " + m.getPgnString(true));
 			return true;
 

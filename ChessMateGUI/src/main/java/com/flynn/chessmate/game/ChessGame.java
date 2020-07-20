@@ -1,4 +1,4 @@
-package cm.game;
+package com.flynn.chessmate.game;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -11,11 +11,11 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
-import cm.communication.Message;
-import cm.communication.Message.MessageType;
-import cm.communication.Reader;
-import cm.gui.BoardGUI;
-import cm.util.Constants;
+import com.flynn.chessmate.communication.Message;
+import com.flynn.chessmate.communication.Message.MessageType;
+import com.flynn.chessmate.communication.Reader;
+import com.flynn.chessmate.gui.BoardGUI;
+import com.flynn.chessmate.util.Constants;
 
 /**
  * Class to represent a single chess game and to maintain its board and
@@ -28,14 +28,14 @@ public class ChessGame extends Thread
 {
 	private int m_sessionId;
 	private Board m_board;
-	
+
 	private Socket m_socket;
 	private BufferedReader m_input;
 	private PrintWriter m_output;
-	
+
 	private boolean m_enabled;
 	private boolean m_shutdownExpected;
-	
+
 	private Color m_playerColor;
 	private int m_difficulty;
 	private boolean m_engineOpponent;
@@ -47,29 +47,29 @@ public class ChessGame extends Thread
 	public ChessGame(Color playerColor,	int difficulty,	boolean engineOpponent)
 	{
 		super("ChessGame");
-		
+
 		m_enabled = false;
 		m_shutdownExpected = false;
-		
+
 		m_playerColor = playerColor;
 		m_difficulty = difficulty;
 		m_engineOpponent = engineOpponent;
-		
+
 		// Try to connect to each configured host
 		for(String host : Constants.HOSTS)
 		{
 			try
 			{
 				m_socket = new Socket(host, Constants.PORT);
-	        	
+
 				m_output = new PrintWriter(m_socket.getOutputStream(), false);
 				m_input = new BufferedReader
 				(
 					new InputStreamReader(m_socket.getInputStream())
 				);
-	        	
+
 				new Reader(this).start();
-	        	
+
 				m_enabled = true;
 				break;
 			}
@@ -86,7 +86,7 @@ public class ChessGame extends Thread
 				System.err.println("IOException with host: " + host);
 			}
 		}
-		
+
 		if(!m_enabled)
 		{
 			JOptionPane.showMessageDialog
@@ -99,21 +99,21 @@ public class ChessGame extends Thread
 			System.exit(-1);
 		}
 	}
-	
+
 	/**
 	 * Initialize the game and its board.
 	 */
 	public void initializeGame()
 	{
 		m_board = new Board();
-		
+
     	int c = (m_playerColor == Color.WHITE ? 1 : 0);
     	Message m = new Message(MessageType.START_GAME,
     		c + " " + m_difficulty);
-    	
+
     	this.sendMessage(m);
 	}
-	
+
 	/**
 	 * Request a move from the engine.
 	 */
@@ -123,7 +123,7 @@ public class ChessGame extends Thread
 		{
 			BoardGUI.acceptMoves(false);
 			BoardGUI.setWaitCursor(true);
-			
+
 			Message msg = new Message(MessageType.GET_MOVE);
 			this.sendMessage(msg);
 
@@ -135,7 +135,7 @@ public class ChessGame extends Thread
 			BoardGUI.setWaitCursor(false);
 		}
 	}
-	
+
 	/**
 	 * @return True if a disconnect from the engine was expected.
 	 */
@@ -146,14 +146,14 @@ public class ChessGame extends Thread
 
 	/**
 	 * Set the game's session ID.
-	 * 
+	 *
 	 * @param sessionId The game's session ID.
 	 */
 	public void setSessionId(int sessionId)
 	{
 		m_sessionId = sessionId;
 	}
-	
+
 	/**
 	 * @return The game's session ID.
 	 */
@@ -161,7 +161,7 @@ public class ChessGame extends Thread
 	{
 		return m_sessionId;
 	}
-	
+
 	/**
 	 * @return This game's board.
 	 */
@@ -169,7 +169,7 @@ public class ChessGame extends Thread
 	{
 		return m_board;
 	}
-	
+
 	/**
 	 * @return The color of the human player, or just white if game is PvP.
 	 */
@@ -177,7 +177,7 @@ public class ChessGame extends Thread
 	{
 		return m_playerColor;
 	}
-	
+
 	/**
 	 * @return True if playing against the engine.
 	 */
@@ -185,7 +185,7 @@ public class ChessGame extends Thread
 	{
 		return m_engineOpponent;
 	}
-	
+
 	/**
 	 * Gracefully disconnect from the engine.
 	 */
@@ -197,13 +197,13 @@ public class ChessGame extends Thread
 			{
 				BoardGUI.acceptMoves(false);
 				BoardGUI.setWaitCursor(false);
-				
+
 				Message m = new Message(MessageType.DISCONNECT);
 				this.sendMessage(m);
-	
+
 				m_enabled = false;
 				m_shutdownExpected = true;
-				
+
 				m_socket.close();
 				m_input.close();
 				m_output.close();
@@ -213,7 +213,7 @@ public class ChessGame extends Thread
 			}
 		}
 	}
-	
+
 	/**
 	 * @return A message read from the engine.
 	 */
@@ -227,7 +227,7 @@ public class ChessGame extends Thread
 			try
 			{
 				int c = m_input.read();
-				
+
 				if (c == -1)
 				{
 					finishedReading = true;
@@ -254,10 +254,10 @@ public class ChessGame extends Thread
 		{
 			m = new Message(recvBuffer.toString());
 		}
-		
+
 		return m;
 	}
-	
+
 	/**
 	 * Send a message to the engine.
 	 *

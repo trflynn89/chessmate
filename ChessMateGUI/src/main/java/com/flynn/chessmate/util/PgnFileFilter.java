@@ -1,4 +1,4 @@
-package cm.util;
+package com.flynn.chessmate.util;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ public class PgnFileFilter extends FileFilter
 
     /**
      * Determine if a file should be displayed to the user.
-     * 
+     *
      * @param f The file to test.
      */
     @Override
@@ -39,10 +39,10 @@ public class PgnFileFilter extends FileFilter
 
         return false;
     }
-    
+
     /**
      * Get the extension of a file.
-     * 
+     *
      * @param f The file name.
      * @return A String representing the extension for the file.
      */
@@ -61,7 +61,7 @@ public class PgnFileFilter extends FileFilter
 
     /**
      * Return the description for the filter.
-     * 
+     *
      * @return String containing the accepted file types.
      */
     @Override

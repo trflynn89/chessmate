@@ -1,24 +1,24 @@
-package cm.util;
+package com.flynn.chessmate.util;
 
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import cm.movement.Move;
+import com.flynn.chessmate.movement.Move;
 
-/** 
+/**
  * Model for the table containing the moves.
- * 
+ *
  * @author Timothy Flynn (timothy.flynn@outlook.com)
  * @version August 2, 2011
  */
 public class TableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	private ArrayList<Move> m_whiteMoves;
 	private ArrayList<Move> m_blackMoves;
-	
+
 	/**
 	 * Initializes the TableModel.
 	 */
@@ -48,7 +48,7 @@ public class TableModel extends AbstractTableModel
 
 	/**
 	 * Retrieves a desired value from this TableModel.
-	 * 
+	 *
 	 * @param rowIndex The row index of the desired value.
 	 * @param columnIndex The column index of the desired value.
 	 * @return The desired Object.

@@ -1,9 +1,9 @@
-package arch;
+package com.flynn.chessmate;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import cm.gui.InitializeGameGUI;
+import com.flynn.chessmate.gui.InitializeGameGUI;
 
 /**
  * Main architecture to run the application.
@@ -16,7 +16,7 @@ public class ChessMateGUI
 	public static void main(String args[])
 	{
 		boolean nimbusSet = false;
-		
+
 		// Search for Nimbus look and feel
 		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
 		{
@@ -34,7 +34,7 @@ public class ChessMateGUI
 				break;
 			}
 		}
-		
+
 		// If unsupported, set to system default
 		if(!nimbusSet)
 		{
@@ -47,9 +47,9 @@ public class ChessMateGUI
 			}
 			catch(Exception e)
 			{
-			} 
+			}
 		}
-		
+
 		// Start the game
 		new InitializeGameGUI().createAndShowGUI();
 	}
