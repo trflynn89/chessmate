@@ -8,7 +8,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 /**
  * Main architecture to run the application.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version August 10, 2011
  */
 public class ChessMateGUI

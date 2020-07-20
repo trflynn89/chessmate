@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Class to represent the board.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class Board

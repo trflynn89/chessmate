@@ -8,7 +8,7 @@ import java.awt.Color;
 /**
  * Data structure to store information about a move.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class Move

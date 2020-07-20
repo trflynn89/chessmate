@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * FileFilter class for selecting only PGN files.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version August 2, 2011
  */
 public class PgnFileFilter extends FileFilter

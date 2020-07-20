@@ -23,7 +23,7 @@ import java.util.Random;
  * GUI for starting a game. Player color defaults to white, and difficulty
  * defaults to medium.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version August 10, 2011
  */
 public class InitializeGameGUI implements ActionListener

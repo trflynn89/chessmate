@@ -11,7 +11,7 @@ import javax.swing.JButton;
 /**
  * Class to represent a square on the board. Stores location, color, and piece.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class SquareGUI extends JButton

@@ -10,7 +10,7 @@ import java.awt.event.KeyEvent;
 /**
  * Constant values used for this project.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class Constants

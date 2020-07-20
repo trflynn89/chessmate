@@ -48,7 +48,7 @@ import java.util.Calendar;
 /**
  * GUI for the chess board.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class BoardGUI implements ActionListener, MouseListener
@@ -674,7 +674,7 @@ public class BoardGUI implements ActionListener, MouseListener
             JOptionPane.showMessageDialog(
                 null,
                 "Created by Timothy Flynn\n"
-                    + "timothy.flynn@outlook.com\n"
+                    + "trflynn89@pm.me\n"
                     + "Version " + Constants.VERSION + "\n",
                 "About ChessMate",
                 JOptionPane.INFORMATION_MESSAGE,

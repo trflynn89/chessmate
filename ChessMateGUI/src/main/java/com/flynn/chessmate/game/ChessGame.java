@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
  * Class to represent a single chess game and to maintain its board and
  * communication to the engine.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class ChessGame extends Thread

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Model for the table containing the moves.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version August 2, 2011
  */
 public class TableModel extends AbstractTableModel

@@ -4,7 +4,7 @@ package com.flynn.chessmate.communication;
  * Class to represent a message send over the wire. Contains a message type
  * and message data.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class Message

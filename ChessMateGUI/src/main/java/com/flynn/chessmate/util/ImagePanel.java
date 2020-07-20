@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * Construct a JPanel to resize and hold an image.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 8, 2011
  */
 public class ImagePanel extends JPanel

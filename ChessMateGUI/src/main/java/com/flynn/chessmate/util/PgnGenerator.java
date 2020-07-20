@@ -15,7 +15,7 @@ import java.util.Calendar;
 /**
  * Class to generate a PGN file based on the moves made thus far.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version August 2, 2011
  */
 public class PgnGenerator

@@ -5,7 +5,7 @@ import java.awt.Color;
 /**
  * Enumeration for a chess piece.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version July 24, 2011
  */
 public enum Piece {

@@ -10,7 +10,7 @@ import java.awt.Color;
 /**
  * Static class to process a message received from the server.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class Processor

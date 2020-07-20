@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
  * Run in its own thread so that it can run constantly while the rest of the
  * application continues to run.
  *
- * @author Timothy Flynn (timothy.flynn@outlook.com)
+ * @author Timothy Flynn (trflynn89@pm.me)
  * @version March 3, 2013
  */
 public class Reader extends Thread
@@ -52,7 +52,7 @@ public class Reader extends Thread
                 "Sorry! Either the server shut down or something else went "
                     + "wrong.\nPlease try playing again later!\n\n"
                     + "If the problem persists, contact me at "
-                    + "timothy.flynn@outlook.com",
+                    + "trflynn89@pm.me",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
         }
