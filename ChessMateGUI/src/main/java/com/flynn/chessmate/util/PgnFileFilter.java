@@ -1,8 +1,8 @@
 package com.flynn.chessmate.util;
 
-import java.io.File;
-
 import javax.swing.filechooser.FileFilter;
+
+import java.io.File;
 
 /**
  * FileFilter class for selecting only PGN files.
@@ -12,8 +12,8 @@ import javax.swing.filechooser.FileFilter;
  */
 public class PgnFileFilter extends FileFilter
 {
-	private final static String m_pgn = "pgn";
-	private final static String m_PGN = "PGN";
+    private final static String m_pgn = "pgn";
+    private final static String m_PGN = "PGN";
 
     /**
      * Determine if a file should be displayed to the user.
@@ -23,17 +23,17 @@ public class PgnFileFilter extends FileFilter
     @Override
     public boolean accept(File f)
     {
-        if(f.isDirectory())
+        if (f.isDirectory())
         {
             return true;
         }
 
         String extension = getExtension(f);
-        if(extension != null)
+        if (extension != null)
         {
-            if(extension.equals(m_pgn) || extension.equals(m_PGN))
+            if (extension.equals(m_pgn) || extension.equals(m_PGN))
             {
-                    return true;
+                return true;
             }
         }
 
@@ -52,9 +52,9 @@ public class PgnFileFilter extends FileFilter
         String s = f.getName();
         int i = s.lastIndexOf('.');
 
-        if((i>0) &&  (i<s.length()-1))
+        if ((i > 0) && (i < s.length() - 1))
         {
-            ext = s.substring(i+1).toLowerCase();
+            ext = s.substring(i + 1).toLowerCase();
         }
         return ext;
     }
