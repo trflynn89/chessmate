@@ -1,6 +1,7 @@
 package com.flynn.chessmate.util;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import java.awt.Dimension;
@@ -35,7 +36,7 @@ public class ImagePanel extends JPanel
      * @param img The absolute path of the image.
      * @param size The size to resize the image to.
      */
-    public ImagePanel(String img, int size)
+    public ImagePanel(ImageIcon img, int size)
     {
         this(img, size, size);
     }
@@ -47,20 +48,11 @@ public class ImagePanel extends JPanel
      * @param width The width to resize the image to.
      * @param height The height to resize the image to.
      */
-    public ImagePanel(String img, int width, int height)
+    public ImagePanel(ImageIcon img, int width, int height)
     {
+        this.m_img = img.getImage();
         this.m_imgWidth = width;
         this.m_imgHeight = height;
-
-        try
-        {
-            this.m_img = ImageIO.read(new File(img));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return;
-        }
 
         Dimension size = new Dimension(m_imgWidth, m_imgHeight);
         setPreferredSize(size);

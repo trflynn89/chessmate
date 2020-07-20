@@ -500,48 +500,30 @@ public class BoardGUI implements ActionListener, MouseListener
         statusPanel.add(m_status, "c");
 
         scorePanel.add(
-            new ImagePanel(Constants.WPAWN_TRANSPARENT.getDescription(), Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.WPAWN_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s skip=1");
         scorePanel.add(
-            new ImagePanel(
-                Constants.WKNIGHT_TRANSPARENT.getDescription(),
-                Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.WKNIGHT_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s");
         scorePanel.add(
-            new ImagePanel(
-                Constants.WBISHOP_TRANSPARENT.getDescription(),
-                Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.WBISHOP_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s");
+        scorePanel.add(new ImagePanel(Constants.WROOK_TRANSPARENT, Constants.TINY_PIECE_SIZE), "s");
         scorePanel.add(
-            new ImagePanel(Constants.WROOK_TRANSPARENT.getDescription(), Constants.TINY_PIECE_SIZE),
-            "s");
-        scorePanel.add(
-            new ImagePanel(
-                Constants.WQUEEN_TRANSPARENT.getDescription(),
-                Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.WQUEEN_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s");
 
         scorePanel.add(
-            new ImagePanel(
-                Constants.BQUEEN_TRANSPARENT.getDescription(),
-                Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.BQUEEN_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s skip=9");
+        scorePanel.add(new ImagePanel(Constants.BROOK_TRANSPARENT, Constants.TINY_PIECE_SIZE), "s");
         scorePanel.add(
-            new ImagePanel(Constants.BROOK_TRANSPARENT.getDescription(), Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.BBISHOP_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s");
         scorePanel.add(
-            new ImagePanel(
-                Constants.BBISHOP_TRANSPARENT.getDescription(),
-                Constants.TINY_PIECE_SIZE),
+            new ImagePanel(Constants.BKNIGHT_TRANSPARENT, Constants.TINY_PIECE_SIZE),
             "s");
-        scorePanel.add(
-            new ImagePanel(
-                Constants.BKNIGHT_TRANSPARENT.getDescription(),
-                Constants.TINY_PIECE_SIZE),
-            "s");
-        scorePanel.add(
-            new ImagePanel(Constants.BPAWN_TRANSPARENT.getDescription(), Constants.TINY_PIECE_SIZE),
-            "s");
+        scorePanel.add(new ImagePanel(Constants.BPAWN_TRANSPARENT, Constants.TINY_PIECE_SIZE), "s");
 
         scorePanel.add(m_whitePawnsCaptured, "n skip=1");
         scorePanel.add(m_whiteKnightsCaptured, "n");
