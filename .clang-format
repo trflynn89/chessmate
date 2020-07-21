@@ -62,9 +62,9 @@ DisableFormat: false
 FixNamespaceComments: true
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '"[[:alnum:]./_]+\.(h|hpp)"'
+  - Regex: '"[[:alnum:]./_]+\.(h|hh|hpp)"'
     Priority: 2
-  - Regex: '^(<|")fly/'
+  - Regex: '^(<|")(fly|test)/'
     Priority: 3
   - Regex: '^(<|")catch2/'
     Priority: 4
@@ -161,7 +161,6 @@ CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: true
 DeriveLineEnding: false
 DerivePointerAlignment: false
 DisableFormat: false
@@ -184,7 +183,6 @@ SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: true
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeCpp11BracedList: true
 SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements

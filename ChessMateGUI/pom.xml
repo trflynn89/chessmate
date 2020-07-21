@@ -12,6 +12,8 @@
   <url>https://github.com/trflynn89/chessmate</url>
 
   <properties>
+    <build.output>${output}</build.output>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
@@ -32,14 +34,25 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-   </resources>
+  <repositories>
+    <repository>
+      <id>lib</id>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>ignore</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <url>${project.baseUri}lib</url>
+    </repository>
+  </repositories>
 
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+  <build>
+    <directory>${build.output}</directory>
+    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+
+    <pluginManagement>
       <plugins>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
