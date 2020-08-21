@@ -5,11 +5,11 @@ SOURCE_ROOT := $(CURDIR)/../..
 VERSION = $(shell cat $(SOURCE_ROOT)/VERSION.md)
 
 # Import the build API
-include /usr/src/fly/api.mk
+include /usr/local/src/fly/api.mk
 
 # Main targets
 $(eval $(call ADD_TARGET, chessmate, ChessMateEngine, BIN))
-$(eval $(call ADD_TARGET, ChessMate, ChessMateGUI, MVN))
+$(eval $(call ADD_TARGET, ChessMate, ChessMateGUI/src/main/java, JAR))
 
 # Import the build system
-include /usr/src/fly/build.mk
+include /usr/local/src/fly/build.mk
