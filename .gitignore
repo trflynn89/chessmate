@@ -58,7 +58,7 @@ GTAGS
 
 # Package Files #
 *.jar
-!ChessMateGUI/jars/*
+!ChessMateGUI/lib/**/*.jar
 *.war
 *.ear
 
