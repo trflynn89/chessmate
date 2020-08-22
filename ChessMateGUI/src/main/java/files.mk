@@ -9,7 +9,7 @@ SRC_DIRS_$(d) := \
 MAIN_CLASS_$(d) := com.flynn.chessmate.ChessMateGUI
 
 CLASS_PATH_$(d) := \
-    $(d)/../../../lib/org/freixas/tablelayout/TableLayout/1.0/TableLayout-1.0.jar
+    $(d)/../../../lib/org/freixas/tablelayout/TableLayout-1.0.jar
 
 RESOURCES_$(d) := \
     $(d)/../resources/images
