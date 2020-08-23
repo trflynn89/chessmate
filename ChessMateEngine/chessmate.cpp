@@ -25,8 +25,10 @@ namespace chessmate {
 ChessMateEngine::ChessMateEngine() :
     m_chessMateDirectory(std::filesystem::temp_directory_path() / "ChessMate")
 {
-    if (!std::filesystem::create_directories(m_chessMateDirectory))
+    if (!std::filesystem::exists(m_chessMateDirectory) &&
+        !std::filesystem::create_directories(m_chessMateDirectory))
     {
+        LOGS("Could not create directory: %s", m_chessMateDirectory);
         m_chessMateDirectory = std::filesystem::temp_directory_path();
     }
 }
@@ -109,11 +111,11 @@ bool ChessMateEngine::initLogger()
         coder_config,
         m_chessMateDirectory);
 
-    // if (m_spLogger->start())
-    // {
-    //     fly::Logger::set_instance(m_spLogger);
-    // }
-    // else
+    if (m_spLogger->start())
+    {
+        fly::Logger::set_instance(m_spLogger);
+    }
+    else
     {
         LOGC("Could not start logger, using console instead");
         m_spLogger.reset();
