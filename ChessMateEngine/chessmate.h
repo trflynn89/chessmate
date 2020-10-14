@@ -64,7 +64,7 @@ private:
      *
      * @retun True if it could be initialized.
      */
-    bool initLogger();
+    bool initLoggers();
 
     /**
      * Initialize the socket subsystem.
@@ -82,7 +82,8 @@ private:
 
     std::shared_ptr<fly::TaskManager> m_spTaskManager;
     std::shared_ptr<fly::ConfigManager> m_spConfigManager;
-    std::shared_ptr<fly::Logger> m_spLogger;
+    std::shared_ptr<fly::Logger> m_spFileLogger;
+    std::shared_ptr<fly::Logger> m_spConsoleLogger;
     std::shared_ptr<fly::SocketManager> m_spSocketManager;
     std::shared_ptr<GameManager> m_spGameManager;
 

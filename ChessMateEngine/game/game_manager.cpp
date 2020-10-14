@@ -47,7 +47,10 @@ bool GameManager::Start()
         const unsigned int receivers = std::max(1_u32, std::thread::hardware_concurrency());
 
         LOGI("Accepting games on port %d with %u receivers", acceptPort, receivers);
-        LOGC("Accepting games on port %d with %u receivers", acceptPort, receivers);
+        fly::Logger::get("console")->info(
+            "Accepting games on port %d with %u receivers",
+            acceptPort,
+            receivers);
 
         for (unsigned int i = 0_u32; i < receivers; ++i)
         {
@@ -61,7 +64,7 @@ bool GameManager::Start()
     else
     {
         LOGE("Could not start game manager on port %d", acceptPort);
-        LOGC("Could not start game manager on port %d", acceptPort);
+        fly::Logger::get("console")->error("Could not start game manager on port %d", acceptPort);
     }
 
     return ret;
@@ -70,7 +73,7 @@ bool GameManager::Start()
 //==================================================================================================
 void GameManager::Stop()
 {
-    LOGC("Stopping game manager");
+    fly::Logger::get("console")->info("Stopping game manager");
 
     std::shared_ptr<fly::SocketManager> spSocketManager = m_wpSocketManager.lock();
 

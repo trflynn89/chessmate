@@ -21,6 +21,13 @@ profile/
 # Dependency files
 *.d
 
+# Coverage files
+*.gcda
+*.gcno
+*.gcov
+*.prodata
+*.profraw
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -38,6 +45,12 @@ profile/
 *.la
 *.a
 *.lib
+
+# Language servers
+.cache
+.clangd
+compile_commands.json
+compile_flags.txt
 
 # Gtags files
 GPATH

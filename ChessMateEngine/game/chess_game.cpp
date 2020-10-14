@@ -53,7 +53,7 @@ ChessGame::ChessGame(
     m_spBoard(std::make_shared<BitBoard>()),
     m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
-    LOGC(
+    fly::Logger::get("console")->info(
         "Initialized game %d: Engine color = %d, max depth = %d",
         m_gameId,
         engineColor,
@@ -68,7 +68,7 @@ ChessGame::ChessGame(
 //==================================================================================================
 ChessGame::~ChessGame()
 {
-    LOGC("Game finished, ID = %d", m_gameId);
+    fly::Logger::get("console")->info("Game finished, ID = %d", m_gameId);
 }
 
 //==================================================================================================

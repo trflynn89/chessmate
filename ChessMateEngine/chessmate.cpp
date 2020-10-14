@@ -1,5 +1,6 @@
 #include "chessmate.h"
 
+#include "fly/logger/log.hpp"
 #include "game/game_config.h"
 #include "game/game_manager.h"
 
@@ -41,7 +42,7 @@ bool ChessMateEngine::Start()
         m_keepRunning = false;
     });
 
-    if (initTaskManager() && initConfigManager() && initLogger() && initSocketManager() &&
+    if (initTaskManager() && initConfigManager() && initLoggers() && initSocketManager() &&
         initGameManager())
     {
         m_keepRunning = true;
@@ -99,26 +100,28 @@ bool ChessMateEngine::initConfigManager()
 }
 
 //==================================================================================================
-bool ChessMateEngine::initLogger()
+bool ChessMateEngine::initLoggers()
 {
     auto task_runner = m_spTaskManager->create_task_runner<fly::SequencedTaskRunner>();
     auto logger_config = m_spConfigManager->create_config<fly::LoggerConfig>();
     auto coder_config = m_spConfigManager->create_config<fly::CoderConfig>();
 
-    m_spLogger = std::make_shared<fly::Logger>(
+    m_spConsoleLogger = fly::Logger::create_console_logger("console", task_runner, logger_config);
+
+    m_spFileLogger = fly::Logger::create_file_logger(
+        "chessmate",
         task_runner,
         logger_config,
         coder_config,
         m_chessMateDirectory);
 
-    if (m_spLogger->start())
+    if (m_spFileLogger)
     {
-        fly::Logger::set_instance(m_spLogger);
+        fly::Logger::set_default_logger(m_spFileLogger);
     }
     else
     {
-        LOGC("Could not start logger, using console instead");
-        m_spLogger.reset();
+        LOGW("Could not start file logger, using default logger instead");
     }
 
     return true;
@@ -161,12 +164,16 @@ int main()
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        LOGC("Received terminal signal %d, quitting", signal);
+        fly::Logger::get("console")->info("Received terminal signal %d, quitting", signal);
         engine.Stop();
     }
     else
     {
-        LOGC("Failed initialization");
+        if (fly::Logger::get("console"))
+        {
+            fly::Logger::get("console")->error("Failed initialization");
+        }
+
         return -1;
     }
 
