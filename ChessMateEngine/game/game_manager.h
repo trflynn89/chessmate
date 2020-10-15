@@ -1,7 +1,5 @@
 #pragma once
 
-#include <fly/task/task.hpp>
-
 #include <future>
 #include <map>
 #include <memory>
@@ -21,7 +19,6 @@ namespace chessmate {
 class ChessGame;
 class GameConfig;
 class Message;
-class MessageReceiver;
 class MoveSet;
 
 /**
@@ -173,8 +170,6 @@ private:
     std::mutex m_gamesMutex;
 
     std::shared_ptr<fly::ParallelTaskRunner> m_spTaskRunner;
-    std::vector<std::shared_ptr<MessageReceiver>> m_receiverTasks;
-
     std::weak_ptr<fly::SocketManager> m_wpSocketManager;
 
     std::mutex m_runningFuturesMutex;
@@ -183,18 +178,6 @@ private:
     std::shared_ptr<MoveSet> m_spMoveSet;
 
     std::shared_ptr<GameConfig> m_spConfig;
-};
-
-class MessageReceiver : public std::enable_shared_from_this<MessageReceiver>, public fly::Task
-{
-public:
-    explicit MessageReceiver(std::weak_ptr<GameManager> wpGameManager) noexcept;
-
-protected:
-    void run() override;
-
-private:
-    std::weak_ptr<GameManager> m_wpGameManager;
 };
 
 } // namespace chessmate

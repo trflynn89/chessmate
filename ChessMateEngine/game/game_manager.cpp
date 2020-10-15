@@ -54,9 +54,10 @@ bool GameManager::Start()
 
         for (unsigned int i = 0_u32; i < receivers; ++i)
         {
-            auto task = std::make_shared<MessageReceiver>(shared_from_this());
-            m_spTaskRunner->post_task(task);
-            m_receiverTasks.push_back(task);
+            if (!processMessage())
+            {
+                return false;
+            }
         }
 
         ret = true;
@@ -82,7 +83,6 @@ void GameManager::Stop()
         spSocketManager->clear_client_callbacks();
     }
 
-    m_receiverTasks.clear();
     StopAllGames();
 
     std::lock_guard<std::mutex> lock(m_runningFuturesMutex);
@@ -131,16 +131,25 @@ void GameManager::StopAllGames()
 //==================================================================================================
 bool GameManager::processMessage()
 {
-    fly::AsyncRequest request;
-    bool healthy = receiveSingleMessage(request);
+    std::weak_ptr<GameManager> weak_self = shared_from_this();
 
-    if (healthy)
-    {
-        giveRequestToGame(request);
-    }
+    auto task = [weak_self]() {
+        if (auto self = weak_self.lock(); self)
+        {
+            fly::AsyncRequest request;
+            bool healthy = self->receiveSingleMessage(request);
 
-    deleteFinishedFutures();
-    return healthy;
+            if (healthy)
+            {
+                self->giveRequestToGame(request);
+                self->processMessage();
+            }
+
+            self->deleteFinishedFutures();
+        }
+    };
+
+    return m_spTaskRunner->post_task(FROM_HERE, std::move(task));
 }
 
 //==================================================================================================
@@ -336,23 +345,6 @@ void GameManager::deleteFinishedFutures()
                 ++it;
             }
         }
-    }
-}
-
-//==================================================================================================
-MessageReceiver::MessageReceiver(std::weak_ptr<GameManager> wpGameManager) noexcept :
-    m_wpGameManager(wpGameManager)
-{
-}
-
-//==================================================================================================
-void MessageReceiver::run()
-{
-    auto spGameManager = m_wpGameManager.lock();
-
-    if (spGameManager && spGameManager->processMessage())
-    {
-        spGameManager->m_spTaskRunner->post_task(shared_from_this());
     }
 }
 
