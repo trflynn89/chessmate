@@ -49,7 +49,7 @@ enum Ranks
  */
 enum BoardSize
 {
-    BOARD_SIZE = NUM_FILES * NUM_RANKS
+    BOARD_SIZE = static_cast<std::size_t>(NUM_FILES) * static_cast<std::size_t>(NUM_RANKS)
 };
 
 /**

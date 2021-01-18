@@ -29,7 +29,7 @@ ChessMateEngine::ChessMateEngine() :
     if (!std::filesystem::exists(m_chessMateDirectory) &&
         !std::filesystem::create_directories(m_chessMateDirectory))
     {
-        LOGS("Could not create directory: %s", m_chessMateDirectory);
+        LOGS("Could not create directory: {}", m_chessMateDirectory);
         m_chessMateDirectory = std::filesystem::temp_directory_path();
     }
 }
@@ -82,7 +82,7 @@ bool ChessMateEngine::KeepRunning(int &signal) const
 //==================================================================================================
 bool ChessMateEngine::initTaskManager()
 {
-    m_spTaskManager = std::make_shared<fly::TaskManager>(4);
+    m_spTaskManager = std::make_shared<fly::TaskManager>(std::thread::hardware_concurrency() * 2);
     return m_spTaskManager->start();
 }
 
@@ -164,7 +164,7 @@ int main()
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        fly::Logger::get("console")->info("Received terminal signal %d, quitting", signal);
+        fly::Logger::get("console")->info("Received terminal signal {}, quitting", signal);
         engine.Stop();
     }
     else

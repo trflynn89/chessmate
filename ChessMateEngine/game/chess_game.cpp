@@ -54,12 +54,12 @@ ChessGame::ChessGame(
     m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
     fly::Logger::get("console")->info(
-        "Initialized game %d: Engine color = %d, max depth = %d",
+        "Initialized game {}: Engine color = {}, max depth = {}",
         m_gameId,
         engineColor,
         m_maxDepth);
     LOGI(
-        "Initialized game %d: Engine color = %d, max depth = %d",
+        "Initialized game {}: Engine color = {}, max depth = {}",
         m_gameId,
         engineColor,
         m_maxDepth);
@@ -68,7 +68,7 @@ ChessGame::ChessGame(
 //==================================================================================================
 ChessGame::~ChessGame()
 {
-    fly::Logger::get("console")->info("Game finished, ID = %d", m_gameId);
+    fly::Logger::get("console")->info("Game finished, ID = {}", m_gameId);
 }
 
 //==================================================================================================
@@ -87,7 +87,7 @@ bool ChessGame::IsValid() const
         return true;
     }
 
-    LOGW("Client %d disconnected", m_gameId);
+    LOGW("Client {} disconnected", m_gameId);
     return false;
 }
 
@@ -102,13 +102,13 @@ bool ChessGame::MakeMove(Move &move) const
     {
         if (move == *it)
         {
-            LOGD("Game %d made valid move: %s", m_gameId, move);
+            LOGD("Game {} made valid move: {}", m_gameId, move);
             m_spBoard->MakeMove(move);
             return true;
         }
     }
 
-    LOGD("Game %d made invalid move: %s", m_gameId, move);
+    LOGD("Game {} made invalid move: {}", m_gameId, move);
     return false;
 }
 
@@ -171,7 +171,7 @@ bool ChessGame::ProcessMessage(const Message &msg)
 
     // UNKNOWN TYPE
     // Unknown message received - log and end this game
-    LOGW("Unrecognized message %d: %d - %s", m_gameId, type, data);
+    LOGW("Unrecognized message {}: {} - {}", m_gameId, type, data);
     return false;
 }
 
@@ -179,7 +179,7 @@ bool ChessGame::ProcessMessage(const Message &msg)
 bool ChessGame::sendMessage(const Message &msg) const
 {
     std::string serialized = msg.Serialize();
-    LOGD("Sending message %d: %s", m_gameId, serialized);
+    LOGD("Sending message {}: {}", m_gameId, serialized);
 
     std::shared_ptr<fly::Socket> spClientSocket = m_wpClientSocket.lock();
 
@@ -188,7 +188,7 @@ bool ChessGame::sendMessage(const Message &msg) const
         return spClientSocket->send_async(std::move(serialized));
     }
 
-    LOGW("Client disconnected: %d", m_gameId);
+    LOGW("Client disconnected: {}", m_gameId);
     return false;
 }
 
@@ -231,9 +231,9 @@ bool ChessGame::anyValidMoves() const
 //==================================================================================================
 Move ChessGame::getBestMove()
 {
-    LOGD("Searching for best move: %d", m_gameId);
+    LOGD("Searching for best move: {}", m_gameId);
     Move m = m_moveSelector.GetBestMove(m_maxDepth);
-    LOGD("Best move is %d: %s", m_gameId, m);
+    LOGD("Best move is {}: {}", m_gameId, m);
 
     m_spBoard->MakeMove(m); // Always promote to queen for now
 

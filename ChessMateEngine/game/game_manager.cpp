@@ -46,9 +46,9 @@ bool GameManager::Start()
     {
         const unsigned int receivers = std::max(1_u32, std::thread::hardware_concurrency());
 
-        LOGI("Accepting games on port %d with %u receivers", acceptPort, receivers);
+        LOGI("Accepting games on port {} with {} receivers", acceptPort, receivers);
         fly::Logger::get("console")->info(
-            "Accepting games on port %d with %u receivers",
+            "Accepting games on port {} with {} receivers",
             acceptPort,
             receivers);
 
@@ -64,8 +64,8 @@ bool GameManager::Start()
     }
     else
     {
-        LOGE("Could not start game manager on port %d", acceptPort);
-        fly::Logger::get("console")->error("Could not start game manager on port %d", acceptPort);
+        LOGE("Could not start game manager on port {}", acceptPort);
+        fly::Logger::get("console")->error("Could not start game manager on port {}", acceptPort);
     }
 
     return ret;
@@ -112,7 +112,7 @@ void GameManager::StopGame(std::shared_ptr<fly::Socket> spClientSocket)
 //==================================================================================================
 void GameManager::StopGame(int socketId)
 {
-    LOGI("Stopping game %d", socketId);
+    LOGI("Stopping game {}", socketId);
 
     std::lock_guard<std::mutex> lock(m_gamesMutex);
     m_pendingMap.erase(socketId);
@@ -124,7 +124,7 @@ void GameManager::StopAllGames()
 {
     std::lock_guard<std::mutex> lock(m_gamesMutex);
 
-    LOGI("Stopping %u games", m_gamesMap.size());
+    LOGI("Stopping {} games", m_gamesMap.size());
     m_gamesMap.clear();
 }
 
@@ -190,13 +190,13 @@ bool GameManager::createAcceptSocket(int acceptPort)
     {
         if (!spSocket->bind(fly::Socket::in_addr_any(), acceptPort, fly::BindOption::AllowReuse))
         {
-            LOGE("Could not bind socket to port %d", acceptPort);
+            LOGE("Could not bind socket to port {}", acceptPort);
             spSocket.reset();
         }
 
         else if (!spSocket->listen())
         {
-            LOGE("Could not listen on port %d", acceptPort);
+            LOGE("Could not listen on port {}", acceptPort);
             spSocket.reset();
         }
     }
@@ -239,7 +239,7 @@ void GameManager::giveRequestToGame(const fly::AsyncRequest &request)
         else
         {
             LOGW(
-                "Cannot convert request to message %d: %s",
+                "Cannot convert request to message {}: {}",
                 request.get_socket_id(),
                 request.get_request());
         }
@@ -247,7 +247,7 @@ void GameManager::giveRequestToGame(const fly::AsyncRequest &request)
 
     if (spGame && spGame->IsValid())
     {
-        LOGD("Handling message type %d: %d", spGame->GetGameID(), message.GetMessageType());
+        LOGD("Handling message type {}: {}", spGame->GetGameID(), message.GetMessageType());
 
         const auto &spThis = shared_from_this();
         auto function = &GameManager::handleMessage;
@@ -268,7 +268,7 @@ std::shared_ptr<ChessGame> GameManager::createOrFindGame(int socketId, const Mes
     {
         if (m_pendingMap.find(socketId) == m_pendingMap.end())
         {
-            LOGW("No pending game associated with socket: %d", socketId);
+            LOGW("No pending game associated with socket: {}", socketId);
             return std::shared_ptr<ChessGame>();
         }
 
@@ -283,14 +283,14 @@ std::shared_ptr<ChessGame> GameManager::createOrFindGame(int socketId, const Mes
         }
         else
         {
-            LOGW("Socket closed while handling START_GAME message: %d", socketId);
+            LOGW("Socket closed while handling START_GAME message: {}", socketId);
             return std::shared_ptr<ChessGame>();
         }
     }
 
     if (m_gamesMap.find(socketId) == m_gamesMap.end())
     {
-        LOGW("No game associated with socket: %d", socketId);
+        LOGW("No game associated with socket: {}", socketId);
         return std::shared_ptr<ChessGame>();
     }
 
@@ -308,7 +308,7 @@ void GameManager::handleMessage(const std::shared_ptr<ChessGame> spGame, const M
     int gameId = spGame->GetGameID();
 
     LOGD(
-        "Game %d processed message type %d in %f seconds",
+        "Game {} processed message type {} in {:f} seconds",
         gameId,
         message.GetMessageType(),
         timeSpan.count());
@@ -316,7 +316,7 @@ void GameManager::handleMessage(const std::shared_ptr<ChessGame> spGame, const M
     if (!keepPlaying || !spGame->IsValid())
     {
         LOGI(
-            "Game %d will be stopped, keepPlaying = %d, isValid = %d",
+            "Game {} will be stopped, keepPlaying = {}, isValid = {}",
             gameId,
             keepPlaying,
             spGame->IsValid());
