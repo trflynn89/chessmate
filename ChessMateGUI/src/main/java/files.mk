@@ -1,10 +1,10 @@
 SRC_DIRS_$(d) := \
-    ChessMateGUI/src/main/java/com/flynn/chessmate \
-    ChessMateGUI/src/main/java/com/flynn/chessmate/communication \
-    ChessMateGUI/src/main/java/com/flynn/chessmate/game \
-    ChessMateGUI/src/main/java/com/flynn/chessmate/gui \
-    ChessMateGUI/src/main/java/com/flynn/chessmate/movement \
-    ChessMateGUI/src/main/java/com/flynn/chessmate/util
+    $(d)/com/flynn/chessmate \
+    $(d)/com/flynn/chessmate/communication \
+    $(d)/com/flynn/chessmate/game \
+    $(d)/com/flynn/chessmate/gui \
+    $(d)/com/flynn/chessmate/movement \
+    $(d)/com/flynn/chessmate/util
 
 MAIN_CLASS_$(d) := com.flynn.chessmate.ChessMateGUI
 

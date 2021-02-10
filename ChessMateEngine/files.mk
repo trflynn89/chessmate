@@ -1,7 +1,7 @@
 SRC_DIRS_$(d) := \
-    ChessMateEngine/engine \
-    ChessMateEngine/game \
-    ChessMateEngine/movement
+    $(d)/engine \
+    $(d)/game \
+    $(d)/movement
 
 SRC_$(d) := \
     $(d)/chessmate.cpp
