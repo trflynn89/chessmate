@@ -74,6 +74,8 @@ public:
 private:
     Message::MessageType m_type;
     std::string m_data;
+
+    std::string m_serialized;
 };
 
 } // namespace chessmate

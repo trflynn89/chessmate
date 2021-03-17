@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fly/types/concurrency/concurrent_queue.hpp"
+
 #include <future>
 #include <map>
 #include <memory>
@@ -7,12 +9,25 @@
 #include <thread>
 #include <vector>
 
-namespace fly {
-class AsyncRequest;
+namespace fly::net {
+
+class IPv4Address;
+class SocketService;
+
+template <typename IPAddressType>
+class Endpoint;
+
+template <typename EndpointType>
+class ListenSocket;
+
+template <typename EndpointType>
+class TcpSocket;
+
+} // namespace fly::net
+
+namespace fly::task {
 class ParallelTaskRunner;
-class Socket;
-class SocketManager;
-} // namespace fly
+} // namespace fly::task
 
 namespace chessmate {
 
@@ -32,6 +47,9 @@ class MoveSet;
  */
 class GameManager : public std::enable_shared_from_this<GameManager>
 {
+    using ListenSocket = fly::net::ListenSocket<fly::net::Endpoint<fly::net::IPv4Address>>;
+    using TcpSocket = fly::net::TcpSocket<fly::net::Endpoint<fly::net::IPv4Address>>;
+
 public:
     /**
      * Map of games indexed by the client ID.
@@ -41,7 +59,7 @@ public:
     /**
      * Map of clients awaiting game initialization.
      */
-    typedef std::map<int, std::weak_ptr<fly::Socket>> PendingMap;
+    typedef std::map<int, std::shared_ptr<TcpSocket>> PendingMap;
 
     /**
      * Constructor, stores a weak reference to the socket manager.
@@ -49,8 +67,8 @@ public:
      * @param SocketManagerPtr Reference to the socket manager.
      */
     GameManager(
-        const std::shared_ptr<fly::ParallelTaskRunner> &,
-        const std::shared_ptr<fly::SocketManager> &,
+        const std::shared_ptr<fly::task::ParallelTaskRunner> &,
+        const std::shared_ptr<fly::net::SocketService> &,
         const std::shared_ptr<GameConfig> &);
 
     /**
@@ -64,14 +82,14 @@ public:
      *
      * @param SocketPtr Shared pointer to the socket connected to the game client.
      */
-    void StartGame(std::shared_ptr<fly::Socket>);
+    void StartGame(std::shared_ptr<TcpSocket>);
 
     /**
      * Stop and delete a game.
      *
      * @param int The socket ID of the game.
      */
-    void StopGame(std::shared_ptr<fly::Socket>);
+    void StopGame(std::shared_ptr<TcpSocket>);
     void StopGame(int);
 
     /**
@@ -95,7 +113,14 @@ public:
     void Stop();
 
 private:
-    friend class MessageReceiver;
+    struct AsyncRequest
+    {
+        std::uint64_t m_socket_id {0};
+        std::string m_message;
+    };
+
+    bool receive_message(std::uint64_t socket_id);
+    void receive_client();
 
     /**
      * Process any data received by the socket manager.
@@ -105,30 +130,13 @@ private:
     bool processMessage();
 
     /**
-     * Set the socket manager callbacks for when a new client connects or an
-     * existing client disconnects.
-     *
-     * @return True if the callbacks were set, false otherwise.
-     */
-    bool setSocketCallbacks();
-
-    /**
      * Create the accept socket for new games to connect to.
      *
      * @param int The port to listen on.
      *
      * @return True if the socket could be created and initialized.
      */
-    bool createAcceptSocket(int);
-
-    /**
-     * Wait for a short time for a message to be available.
-     *
-     * @param AsyncRequest Reference to request object to store a receive.
-     *
-     * @return True if the socket manager could be queried for a request.
-     */
-    bool receiveSingleMessage(fly::AsyncRequest &) const;
+    bool createAcceptSocket(std::uint16_t);
 
     /**
      * Find a game associated with an AsyncRequest and launch an async task to
@@ -136,7 +144,7 @@ private:
      *
      * @param AsyncRequest The request to process.
      */
-    void giveRequestToGame(const fly::AsyncRequest &);
+    void giveRequestToGame(const AsyncRequest &);
 
     /**
      * Depending on the given message type, either create a chess game or find
@@ -150,7 +158,7 @@ private:
      *
      * @return A shared pointer around the created ChessGame instance.
      */
-    std::shared_ptr<ChessGame> createOrFindGame(int, const Message &);
+    std::shared_ptr<ChessGame> createOrFindGame(std::uint64_t, const Message &);
 
     /**
      * Handle a message retrieved by the message receiver thread.
@@ -169,8 +177,11 @@ private:
     PendingMap m_pendingMap;
     std::mutex m_gamesMutex;
 
-    std::shared_ptr<fly::ParallelTaskRunner> m_spTaskRunner;
-    std::weak_ptr<fly::SocketManager> m_wpSocketManager;
+    std::shared_ptr<fly::task::ParallelTaskRunner> m_spTaskRunner;
+    std::weak_ptr<fly::net::SocketService> m_wpSocketService;
+    std::shared_ptr<ListenSocket> m_accept_socket;
+
+    fly::ConcurrentQueue<AsyncRequest> m_pending_messages;
 
     std::mutex m_runningFuturesMutex;
     std::vector<std::future<void>> m_runningFutures;

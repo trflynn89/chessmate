@@ -3,6 +3,9 @@
 #include "movement/valid_move_set.h"
 
 #include <fly/logger/logger.hpp>
+#include <fly/net/endpoint.hpp>
+#include <fly/net/ipv4_address.hpp>
+#include <fly/net/socket/tcp_socket.hpp>
 #include <fly/types/string/string.hpp>
 
 #include <string>
@@ -13,7 +16,7 @@ namespace chessmate {
 //==================================================================================================
 std::shared_ptr<ChessGame> ChessGame::Create(
     const std::shared_ptr<GameConfig> &spConfig,
-    const std::shared_ptr<fly::Socket> &spClientSocket,
+    std::shared_ptr<TcpSocket> spClientSocket,
     const std::shared_ptr<MoveSet> &spMoveSet,
     const Message &msg)
 {
@@ -40,20 +43,20 @@ std::shared_ptr<ChessGame> ChessGame::Create(
 //==================================================================================================
 ChessGame::ChessGame(
     const std::shared_ptr<GameConfig> &spConfig,
-    const std::shared_ptr<fly::Socket> &spClientSocket,
+    std::shared_ptr<TcpSocket> spClientSocket,
     const std::shared_ptr<MoveSet> &spMoveSet,
     const color_type &engineColor,
     const value_type &difficulty) :
     m_spConfig(spConfig),
-    m_gameId(spClientSocket->get_socket_id()),
-    m_wpClientSocket(spClientSocket),
+    m_gameId(spClientSocket->socket_id()),
+    m_client_socket(std::move(spClientSocket)),
     m_wpMoveSet(spMoveSet),
     m_maxDepth(2 * difficulty + 1),
     m_checkMaxDepth(m_spConfig->IncreaseEndGameDifficulty()),
     m_spBoard(std::make_shared<BitBoard>()),
     m_moveSelector(spMoveSet, m_spBoard, engineColor)
 {
-    fly::Logger::get("console")->info(
+    fly::logger::Logger::get("console")->info(
         "Initialized game {}: Engine color = {}, max depth = {}",
         m_gameId,
         engineColor,
@@ -68,7 +71,7 @@ ChessGame::ChessGame(
 //==================================================================================================
 ChessGame::~ChessGame()
 {
-    fly::Logger::get("console")->info("Game finished, ID = {}", m_gameId);
+    fly::logger::Logger::get("console")->info("Game finished, ID = {}", m_gameId);
 }
 
 //==================================================================================================
@@ -80,9 +83,7 @@ int ChessGame::GetGameID() const
 //==================================================================================================
 bool ChessGame::IsValid() const
 {
-    std::shared_ptr<fly::Socket> spClientSocket = m_wpClientSocket.lock();
-
-    if (spClientSocket && spClientSocket->is_valid())
+    if (m_client_socket->is_open())
     {
         return true;
     }
@@ -176,20 +177,13 @@ bool ChessGame::ProcessMessage(const Message &msg)
 }
 
 //==================================================================================================
-bool ChessGame::sendMessage(const Message &msg) const
+bool ChessGame::sendMessage(const Message &msg)
 {
-    std::string serialized = msg.Serialize();
-    LOGD("Sending message {}: {}", m_gameId, serialized);
+    m_last_message = msg.Serialize();
+    LOGD("Sending message {}: {}", m_gameId, m_last_message);
 
-    std::shared_ptr<fly::Socket> spClientSocket = m_wpClientSocket.lock();
-
-    if (spClientSocket && spClientSocket->is_valid())
-    {
-        return spClientSocket->send_async(std::move(serialized));
-    }
-
-    LOGW("Client disconnected: {}", m_gameId);
-    return false;
+    // TODO send handle errors.
+    return m_client_socket->send_async(m_last_message, [](std::size_t) {});
 }
 
 //==================================================================================================

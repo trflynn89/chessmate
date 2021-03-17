@@ -7,13 +7,19 @@
 #include "movement/move.h"
 #include "movement/move_set.h"
 
-#include <fly/socket/socket.hpp>
-
 #include <memory>
 
-namespace fly {
-class Socket;
-} // namespace fly
+namespace fly::net {
+
+class IPv4Address;
+
+template <typename IPAddressType>
+class Endpoint;
+
+template <typename EndpointType>
+class TcpSocket;
+
+} // namespace fly::net
 
 namespace chessmate {
 
@@ -26,6 +32,8 @@ namespace chessmate {
  */
 class ChessGame : public std::enable_shared_from_this<ChessGame>
 {
+    using TcpSocket = fly::net::TcpSocket<fly::net::Endpoint<fly::net::IPv4Address>>;
+
     /**
      * Enumerated list of game difficulties.
      */
@@ -50,7 +58,7 @@ public:
      */
     static std::shared_ptr<ChessGame> Create(
         const std::shared_ptr<GameConfig> &,
-        const std::shared_ptr<fly::Socket> &,
+        std::shared_ptr<TcpSocket>,
         const std::shared_ptr<MoveSet> &,
         const Message &);
 
@@ -65,7 +73,7 @@ public:
      */
     ChessGame(
         const std::shared_ptr<GameConfig> &,
-        const std::shared_ptr<fly::Socket> &,
+        std::shared_ptr<TcpSocket>,
         const std::shared_ptr<MoveSet> &,
         const color_type &,
         const value_type &);
@@ -103,6 +111,11 @@ public:
      */
     bool ProcessMessage(const Message &);
 
+    std::shared_ptr<TcpSocket> client() const
+    {
+        return m_client_socket;
+    }
+
 private:
     /**
      * Send a message to the client.
@@ -111,7 +124,7 @@ private:
      *
      * @return True if the message could be sent.
      */
-    bool sendMessage(const Message &) const;
+    bool sendMessage(const Message &);
 
     /**
      * Retrieve a move's PGN string and determine stalemate status.
@@ -144,7 +157,7 @@ private:
 
     int m_gameId;
 
-    std::weak_ptr<fly::Socket> m_wpClientSocket;
+    std::shared_ptr<TcpSocket> m_client_socket;
     std::weak_ptr<MoveSet> m_wpMoveSet;
 
     value_type m_maxDepth;
@@ -153,6 +166,8 @@ private:
     std::shared_ptr<BitBoard> m_spBoard;
 
     MoveSelector m_moveSelector;
+
+    std::string m_last_message;
 };
 
 } // namespace chessmate

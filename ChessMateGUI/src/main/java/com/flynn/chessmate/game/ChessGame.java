@@ -127,6 +127,7 @@ public class ChessGame extends Thread
         {
             BoardGUI.acceptMoves(true);
             BoardGUI.setWaitCursor(false);
+            BoardGUI.setStatus("Your move!");
         }
     }
 

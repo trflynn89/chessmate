@@ -4,12 +4,21 @@
 #include <string>
 #include <type_traits>
 
-namespace fly {
+namespace fly::config {
 class ConfigManager;
+} // namespace fly::config
+
+namespace fly::logger {
 class Logger;
-class SocketManager;
+} // namespace fly::logger
+
+namespace fly::net {
+class SocketService;
+} // namespace fly::net
+
+namespace fly::task {
 class TaskManager;
-} // namespace fly
+} // namespace fly::task
 
 namespace chessmate {
 
@@ -71,7 +80,7 @@ private:
      *
      * @retun True if it could be initialized.
      */
-    bool initSocketManager();
+    bool initSocketService();
 
     /**
      * Initialize the game subsystem.
@@ -80,11 +89,11 @@ private:
      */
     bool initGameManager();
 
-    std::shared_ptr<fly::TaskManager> m_spTaskManager;
-    std::shared_ptr<fly::ConfigManager> m_spConfigManager;
-    std::shared_ptr<fly::Logger> m_spFileLogger;
-    std::shared_ptr<fly::Logger> m_spConsoleLogger;
-    std::shared_ptr<fly::SocketManager> m_spSocketManager;
+    std::shared_ptr<fly::task::TaskManager> m_spTaskManager;
+    std::shared_ptr<fly::config::ConfigManager> m_spConfigManager;
+    std::shared_ptr<fly::logger::Logger> m_spFileLogger;
+    std::shared_ptr<fly::logger::Logger> m_spConsoleLogger;
+    std::shared_ptr<fly::net::SocketService> m_spSocketService;
     std::shared_ptr<GameManager> m_spGameManager;
 
     std::filesystem::path m_chessMateDirectory;

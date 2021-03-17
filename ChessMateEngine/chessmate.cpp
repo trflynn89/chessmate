@@ -8,8 +8,8 @@
 #include <fly/config/config_manager.hpp>
 #include <fly/logger/logger.hpp>
 #include <fly/logger/logger_config.hpp>
-#include <fly/socket/socket_config.hpp>
-#include <fly/socket/socket_manager.hpp>
+#include <fly/net/network_config.hpp>
+#include <fly/net/socket/socket_service.hpp>
 #include <fly/system/system.hpp>
 #include <fly/task/task_manager.hpp>
 #include <fly/task/task_runner.hpp>
@@ -37,12 +37,14 @@ ChessMateEngine::ChessMateEngine() :
 //==================================================================================================
 bool ChessMateEngine::Start()
 {
-    fly::System::set_signal_handler([this](int signal) {
-        m_killSignal = signal;
-        m_keepRunning = false;
-    });
+    fly::system::set_signal_handler(
+        [this](int signal)
+        {
+            m_killSignal = signal;
+            m_keepRunning = false;
+        });
 
-    if (initTaskManager() && initConfigManager() && initLoggers() && initSocketManager() &&
+    if (initTaskManager() && initConfigManager() && initLoggers() && initSocketService() &&
         initGameManager())
     {
         m_keepRunning = true;
@@ -64,7 +66,7 @@ void ChessMateEngine::Stop()
         m_spTaskManager->stop();
     }
 
-    fly::System::set_signal_handler(nullptr);
+    fly::system::set_signal_handler(nullptr);
 }
 
 //==================================================================================================
@@ -82,33 +84,33 @@ bool ChessMateEngine::KeepRunning(int &signal) const
 //==================================================================================================
 bool ChessMateEngine::initTaskManager()
 {
-    m_spTaskManager = std::make_shared<fly::TaskManager>(std::thread::hardware_concurrency() * 2);
-    return m_spTaskManager->start();
+    m_spTaskManager = fly::task::TaskManager::create(std::thread::hardware_concurrency() * 2);
+    return static_cast<bool>(m_spTaskManager);
 }
 
 //==================================================================================================
 bool ChessMateEngine::initConfigManager()
 {
-    auto task_runner = m_spTaskManager->create_task_runner<fly::SequencedTaskRunner>();
+    auto task_runner = fly::task::SequencedTaskRunner::create(m_spTaskManager);
 
-    m_spConfigManager = std::make_shared<fly::ConfigManager>(
+    m_spConfigManager = fly::config::ConfigManager::create(
         task_runner,
-        fly::ConfigManager::ConfigFileType::Json,
+        fly::config::ConfigManager::ConfigFileType::Json,
         m_chessMateDirectory / "chessmate.json");
 
-    return m_spConfigManager->start();
+    return static_cast<bool>(m_spConfigManager);
 }
 
 //==================================================================================================
 bool ChessMateEngine::initLoggers()
 {
-    auto task_runner = m_spTaskManager->create_task_runner<fly::SequencedTaskRunner>();
-    auto logger_config = m_spConfigManager->create_config<fly::LoggerConfig>();
-    auto coder_config = m_spConfigManager->create_config<fly::CoderConfig>();
+    auto task_runner = fly::task::SequencedTaskRunner::create(m_spTaskManager);
+    auto logger_config = m_spConfigManager->create_config<fly::logger::LoggerConfig>();
+    auto coder_config = m_spConfigManager->create_config<fly::coders::CoderConfig>();
 
-    m_spConsoleLogger = fly::Logger::create_console_logger("console", task_runner, logger_config);
+    m_spConsoleLogger = fly::logger::create_console_logger("console", task_runner, logger_config);
 
-    m_spFileLogger = fly::Logger::create_file_logger(
+    m_spFileLogger = fly::logger::create_file_logger(
         "chessmate",
         task_runner,
         logger_config,
@@ -117,7 +119,7 @@ bool ChessMateEngine::initLoggers()
 
     if (m_spFileLogger)
     {
-        fly::Logger::set_default_logger(m_spFileLogger);
+        fly::logger::Logger::set_default_logger(m_spFileLogger);
     }
     else
     {
@@ -128,24 +130,23 @@ bool ChessMateEngine::initLoggers()
 }
 
 //==================================================================================================
-bool ChessMateEngine::initSocketManager()
+bool ChessMateEngine::initSocketService()
 {
-    auto task_runner = m_spTaskManager->create_task_runner<fly::SequencedTaskRunner>();
-    auto socket_config = m_spConfigManager->create_config<fly::SocketConfig>();
+    auto task_runner = fly::task::SequencedTaskRunner::create(m_spTaskManager);
+    auto network_config = m_spConfigManager->create_config<fly::net::NetworkConfig>();
 
-    m_spSocketManager = std::make_shared<fly::SocketManagerImpl>(task_runner, socket_config);
-    m_spSocketManager->start();
-
-    return true;
+    m_spSocketService =
+        fly::net::SocketService::create(std::move(task_runner), std::move(network_config));
+    return static_cast<bool>(m_spSocketService);
 }
 
 //==================================================================================================
 bool ChessMateEngine::initGameManager()
 {
-    auto task_runner = m_spTaskManager->create_task_runner<fly::ParallelTaskRunner>();
+    auto task_runner = fly::task::ParallelTaskRunner::create(m_spTaskManager);
     auto game_config = m_spConfigManager->create_config<GameConfig>();
 
-    m_spGameManager = std::make_shared<GameManager>(task_runner, m_spSocketManager, game_config);
+    m_spGameManager = std::make_shared<GameManager>(task_runner, m_spSocketService, game_config);
     return m_spGameManager->Start();
 }
 
@@ -164,14 +165,14 @@ int main()
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        fly::Logger::get("console")->info("Received terminal signal {}, quitting", signal);
+        fly::logger::Logger::get("console")->info("Received terminal signal {}, quitting", signal);
         engine.Stop();
     }
     else
     {
-        if (fly::Logger::get("console"))
+        if (fly::logger::Logger::get("console"))
         {
-            fly::Logger::get("console")->error("Failed initialization");
+            fly::logger::Logger::get("console")->error("Failed initialization");
         }
 
         return -1;

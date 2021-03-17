@@ -14,7 +14,7 @@ namespace chessmate {
  * @author Timothy Flynn (trflynn89@gmail.com)
  * @version July 19, 2016
  */
-class GameConfig : public fly::Config
+class GameConfig : public fly::config::Config
 {
 public:
     static constexpr const char *identifier = "game";

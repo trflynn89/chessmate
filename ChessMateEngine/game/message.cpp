@@ -1,10 +1,17 @@
 #include "message.h"
 
 #include <fly/types/string/string.hpp>
+#include <fly/types/string/string_lexer.hpp>
 
 #include <optional>
 
 namespace chessmate {
+
+namespace {
+
+    char s_chessmate_eom = 0x04;
+
+} // namespace
 
 //==================================================================================================
 Message::Message() : m_type(Message::INVALID_TYPE)
@@ -14,22 +21,24 @@ Message::Message() : m_type(Message::INVALID_TYPE)
 //==================================================================================================
 Message::Message(const std::string &raw) : m_type(Message::INVALID_TYPE)
 {
-    // Message type is raw[0]
-    if (raw.length() > 0)
+    using StringLexer = fly::BasicStringLexer<std::string>;
+
+    StringLexer lexer(raw);
+
+    if (auto type = lexer.consume_number(); type)
     {
-        // TODO message type may be more than 1 char
-        auto maybe_type = fly::String::convert<int>(raw.substr(0, 1));
+        m_type = static_cast<Message::MessageType>(type.value());
 
-        if (maybe_type)
+        if (!lexer.consume_if(' '))
         {
-            m_type = static_cast<Message::MessageType>(maybe_type.value());
-
-            // Message data is raw[2 : end]
-            if (raw.length() > 1)
-            {
-                m_data = raw.substr(2);
-            }
+            return;
         }
+        else if (lexer.position() >= raw.size())
+        {
+            return;
+        }
+
+        m_data = raw.substr(lexer.position(), lexer.view().size() - lexer.position() - 1);
     }
 }
 
@@ -84,15 +93,11 @@ std::string Message::GetData() const
 //==================================================================================================
 std::string Message::Serialize() const
 {
-    std::string ret = std::to_string(m_type);
-
-    if (!m_data.empty())
-    {
-        ret.append(" ");
-        ret.append(m_data);
-    }
-
-    return ret;
+    return fly::String::format(
+        "{}{}{}",
+        m_type,
+        (m_data.empty() ? "" : " " + m_data),
+        s_chessmate_eom);
 }
 
 } // namespace chessmate
