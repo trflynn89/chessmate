@@ -87,29 +87,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</IntDir>
     <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</IntDir>
     <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</IntDir>
     <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(libfly_dir);$(SolutionDir)..\..;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\build\$(Configuration)\msvc\$(PlatformTarget)\$(ProjectName)\</IntDir>
     <LibraryPath>$(libfly_dir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
