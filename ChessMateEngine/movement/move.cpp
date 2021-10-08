@@ -434,11 +434,4 @@ bool Move::operator==(const Move &move) const
         (m_endRank == move.m_endRank) && (m_endFile == move.m_endFile));
 }
 
-//==================================================================================================
-std::ostream &operator<<(std::ostream &stream, const Move &move)
-{
-    stream << move.GetPGNString();
-    return stream;
-}
-
 } // namespace chessmate

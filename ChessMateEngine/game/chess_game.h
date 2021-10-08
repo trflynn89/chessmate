@@ -7,16 +7,18 @@
 #include "movement/move.h"
 #include "movement/move_set.h"
 
+#include <fly/net/socket/concepts.hpp>
+
 #include <memory>
 
 namespace fly::net {
 
 class IPv4Address;
 
-template <typename IPAddressType>
+template <IPAddress IPAddressType>
 class Endpoint;
 
-template <typename EndpointType>
+template <IPEndpoint EndpointType>
 class TcpSocket;
 
 } // namespace fly::net

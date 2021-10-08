@@ -1,6 +1,5 @@
 #include "chessmate.h"
 
-#include "fly/logger/log.hpp"
 #include "game/game_config.h"
 #include "game/game_manager.h"
 
@@ -29,7 +28,7 @@ ChessMateEngine::ChessMateEngine() :
     if (!std::filesystem::exists(m_chessMateDirectory) &&
         !std::filesystem::create_directories(m_chessMateDirectory))
     {
-        LOGS("Could not create directory: {}", m_chessMateDirectory);
+        LOGS("Could not create directory: {}", m_chessMateDirectory.string());
         m_chessMateDirectory = std::filesystem::temp_directory_path();
     }
 }
@@ -95,7 +94,7 @@ bool ChessMateEngine::initConfigManager()
 
     m_spConfigManager = fly::config::ConfigManager::create(
         task_runner,
-        fly::config::ConfigManager::ConfigFileType::Json,
+        fly::config::ConfigFileType::Json,
         m_chessMateDirectory / "chessmate.json");
 
     return static_cast<bool>(m_spConfigManager);

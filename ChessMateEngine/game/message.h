@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fly/types/string/formatters.hpp>
+
 #include <string>
 
 namespace chessmate {
@@ -79,3 +81,22 @@ private:
 };
 
 } // namespace chessmate
+
+//==================================================================================================
+template <>
+struct fly::Formatter<chessmate::Message::MessageType> : fly::Formatter<std::uint8_t>
+{
+    /**
+     * Format a message type.
+     *
+     * @tparam FormatContext The type of the formatting context.
+     *
+     * @param type The message type to format.
+     * @param context The context holding the formatting state.
+     */
+    template <typename FormatContext>
+    void format(chessmate::Message::MessageType type, FormatContext &context)
+    {
+        fly::Formatter<std::uint8_t>::format(static_cast<std::uint8_t>(type), context);
+    }
+};

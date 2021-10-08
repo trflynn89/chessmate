@@ -1,6 +1,7 @@
 #pragma once
 
-#include "fly/types/concurrency/concurrent_queue.hpp"
+#include <fly/net/socket/concepts.hpp>
+#include <fly/types/concurrency/concurrent_queue.hpp>
 
 #include <future>
 #include <map>
@@ -14,13 +15,13 @@ namespace fly::net {
 class IPv4Address;
 class SocketService;
 
-template <typename IPAddressType>
+template <IPAddress IPAddressType>
 class Endpoint;
 
-template <typename EndpointType>
+template <IPEndpoint EndpointType>
 class ListenSocket;
 
-template <typename EndpointType>
+template <IPEndpoint EndpointType>
 class TcpSocket;
 
 } // namespace fly::net

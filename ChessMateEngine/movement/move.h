@@ -2,8 +2,9 @@
 
 #include "game/board_types.h"
 
+#include <fly/types/string/formatters.hpp>
+
 #include <array>
-#include <iostream>
 #include <string>
 
 namespace chessmate {
@@ -170,14 +171,6 @@ public:
      */
     bool operator==(const Move &move) const;
 
-    /**
-     * Overloaded operator << for printing the move.
-     *
-     * @param stream The stream to print to.
-     * @param Move The move to print.
-     */
-    friend std::ostream &operator<<(std::ostream &, const Move &);
-
 private:
     square_type m_startRank;
     square_type m_startFile;
@@ -197,3 +190,22 @@ private:
 };
 
 } // namespace chessmate
+
+//==================================================================================================
+template <>
+struct fly::Formatter<chessmate::Move> : fly::Formatter<std::string_view>
+{
+    /**
+     * Format a move.
+     *
+     * @tparam FormatContext The type of the formatting context.
+     *
+     * @param move The move to format.
+     * @param context The context holding the formatting state.
+     */
+    template <typename FormatContext>
+    void format(const chessmate::Move &move, FormatContext &context)
+    {
+        fly::Formatter<std::string_view>::format(move.GetPGNString(), context);
+    }
+};

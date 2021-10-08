@@ -1,7 +1,7 @@
 #include "message.h"
 
+#include <fly/types/string/lexer.hpp>
 #include <fly/types/string/string.hpp>
-#include <fly/types/string/string_lexer.hpp>
 
 #include <optional>
 
@@ -21,7 +21,7 @@ Message::Message() : m_type(Message::INVALID_TYPE)
 //==================================================================================================
 Message::Message(const std::string &raw) : m_type(Message::INVALID_TYPE)
 {
-    using StringLexer = fly::BasicStringLexer<std::string>;
+    using StringLexer = fly::BasicLexer<char>;
 
     StringLexer lexer(raw);
 
