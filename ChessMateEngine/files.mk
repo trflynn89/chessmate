@@ -7,6 +7,3 @@ SRC_$(d) := \
     $(d)/chessmate.cpp
 
 CXXFLAGS_$(d) += -I$(SOURCE_ROOT)/ChessMateEngine
-
-LDLIBS_$(d) := \
-    -lfly

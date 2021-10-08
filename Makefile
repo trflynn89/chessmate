@@ -7,8 +7,14 @@ VERSION = $(shell cat $(SOURCE_ROOT)/VERSION.md)
 # Import the build API.
 include $(SOURCE_ROOT)/extern/flymake/src/api.mk
 
+CFLAGS := -I$(SOURCE_ROOT)/extern/libfly
+CXXFLAGS := -I$(SOURCE_ROOT)/extern/libfly
+
+# Dependencies.
+$(eval $(call ADD_TARGET, libfly, extern/libfly/fly, LIB))
+
 # Main targets.
-$(eval $(call ADD_TARGET, chessmate, ChessMateEngine, BIN))
+$(eval $(call ADD_TARGET, chessmate, ChessMateEngine, BIN, libfly))
 $(eval $(call ADD_TARGET, ChessMate, ChessMateGUI/src/main/java, JAR))
 
 # Override default flymake configuration.
