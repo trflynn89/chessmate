@@ -1,0 +1,3 @@
+[submodule "extern/flymake"]
+	path = extern/flymake
+	url = https://github.com/trflynn89/flymake.git
